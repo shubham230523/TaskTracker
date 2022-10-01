@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="btn_add_task" parent="CardView">
+        <item name="backgroundTint">@color/green</item>
+        <item name="cornerRadius">15dp</item>
+        <item name="elevation">10dp</item>
+        <item name="android:shadowColor">@color/grey</item>
+    </style>
+</resources>
