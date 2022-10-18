@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context=".MainActivity">
     <TextView
         android:layout_width="wrap_content"
@@ -18,7 +19,7 @@
         app:layout_constraintBottom_toTopOf="@id/tv_day"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="25dp"/>
+        android:layout_marginStart="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,7 +31,7 @@
         android:textStyle="bold"
         android:id="@+id/tv_day"
         android:layout_marginTop="2dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_date"
         app:layout_constraintBottom_toTopOf="@id/guideline_dates"
@@ -41,7 +42,7 @@
         style="@style/btn_add_task"
         android:layout_width="140dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="15dp"
         android:text="+  Add Task"
         android:fontFamily="@font/robotoslab_medium"
         app:layout_constraintBottom_toTopOf="@+id/guideline_dates"
@@ -55,8 +56,60 @@
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.2"
+        app:layout_constraintGuide_percent="0.1"
         android:id="@+id/guideline_dates"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:id="@+id/rv_dates"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_dates"/>
 
+<!--    <ScrollView-->
+<!--        android:id="@+id/scrollview"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/rv_dates" ></ScrollView>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/rv_tasks"
+        app:layout_constraintBottom_toTopOf="@id/cv_bottom_nav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_dates"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cv_bottom_nav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardBackgroundColor="@color/black"
+        app:cardCornerRadius="14dp"
+        >
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_nav"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
+            app:menu="@menu/bottom_nav_items"
+            android:background="@color/black"
+            app:itemRippleColor="@color/grey"
+            app:itemIconSize="20dp"
+            />
+
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
