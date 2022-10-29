@@ -1,15 +1,12 @@
 package com.shubham.tasktrackerapp
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vipulasri.timelineview.TimelineView
 import com.google.android.material.card.MaterialCardView
@@ -30,17 +27,20 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
     )
 
     inner class TimeLineTaskViewHolder(itemView: View, viewType: Int) : RecyclerView.ViewHolder(itemView){
-        val title = itemView.findViewById<TextView>(R.id.timeline_card_title)
-        val description = itemView.findViewById<TextView>(R.id.timeline_card_description)
-        val lastDate = itemView.findViewById<TextView>(R.id.timeline_card_lastdate)
-        val timeLine = itemView.findViewById<TimelineView>(R.id.timeline)
+        val title: TextView = itemView.findViewById(R.id.tv_card_title)
+        val addedDate: TextView = itemView.findViewById(R.id.tv_card_task_added_date)
+        val dueDate = itemView.findViewById<TextView>(R.id.tv_card_last_date)
+        val timeLine: TimelineView = itemView.findViewById(R.id.timeline)
+        val txtAttachments : TextView = itemView.findViewById(R.id.tv_txt_attachments)
         val startTime = itemView.findViewById<TextView>(R.id.tv_start_time)
-        val endTime = itemView.findViewById<TextView>(R.id.tv_end_time)
-        val timeLine_curr_time = itemView.findViewById<TimelineView>(R.id.timeline_current_time)
-        val card = itemView.findViewById<MaterialCardView>(R.id.task_card)
+        val attachment : TextView = itemView.findViewById(R.id.tv_attachments)
+        val attachmentLine : View = itemView.findViewById(R.id.line_attachments)
+        val endTime: TextView = itemView.findViewById<TextView>(R.id.tv_end_time)
+        val timeLineLocalTime: TimelineView = itemView.findViewById(R.id.timeline_local_time)
+        val taskCard = itemView.findViewById<MaterialCardView>(R.id.task_card)
         init {
             timeLine.initLine(viewType)
-            timeLine_curr_time.initLine(viewType)
+            timeLineLocalTime.initLine(viewType)
         }
     }
 
@@ -54,18 +54,23 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
 
     override fun onBindViewHolder(holder: TimeLineTaskViewHolder, position: Int) {
         val task = tasks[position]
-        if(task.description == ""){
+        if(task.title == ""){
             Log.d("TaskAdapter" , "description null")
-            holder.card.visibility = View.GONE
+            holder.taskCard.visibility = View.GONE
             holder.timeLine.visibility = View.GONE
-            holder.timeLine_curr_time.visibility = View.VISIBLE
+            holder.timeLineLocalTime.visibility = View.VISIBLE
             holder.endTime.visibility = View.GONE
         }
         Log.d("TaskAdapter" , "description not null")
-        holder.description.text = task.description
+        holder.addedDate.text = task.added_date
         holder.title.text = task.title
-        holder.lastDate.text = task.lastDate
-        holder.card.setCardBackgroundColor(colors.random())
+        holder.dueDate.text = task.due_date
+        if(task.attachments) {
+            holder.attachment.visibility = View.VISIBLE
+            holder.attachment.text = "Attachments"
+            holder.attachmentLine.visibility = View.VISIBLE
+        }
+        holder.taskCard.setCardBackgroundColor(colors.random())
 //        holder.card.setCardBackgroundColor(ContextCompat.getColor(context , color))
     }
 

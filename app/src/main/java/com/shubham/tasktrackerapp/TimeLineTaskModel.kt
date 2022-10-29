@@ -2,6 +2,7 @@ package com.shubham.tasktrackerapp
 
 data class TimeLineTaskModel(
     val title: String,
-    val description : String ,
-    val lastDate : String
+    val added_date : String,
+    val due_date: String,
+    val attachments: Boolean
 )

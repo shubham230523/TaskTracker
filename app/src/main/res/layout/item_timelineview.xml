@@ -1,141 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
+        android:id="@+id/tv_start_time"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/robotoslab_medium"
         android:text="11:00"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:fontFamily="@font/robotoslab_medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="20dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_start_time"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/tv_end_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/tv_start_time"
-        app:layout_constraintEnd_toEndOf="@id/tv_start_time"
-        app:layout_constraintTop_toBottomOf="@id/tv_start_time"
-        android:layout_marginTop="10dp"
-        android:text="12:00"
-        android:textSize="16sp"
         android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/robotoslab_regular"
+        android:text="12:00"
         android:textColor="@color/grey"
-        android:id="@+id/tv_end_time" />
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/tv_start_time"
+        app:layout_constraintStart_toStartOf="@id/tv_start_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_start_time" />
 
     <com.github.vipulasri.timelineview.TimelineView
         android:id="@+id/timeline"
-        app:markerPaddingTop="20dp"
-        app:layout_constraintStart_toEndOf="@id/tv_start_time"
-        android:layout_marginStart="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        app:markerSize="20dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:minHeight="40dp"
+        android:visibility="visible"
+        app:endLineColor="@color/green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_start_time"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lineStyle="normal"
         app:lineWidth="3dp"
         app:marker="@drawable/marker_task"
-        android:visibility="visible"
-        android:minHeight="40dp"
         app:markerInCenter="false"
-        app:startLineColor="@color/green"
-        app:endLineColor="@color/green"
-        app:lineStyle="normal"/>
+        app:markerPaddingTop="20dp"
+        app:markerSize="20dp"
+        app:startLineColor="@color/green" />
 
     <com.github.vipulasri.timelineview.TimelineView
-        android:id="@+id/timeline_current_time"
-        app:layout_constraintStart_toEndOf="@id/tv_start_time"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/timeline_local_time"
         android:layout_width="wrap_content"
         android:layout_height="90dp"
-        app:markerSize="20dp"
+        android:layout_marginStart="10dp"
+        android:visibility="invisible"
+        app:endLineColor="@color/green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_start_time"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lineStyle="dash"
         app:lineWidth="3dp"
         app:marker="@drawable/curr_time_marker"
-        app:markerPaddingTop="20dp"
-        android:visibility="invisible"
         app:markerInCenter="false"
-        app:startLineColor="@color/green"
-        app:endLineColor="@color/green"
-        app:lineStyle="dash"/>
+        app:markerPaddingTop="20dp"
+        app:markerSize="20dp"
+        app:startLineColor="@color/green" />
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="20dp"
-        android:paddingBottom="20dp"
         android:id="@+id/task_card"
-        app:cardBackgroundColor="@color/green"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="@id/timeline"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:cardBackgroundColor="@color/green"
         app:cardCornerRadius="15dp"
-        app:cardElevation="0dp">
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/timeline"
+        app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:padding="12dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
             <!-- task title -->
             <TextView
+                android:id="@+id/tv_card_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:fontFamily="@font/roboldslab_bold"
-                android:textColor="@color/black"
-                android:id="@+id/timeline_card_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_margin = "5dp"/>
-
-            <!-- task description -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@color/black"
                 android:fontFamily="@font/robotoslab_medium"
-                android:id="@+id/timeline_card_description"
+                android:text="BDA Assignment"
+                android:textSize="18sp"
+                android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/timeline_card_title"
-                android:layout_margin="5dp"
-                android:maxLines="1"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Do this by -->
+            <!-- task added date -->
             <TextView
+                android:id="@+id/tv_card_task_added_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_dothisby"
-                android:textSize="12sp"
-                android:fontFamily="@font/robotoslab_regular"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/timeline_card_description"
-                android:layout_margin="5dp"
-                android:text="Do this by - "/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/robotoslab_medium"
                 android:maxLines="1"
+                android:text="18 Oct"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_card_title" />
+
+            <!-- last date -->
+            <TextView
+                android:id="@+id/tv_card_txtdue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:fontFamily="@font/robotoslab_regular"
-                app:layout_constraintStart_toEndOf="@id/tv_dothisby"
-                app:layout_constraintTop_toTopOf="@id/tv_dothisby"
-                app:layout_constraintBottom_toBottomOf="@id/tv_dothisby"
-                android:id="@+id/timeline_card_lastdate"/>
+                android:text="Due - "
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_card_task_added_date" />
+
+            <TextView
+                android:id="@+id/tv_card_last_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/robotoslab_regular"
+                android:maxLines="1"
+                android:text="20 Oct"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_card_txtdue"
+                app:layout_constraintStart_toEndOf="@id/tv_card_txtdue"
+                app:layout_constraintTop_toTopOf="@id/tv_card_txtdue" />
+
+            <TextView
+                android:id="@+id/tv_txt_attachments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/robotoslab_regular"
+                android:maxLines="1"
+                android:layout_marginTop="10dp"
+                android:text="No Attachments"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_card_txtdue" />
+
+            <View
+                android:id="@+id/line_attachments"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:background="@color/green"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_txt_attachments" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:visibility="gone"
+                android:text="Attachments"
+                android:id="@+id/tv_attachments"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/line_attachments"
+                android:layout_marginTop="10dp"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

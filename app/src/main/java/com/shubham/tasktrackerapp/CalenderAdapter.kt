@@ -1,32 +1,50 @@
 package com.shubham.tasktrackerapp
 
+import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Calendar
 
-class CalenderAdapter(val list : ArrayList<CalenderDateModel>) : RecyclerView.Adapter<CalenderAdapter.CalenderViewHolder>() {
-    private val dates = ArrayList<CalenderDateModel>()
-    inner class CalenderViewHolder(view : View) : RecyclerView.ViewHolder(view){
-        fun bind(calenderDateModel: CalenderDateModel){
+class CalenderAdapter(val list: MutableList<CalenderDateModel>, val context: Context ,
+private val onItemClicked: (position: Int) -> Unit) :
+    RecyclerView.Adapter<CalenderAdapter.CalenderViewHolder>(){
+    inner class CalenderViewHolder(view : View , private val onItemClicked: (position: Int) -> Unit) :
+        RecyclerView.ViewHolder(view) , View.OnClickListener{
+        init {
+            itemView.setOnClickListener(this)
+        }
+        fun bind(date: CalenderDateModel){
             Log.d("listCA" , list.toString())
-            val txt_day = itemView.findViewById<TextView>(R.id.rv_item_day)
-            val txt_date = itemView.findViewById<TextView>(R.id.rv_item_date)
-            val date = calenderDateModel.date.date.toString()
-            var day = calenderDateModel.date.day.toString()
-            when(day){
-                "0" -> day = "Mon"
-                "1" -> day = "Tue"
-                "2" -> day = "Wed"
-                "3" -> day = "Thu"
-                "4" -> day = "Fri"
-                "5" -> day = "Sat"
-                "6" -> day = "Sun"
+            val txtDay = itemView.findViewById<TextView>(R.id.rv_item_day)
+            val txtDate = itemView.findViewById<TextView>(R.id.rv_item_date)
+            when(date.day){
+                "0" -> txtDay.text = "Mon"
+                "1" -> txtDay.text = "Tue"
+                "2" -> txtDay.text = "Wed"
+                "3" -> txtDay.text = "Thu"
+                "4" -> txtDay.text = "Fri"
+                "5" -> txtDay.text = "Sat"
+                "6" -> txtDay.text = "Sun"
             }
-            txt_day.text = day
-            txt_date.text = date
+            txtDate.text = date.date
+            if(date.selected){
+                txtDay.setTextColor(ContextCompat.getColor(context , R.color.green))
+                txtDate.setTextColor(ContextCompat.getColor(context , R.color.green))
+            }
+            else {
+                txtDay.setTextColor(ContextCompat.getColor(context , R.color.grey))
+                txtDate.setTextColor(ContextCompat.getColor(context , R.color.black))
+            }
+        }
+
+        override fun onClick(p0: View?) {
+            onItemClicked(adapterPosition)
         }
     }
 
@@ -34,7 +52,7 @@ class CalenderAdapter(val list : ArrayList<CalenderDateModel>) : RecyclerView.Ad
         Log.d("onCreateVH" , "yes")
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.rv_dates_item , parent , false);
-        return CalenderViewHolder(view)
+        return CalenderViewHolder(view , onItemClicked)
     }
 
     override fun onBindViewHolder(holder: CalenderViewHolder, position: Int) {
@@ -44,9 +62,10 @@ class CalenderAdapter(val list : ArrayList<CalenderDateModel>) : RecyclerView.Ad
     override fun getItemCount(): Int {
         return list.size
     }
-    fun setDates(calenderList : ArrayList<CalenderDateModel>){
-        dates.clear()
-        dates.addAll(calenderList)
-        notifyDataSetChanged()
+    fun changeSelectedDate(lastSelectedPosition: Int , newSelectedPosition: Int){
+        list[lastSelectedPosition].selected = false
+        list[newSelectedPosition].selected = true;
+        notifyItemChanged(lastSelectedPosition)
+        notifyItemChanged(newSelectedPosition)
     }
 }

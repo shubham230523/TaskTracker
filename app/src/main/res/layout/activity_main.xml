@@ -59,14 +59,27 @@
         app:layout_constraintGuide_percent="0.1"
         android:id="@+id/guideline_dates"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="month"
+        android:textSize="16sp"
+        android:fontFamily="@font/robotoslab_medium"
+        android:textColor="@color/grey"
+        app:layout_constraintTop_toBottomOf="@id/guideline_dates"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/tv_month"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:id="@+id/rv_dates"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_dates"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_month"/>
 
 <!--    <ScrollView-->
 <!--        android:id="@+id/scrollview"-->
