@@ -3,11 +3,15 @@ package com.shubham.tasktrackerapp
 import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.ViewTreeObserver
 import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -15,82 +19,100 @@ class MainActivity : AppCompatActivity() {
 
     private val tasks = listOf(
         TimeLineTaskModel(
-            "",
-            "",
-            "",
-            false
-        ),
-        TimeLineTaskModel(
             "BDA Assignment 5" ,
             "18 Oct" ,
             "27 Oct",
-            true
+            true,
+            "9:00",
+            "9:30"
         ),
         TimeLineTaskModel(
             "CSL Module 3 Quiz" ,
             "12 March" ,
             "12 Nov",
-            false
+            false,
+            "9:40",
+            "10:10"
         ),
         TimeLineTaskModel(
             "AVR Practicals" ,
             "12 May" ,
             "14 Jun",
-            false
+            false,
+            "10:30",
+            "11:00"
         ),
         TimeLineTaskModel(
             "Major Project" ,
             "11 Dec" ,
             "12 Jan",
-            true
+            true,
+            "11:20",
+            "11:35"
         ),
         TimeLineTaskModel(
             "BDA Assignment 5" ,
             "18 Oct" ,
             "27 Oct",
-            true
+            true,
+            "11:50",
+            "12:22"
         ),
         TimeLineTaskModel(
             "CSL Module 3 Quiz" ,
             "12 March" ,
             "12 Nov",
-            false
+            false,
+            "12:40",
+            "12:55"
         ),
         TimeLineTaskModel(
             "AVR Practicals" ,
             "12 May" ,
             "14 Jun",
-            false
+            false,
+            "1:00",
+            "1:15"
         ),
         TimeLineTaskModel(
             "Major Project" ,
             "11 Dec" ,
             "12 Jan",
-            true
+            true,
+            "1:25",
+            "1:50"
         ),
         TimeLineTaskModel(
             "BDA Assignment 5" ,
             "18 Oct" ,
             "27 Oct",
-            true
+            true,
+            "2:00",
+            "2:20"
         ),
         TimeLineTaskModel(
             "CSL Module 3 Quiz" ,
             "12 March" ,
             "12 Nov",
-            false
+            false,
+            "2:35",
+            "2:40"
         ),
         TimeLineTaskModel(
             "AVR Practicals" ,
             "12 May" ,
             "14 Jun",
-            false
+            false,
+            "3:00",
+            "3:22"
         ),
         TimeLineTaskModel(
             "Major Project" ,
             "11 Dec" ,
             "12 Jan",
-            true
+            true,
+            "4:00",
+            "5:00"
         ),
     )
     private var datesList = mutableListOf<CalenderDateModel>()
@@ -100,7 +122,8 @@ class MainActivity : AppCompatActivity() {
     var month = 0 ; var day = 0 ; var date = 0 ; var year = 0
     private lateinit var rvDates: RecyclerView
     private lateinit var tvMonth : TextView
-
+    private val scaleFractions = mutableListOf<Float>(1F, 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 0.4F)
+    private var  job : Job = Job()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -131,12 +154,24 @@ class MainActivity : AppCompatActivity() {
             adapter = tasksAdapter
             layoutManager = LinearLayoutManager(this@MainActivity , LinearLayoutManager.VERTICAL , false)
         }
-
+//        val view = rvTasks[0]
         lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH)-1
         rvDates.scrollToPosition(lastSelectedPosition)
         calenderAdapter.changeSelectedDate(lastSelectedPosition , lastSelectedPosition)
 
         tvMonth.setOnClickListener { pickDate() }
+        var count = 0
+        Log.d("MainActivity" , "mainActivity")
+        rvTasks.runWhenReady {
+            if (count == 0) tasksAdapter.scalingViewsTimeline(scaleFractions)
+            count+=1
+        }
+//        job = GlobalScope.launch(Dispatchers.Main) {
+//            delay(500)
+//            Log.d("scalingViewsTimeline" , "called")
+//            tasksAdapter.scalingViewsTimeline(scaleFractions)
+////            job.cancel()
+//        }
     }
 
     private fun setUpCalender() : MutableList<CalenderDateModel> {
@@ -214,5 +249,14 @@ class MainActivity : AppCompatActivity() {
             11 -> return "December"
         }
         return ""
+    }
+    fun RecyclerView.runWhenReady(action: () -> Unit) {
+        val globalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                action()
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        }
+        viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     }
 }

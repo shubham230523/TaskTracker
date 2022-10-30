@@ -2,14 +2,17 @@ package com.shubham.tasktrackerapp
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vipulasri.timelineview.TimelineView
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.*
 
 class TimeLineTasksAdapter(private val tasks : List<TimeLineTaskModel> , val context : Context) :
 RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
@@ -25,23 +28,19 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
         Color.parseColor("#F8F9F9"),
         Color.parseColor("#EBEDEF")
     )
+    private val viewHolderList = mutableListOf<TimeLineTaskViewHolder>()
 
     inner class TimeLineTaskViewHolder(itemView: View, viewType: Int) : RecyclerView.ViewHolder(itemView){
         val title: TextView = itemView.findViewById(R.id.tv_card_title)
         val addedDate: TextView = itemView.findViewById(R.id.tv_card_task_added_date)
         val dueDate = itemView.findViewById<TextView>(R.id.tv_card_last_date)
-        val timeLine: TimelineView = itemView.findViewById(R.id.timeline)
+        val viewTimeline: View = itemView.findViewById(R.id.view_timeline)
         val txtAttachments : TextView = itemView.findViewById(R.id.tv_txt_attachments)
         val startTime = itemView.findViewById<TextView>(R.id.tv_start_time)
         val attachment : TextView = itemView.findViewById(R.id.tv_attachments)
         val attachmentLine : View = itemView.findViewById(R.id.line_attachments)
         val endTime: TextView = itemView.findViewById<TextView>(R.id.tv_end_time)
-        val timeLineLocalTime: TimelineView = itemView.findViewById(R.id.timeline_local_time)
         val taskCard = itemView.findViewById<MaterialCardView>(R.id.task_card)
-        init {
-            timeLine.initLine(viewType)
-            timeLineLocalTime.initLine(viewType)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineTaskViewHolder {
@@ -53,17 +52,14 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
     }
 
     override fun onBindViewHolder(holder: TimeLineTaskViewHolder, position: Int) {
+        viewHolderList.add(holder)
+        Log.d("viewHolderList" , "holder added")
         val task = tasks[position]
-        if(task.title == ""){
-            Log.d("TaskAdapter" , "description null")
-            holder.taskCard.visibility = View.GONE
-            holder.timeLine.visibility = View.GONE
-            holder.timeLineLocalTime.visibility = View.VISIBLE
-            holder.endTime.visibility = View.GONE
-        }
         Log.d("TaskAdapter" , "description not null")
         holder.addedDate.text = task.added_date
         holder.title.text = task.title
+        holder.startTime.text = task.startTime
+        holder.endTime.text = task.endTime
         holder.dueDate.text = task.due_date
         if(task.attachments) {
             holder.attachment.visibility = View.VISIBLE
@@ -75,4 +71,16 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
     }
 
     override fun getItemCount() = tasks.size
+    fun scalingViewsTimeline(scaleFractions : List<Float>){
+        Log.d("viewholder" , viewHolderList[0].toString())
+        GlobalScope.launch (Dispatchers.Main){
+            for((ind, view) in viewHolderList.withIndex()) {
+                view.viewTimeline.pivotY = 0F
+                view.viewTimeline.animate().scaleY(scaleFractions[ind])
+                view.viewTimeline.animate().duration = 1500
+                view.viewTimeline.animate().start()
+                delay(1400)
+            }
+        }
+    }
 }
