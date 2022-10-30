@@ -158,13 +158,11 @@ class MainActivity : AppCompatActivity() {
         lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH)-1
         rvDates.scrollToPosition(lastSelectedPosition)
         calenderAdapter.changeSelectedDate(lastSelectedPosition , lastSelectedPosition)
-
         tvMonth.setOnClickListener { pickDate() }
-        var count = 0
         Log.d("MainActivity" , "mainActivity")
         rvTasks.runWhenReady {
-            if (count == 0) tasksAdapter.scalingViewsTimeline(scaleFractions)
-            count+=1
+//            tasksAdapter.scalingViewsTimeline(scaleFractions)
+            Log.d("childCount" , rvTasks.childCount.toString())
         }
 //        job = GlobalScope.launch(Dispatchers.Main) {
 //            delay(500)

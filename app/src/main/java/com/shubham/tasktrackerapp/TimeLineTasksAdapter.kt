@@ -48,12 +48,14 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
             mLayoutInflater = LayoutInflater.from(parent.context)
         }
         val view = mLayoutInflater.inflate(R.layout.item_timelineview , parent , false);
-        return TimeLineTaskViewHolder(view , viewType)
+        val viewholder = TimeLineTaskViewHolder(view , viewType)
+        viewHolderList.add(viewholder)
+        return viewholder
     }
 
     override fun onBindViewHolder(holder: TimeLineTaskViewHolder, position: Int) {
-        viewHolderList.add(holder)
-        Log.d("viewHolderList" , "holder added")
+//        viewHolderList.add(holder)
+//        Log.d("viewHolderList" , "holder added")
         val task = tasks[position]
         Log.d("TaskAdapter" , "description not null")
         holder.addedDate.text = task.added_date
@@ -72,15 +74,15 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
 
     override fun getItemCount() = tasks.size
     fun scalingViewsTimeline(scaleFractions : List<Float>){
-        Log.d("viewholder" , viewHolderList[0].toString())
-        GlobalScope.launch (Dispatchers.Main){
-            for((ind, view) in viewHolderList.withIndex()) {
-                view.viewTimeline.pivotY = 0F
-                view.viewTimeline.animate().scaleY(scaleFractions[ind])
-                view.viewTimeline.animate().duration = 1500
-                view.viewTimeline.animate().start()
-                delay(1400)
-            }
-        }
+        Log.d("viewHolderList" , viewHolderList.size.toString())
+//        GlobalScope.launch (Dispatchers.Main){
+//            for((ind, view) in viewHolderList.withIndex()) {
+//                view.viewTimeline.pivotY = 0F
+//                view.viewTimeline.animate().scaleY(scaleFractions[ind])
+//                view.viewTimeline.animate().duration = 1500
+//                view.viewTimeline.animate().start()
+//                delay(1400)
+//            }
+//        }
     }
 }
