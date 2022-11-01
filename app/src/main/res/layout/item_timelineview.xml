@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="20dp"
-        app:cardBackgroundColor="@color/green"
+        android:background="@drawable/documents"
         app:cardCornerRadius="15dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -78,10 +78,9 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
-
             <!-- task title -->
             <TextView
                 android:id="@+id/tv_card_title"
@@ -150,7 +149,7 @@
                 android:layout_height="1dp"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
-                android:background="@color/green"
+                android:background="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_txt_attachments" />
@@ -167,6 +166,22 @@
                 app:layout_constraintTop_toBottomOf="@id/line_attachments"
                 android:layout_marginTop="10dp"
                 />
+            <!-- guideline for task background image -->
+            <androidx.constraintlayout.widget.Guideline
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.4"
+                android:id="@+id/task_background_img_guideline"/>
+            <!-- task card background image -->
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="0dp"
+                android:alpha="0.2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/task_background_img_guideline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/videos"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

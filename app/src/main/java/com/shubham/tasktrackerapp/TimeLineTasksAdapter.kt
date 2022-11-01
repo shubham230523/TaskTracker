@@ -18,14 +18,11 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
     private val TAG  = "TimeLineTasksAdapter"
     private lateinit var mLayoutInflater: LayoutInflater
     val colors = arrayOf(
-        Color.parseColor("#F9EBEA"),
-        Color.parseColor("#F4ECF7"),
-        Color.parseColor("#EBF5FB"),
-        Color.parseColor("#E8F6F3"),
-        Color.parseColor("#FEF9E7"),
-        Color.parseColor("#FDF2E9"),
-        Color.parseColor("#F8F9F9"),
-        Color.parseColor("#EBEDEF")
+        Color.parseColor("#03A9F4"),
+        Color.parseColor("#E64A19"),
+        Color.parseColor("#D81B60"),
+        Color.parseColor("#9C27B0"),
+        Color.parseColor("#FBC02D"),
     )
     private var cal = Calendar.getInstance(Locale.ENGLISH)
     var firstItem = true
