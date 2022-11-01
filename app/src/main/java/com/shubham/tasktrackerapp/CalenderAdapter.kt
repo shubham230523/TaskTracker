@@ -1,7 +1,6 @@
 package com.shubham.tasktrackerapp
 
 import android.content.Context
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Calendar
 
 class CalenderAdapter(val list: MutableList<CalenderDateModel>, val context: Context ,
 private val onItemClicked: (position: Int) -> Unit) :
@@ -36,10 +34,12 @@ private val onItemClicked: (position: Int) -> Unit) :
             if(date.selected){
                 txtDay.setTextColor(ContextCompat.getColor(context , R.color.green))
                 txtDate.setTextColor(ContextCompat.getColor(context , R.color.green))
+                itemView.background = ContextCompat.getDrawable(context , R.drawable.dates_selected_background_stroke)
             }
             else {
                 txtDay.setTextColor(ContextCompat.getColor(context , R.color.grey))
                 txtDate.setTextColor(ContextCompat.getColor(context , R.color.black))
+                itemView.background = ContextCompat.getDrawable(context , R.drawable.dates_unselected_background_stroke)
             }
         }
 

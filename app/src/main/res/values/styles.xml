@@ -6,4 +6,7 @@
         <item name="elevation">10dp</item>
         <item name="android:shadowColor">@color/grey</item>
     </style>
+
+    <style name="dates_background_strokes" parent="Widget.Material3.CardView.Outlined">
+    </style>
 </resources>    

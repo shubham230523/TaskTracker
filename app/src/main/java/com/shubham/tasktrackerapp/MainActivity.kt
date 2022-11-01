@@ -8,10 +8,12 @@ import android.view.ViewTreeObserver
 import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.get
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
+import org.w3c.dom.Text
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,97 +25,105 @@ class MainActivity : AppCompatActivity() {
             "18 Oct" ,
             "27 Oct",
             true,
-            "9:00",
-            "9:30"
-        ),
-        TimeLineTaskModel(
-            "CSL Module 3 Quiz" ,
-            "12 March" ,
-            "12 Nov",
-            false,
-            "9:40",
-            "10:10"
-        ),
-        TimeLineTaskModel(
-            "AVR Practicals" ,
-            "12 May" ,
-            "14 Jun",
-            false,
-            "10:30",
-            "11:00"
-        ),
-        TimeLineTaskModel(
-            "Major Project" ,
-            "11 Dec" ,
-            "12 Jan",
-            true,
-            "11:20",
-            "11:35"
+            "7:15",
+            "18:30"
         ),
         TimeLineTaskModel(
             "BDA Assignment 5" ,
             "18 Oct" ,
             "27 Oct",
             true,
-            "11:50",
-            "12:22"
+            "7:20",
+            "18:30"
         ),
         TimeLineTaskModel(
             "CSL Module 3 Quiz" ,
             "12 March" ,
             "12 Nov",
             false,
-            "12:40",
-            "12:55"
+            "21:46",
+            "19:10"
         ),
         TimeLineTaskModel(
             "AVR Practicals" ,
             "12 May" ,
             "14 Jun",
             false,
-            "1:00",
-            "1:15"
+            "21:47",
+            "19:50"
         ),
-        TimeLineTaskModel(
-            "Major Project" ,
-            "11 Dec" ,
-            "12 Jan",
-            true,
-            "1:25",
-            "1:50"
-        ),
-        TimeLineTaskModel(
-            "BDA Assignment 5" ,
-            "18 Oct" ,
-            "27 Oct",
-            true,
-            "2:00",
-            "2:20"
-        ),
-        TimeLineTaskModel(
-            "CSL Module 3 Quiz" ,
-            "12 March" ,
-            "12 Nov",
-            false,
-            "2:35",
-            "2:40"
-        ),
-        TimeLineTaskModel(
-            "AVR Practicals" ,
-            "12 May" ,
-            "14 Jun",
-            false,
-            "3:00",
-            "3:22"
-        ),
-        TimeLineTaskModel(
-            "Major Project" ,
-            "11 Dec" ,
-            "12 Jan",
-            true,
-            "4:00",
-            "5:00"
-        ),
+//        TimeLineTaskModel(
+//            "Major Project" ,
+//            "11 Dec" ,
+//            "12 Jan",
+//            true,
+//            "11:20",
+//            "11:35"
+//        ),
+//        TimeLineTaskModel(
+//            "BDA Assignment 5" ,
+//            "18 Oct" ,
+//            "27 Oct",
+//            true,
+//            "11:50",
+//            "12:22"
+//        ),
+//        TimeLineTaskModel(
+//            "CSL Module 3 Quiz" ,
+//            "12 March" ,
+//            "12 Nov",
+//            false,
+//            "12:40",
+//            "12:55"
+//        ),
+//        TimeLineTaskModel(
+//            "AVR Practicals" ,
+//            "12 May" ,
+//            "14 Jun",
+//            false,
+//            "1:00",
+//            "1:15"
+//        ),
+//        TimeLineTaskModel(
+//            "Major Project" ,
+//            "11 Dec" ,
+//            "12 Jan",
+//            true,
+//            "1:25",
+//            "1:50"
+//        ),
+//        TimeLineTaskModel(
+//            "BDA Assignment 5" ,
+//            "18 Oct" ,
+//            "27 Oct",
+//            true,
+//            "2:00",
+//            "2:20"
+//        ),
+//        TimeLineTaskModel(
+//            "CSL Module 3 Quiz" ,
+//            "12 March" ,
+//            "12 Nov",
+//            false,
+//            "2:35",
+//            "2:40"
+//        ),
+//        TimeLineTaskModel(
+//            "AVR Practicals" ,
+//            "12 May" ,
+//            "14 Jun",
+//            false,
+//            "3:00",
+//            "3:22"
+//        ),
+//        TimeLineTaskModel(
+//            "Major Project" ,
+//            "11 Dec" ,
+//            "12 Jan",
+//            true,
+//            "4:00",
+//            "5:00"
+//        ),
     )
     private var datesList = mutableListOf<CalenderDateModel>()
     private var lastSelectedPosition = 0
@@ -124,6 +134,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvMonth : TextView
     private val scaleFractions = mutableListOf<Float>(1F, 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 0.4F)
     private var  job : Job = Job()
+    var optUpcom = true
+    var optAllupcom = false
+    var optMissed = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -131,16 +145,66 @@ class MainActivity : AppCompatActivity() {
         rvDates = findViewById(R.id.rv_dates)
         val rvTasks = findViewById<RecyclerView>(R.id.rv_tasks)
         tvMonth = findViewById(R.id.tv_month)
-        val tvDate = findViewById<TextView>(R.id.tv_date)
-        val tvDay = findViewById<TextView>(R.id.tv_day)
+
+        val opt_upcoming = findViewById<TextView>(R.id.opt_upcoming_tasks)
+        val opt_all_comming = findViewById<TextView>(R.id.opt_all_upcoming_tasks)
+        val opt_missed_tasks = findViewById<TextView>(R.id.opt_missed)
+
+        opt_upcoming.background = ContextCompat.getDrawable(this , R.drawable.task_opt_selected)
+        opt_upcoming.setTextColor(ContextCompat.getColor(this , R.color.blue))
+
+        opt_upcoming.setOnClickListener {
+            if(optAllupcom) {
+                optAllupcom = false
+                opt_all_comming.setTextColor(ContextCompat.getColor(this , R.color.grey))
+                opt_all_comming.background = ContextCompat.getDrawable(this , R.drawable.dates_unselected_background_stroke)
+            }
+            if(optMissed){
+                optMissed = false
+                opt_missed_tasks.setTextColor(ContextCompat.getColor(this , R.color.grey))
+                opt_missed_tasks.background = ContextCompat.getDrawable(this , R.drawable.dates_unselected_background_stroke)
+            }
+            optUpcom = true
+            opt_upcoming.setTextColor(ContextCompat.getColor(this , R.color.blue))
+            opt_upcoming.background = ContextCompat.getDrawable(this , R.drawable.task_opt_selected)
+        }
+        opt_all_comming.setOnClickListener {
+            if(optUpcom) {
+                optUpcom = false
+                opt_upcoming.setTextColor(ContextCompat.getColor(this , R.color.grey))
+                opt_upcoming.background = ContextCompat.getDrawable(this , R.drawable.dates_unselected_background_stroke)
+            }
+            if(optMissed){
+                optMissed = false
+                opt_missed_tasks.setTextColor(ContextCompat.getColor(this , R.color.grey))
+                opt_missed_tasks.background = ContextCompat.getDrawable(this , R.drawable.dates_unselected_background_stroke)
+            }
+            optAllupcom = true
+            opt_all_comming.setTextColor(ContextCompat.getColor(this , R.color.blue))
+            opt_all_comming.background = ContextCompat.getDrawable(this , R.drawable.task_opt_selected)
+        }
+        opt_missed_tasks.setOnClickListener {
+            if(optAllupcom) {
+                optAllupcom = false
+                opt_all_comming.setTextColor(ContextCompat.getColor(this , R.color.grey))
+                opt_all_comming.background = ContextCompat.getDrawable(this , R.drawable.dates_unselected_background_stroke)
+            }
+            if(optUpcom){
+                optUpcom = false
+                opt_upcoming.setTextColor(ContextCompat.getColor(this , R.color.grey))
+                opt_upcoming.background = ContextCompat.getDrawable(this , R.drawable.dates_unselected_background_stroke)
+            }
+            optMissed = true
+            opt_missed_tasks.setTextColor(ContextCompat.getColor(this , R.color.blue))
+            opt_missed_tasks.background = ContextCompat.getDrawable(this , R.drawable.task_opt_selected)
+        }
+
 
         month = cal.get(Calendar.MONTH)
         day = cal.get(Calendar.DAY_OF_WEEK)
         date = cal.get(Calendar.DATE)
         year = cal.get(Calendar.YEAR)
 
-        tvDate.text = "$date ${getMonth(month)} $year"
-        tvDay.text = getDay(day)
         tvMonth.text = "$date ${getMonth(month)} $year"
 
         calenderAdapter = CalenderAdapter(setUpCalender(), this){position ->  onListItemClick(position)}
@@ -150,9 +214,10 @@ class MainActivity : AppCompatActivity() {
             adapter = calenderAdapter
             layoutManager = LinearLayoutManager(this@MainActivity , LinearLayoutManager.HORIZONTAL , false)
         }
+        val lm = LinearLayoutManager(this@MainActivity , LinearLayoutManager.VERTICAL , false)
         rvTasks.apply {
             adapter = tasksAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity , LinearLayoutManager.VERTICAL , false)
+            layoutManager = lm
         }
 //        val view = rvTasks[0]
         lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH)-1
@@ -161,15 +226,15 @@ class MainActivity : AppCompatActivity() {
         tvMonth.setOnClickListener { pickDate() }
         Log.d("MainActivity" , "mainActivity")
         rvTasks.runWhenReady {
-//            tasksAdapter.scalingViewsTimeline(scaleFractions)
-            Log.d("childCount" , rvTasks.childCount.toString())
+//            val firstVisibleItem = lm.findFirstCompletelyVisibleItemPosition()
+//            val vh : TimeLineTasksAdapter.TimeLineTaskViewHolder
+//            = rvTasks.findViewHolderForAdapterPosition(firstVisibleItem)
+//                    as TimeLineTasksAdapter.TimeLineTaskViewHolder
+//            val lp : ConstraintLayout.LayoutParams = vh.taskCard.layoutParams as ConstraintLayout.LayoutParams
+//            lp.setMargins(30 , 60 , 20 , 20)
+//            vh.taskCard.layoutParams = lp
+            tasksAdapter.scalingViewsTimeline(scaleFractions)
         }
-//        job = GlobalScope.launch(Dispatchers.Main) {
-//            delay(500)
-//            Log.d("scalingViewsTimeline" , "called")
-//            tasksAdapter.scalingViewsTimeline(scaleFractions)
-////            job.cancel()
-//        }
     }
 
     private fun setUpCalender() : MutableList<CalenderDateModel> {
