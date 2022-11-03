@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(
     entities = [Task::class] ,
     exportSchema = false,
-    version = 1
+    version = 2
 )
+@TypeConverters(TaskConverter::class)
 abstract class TaskDatabase : RoomDatabase() {
     companion object{
         const val DATABASE_NAME = "task_db"
@@ -23,6 +25,7 @@ abstract class TaskDatabase : RoomDatabase() {
         }
         private fun buildDatabase(context: Context) : TaskDatabase{
             return Room.databaseBuilder(context , TaskDatabase::class.java , DATABASE_NAME)
+                .fallbackToDestructiveMigration()
                 .build()
         }
     }

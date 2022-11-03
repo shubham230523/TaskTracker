@@ -156,7 +156,6 @@ class MainActivity : AppCompatActivity() {
 
         opt_upcoming.background = ContextCompat.getDrawable(this , R.drawable.task_opt_selected)
         opt_upcoming.setTextColor(ContextCompat.getColor(this , R.color.blue))
-
         opt_upcoming.setOnClickListener {
             if(optAllupcom) {
                 optAllupcom = false
@@ -203,7 +202,6 @@ class MainActivity : AppCompatActivity() {
             opt_missed_tasks.background = ContextCompat.getDrawable(this , R.drawable.task_opt_selected)
         }
 
-
         month = cal.get(Calendar.MONTH)
         day = cal.get(Calendar.DAY_OF_WEEK)
         date = cal.get(Calendar.DATE)
@@ -223,37 +221,32 @@ class MainActivity : AppCompatActivity() {
             adapter = tasksAdapter
             layoutManager = lm
         }
-//        val view = rvTasks[0]
         lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH)-1
         rvDates.scrollToPosition(lastSelectedPosition)
         calenderAdapter.changeSelectedDate(lastSelectedPosition , lastSelectedPosition)
         tvMonth.setOnClickListener { pickDate() }
         Log.d("MainActivity" , "mainActivity")
         rvTasks.runWhenReady {
-//            val firstVisibleItem = lm.findFirstCompletelyVisibleItemPosition()
-//            val vh : TimeLineTasksAdapter.TimeLineTaskViewHolder
-//            = rvTasks.findViewHolderForAdapterPosition(firstVisibleItem)
-//                    as TimeLineTasksAdapter.TimeLineTaskViewHolder
-//            val lp : ConstraintLayout.LayoutParams = vh.taskCard.layoutParams as ConstraintLayout.LayoutParams
-//            lp.setMargins(30 , 60 , 20 , 20)
-//            vh.taskCard.layoutParams = lp
             tasksAdapter.scalingViewsTimeline(scaleFractions)
         }
 
         //inserting and retrieving data to room database
-        val task = Task(
-            1 ,
-            "BDA Assignment 1" ,
-            "01-Nov-22",
-        "02-Nov-22" ,
-            "9:00",
-            "9:30",
-            "documents"
-        )
-        val db = TaskDatabase.getInstance(this)
-        db.dao().insertTask(task)
-        val taskList = db.dao().getAllTasks()
-        Log.d("MainActivity" , "taskList - $taskList")
+//        val task = Task(
+//            title = "ML_Viva" ,
+//            added_date = "03-Nov-22",
+//            due_date = "03-Nov-22" ,
+//            start_time = "9:10",
+//            end_time = "9:20",
+//            bg_img = "reading",
+//            attachments = mutableListOf("VIVA"),
+//            1
+//        )
+//        val db = TaskDatabase.getInstance(this)
+//        GlobalScope.launch (Dispatchers.IO){
+//            db.dao().updateTask(task)
+//            val taskList = db.dao().getAllTasks()
+//            Log.d("MainActivity" , "taskList - $taskList")
+//        }
     }
 
     private fun setUpCalender() : MutableList<CalenderDateModel> {

@@ -24,13 +24,13 @@ class CalenderAdapter(val list: MutableList<CalenderDateModel>, val context: Con
             val txtDay = itemView.findViewById<TextView>(R.id.rv_item_day)
             val txtDate = itemView.findViewById<TextView>(R.id.rv_item_date)
             when(date.day){
-                "0" -> txtDay.text = "Mon"
-                "1" -> txtDay.text = "Tue"
-                "2" -> txtDay.text = "Wed"
-                "3" -> txtDay.text = "Thu"
-                "4" -> txtDay.text = "Fri"
-                "5" -> txtDay.text = "Sat"
-                "6" -> txtDay.text = "Sun"
+                "0" -> txtDay.text = "Sun"
+                "1" -> txtDay.text = "Mon"
+                "2" -> txtDay.text = "Tue"
+                "3" -> txtDay.text = "Wed"
+                "4" -> txtDay.text = "Thu"
+                "5" -> txtDay.text = "Fri"
+                "6" -> txtDay.text = "Sat"
             }
             txtDate.text = date.date
             if(date.selected){

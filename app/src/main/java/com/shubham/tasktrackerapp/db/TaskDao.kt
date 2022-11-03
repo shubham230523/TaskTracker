@@ -3,20 +3,21 @@ package com.shubham.tasktrackerapp.db
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 
 @Dao
 interface TaskDao {
     @Query("Select * from tb_task")
-    fun getAllTasks() : List<Task>
+    suspend fun getAllTasks() : List<Task>
 
-    @Insert
-    fun insertTask(task : Task)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTask(task : Task)
 
     @Update
-    fun updateTask(task : Task)
+    suspend fun updateTask(task : Task)
 
     @Delete
-    fun deleteTask(task : Task)
+    suspend fun deleteTask(task : Task)
 }
