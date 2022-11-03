@@ -1,4 +1,4 @@
-package com.shubham.tasktrackerapp
+package com.shubham.tasktrackerapp.Models
 
 data class TimeLineTaskModel(
     val title: String,

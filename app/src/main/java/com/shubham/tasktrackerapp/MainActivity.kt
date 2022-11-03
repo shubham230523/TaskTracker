@@ -8,12 +8,16 @@ import android.view.ViewTreeObserver
 import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.shubham.tasktrackerapp.Adapter.CalenderAdapter
+import com.shubham.tasktrackerapp.Adapter.TimeLineTasksAdapter
+import com.shubham.tasktrackerapp.Models.CalenderDateModel
+import com.shubham.tasktrackerapp.Models.TimeLineTaskModel
+import com.shubham.tasktrackerapp.db.Task
+import com.shubham.tasktrackerapp.db.TaskDatabase
 import kotlinx.coroutines.*
-import org.w3c.dom.Text
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -235,6 +239,21 @@ class MainActivity : AppCompatActivity() {
 //            vh.taskCard.layoutParams = lp
             tasksAdapter.scalingViewsTimeline(scaleFractions)
         }
+
+        //inserting and retrieving data to room database
+        val task = Task(
+            1 ,
+            "BDA Assignment 1" ,
+            "01-Nov-22",
+        "02-Nov-22" ,
+            "9:00",
+            "9:30",
+            "documents"
+        )
+        val db = TaskDatabase.getInstance(this)
+        db.dao().insertTask(task)
+        val taskList = db.dao().getAllTasks()
+        Log.d("MainActivity" , "taskList - $taskList")
     }
 
     private fun setUpCalender() : MutableList<CalenderDateModel> {

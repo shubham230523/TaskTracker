@@ -1,4 +1,4 @@
-package com.shubham.tasktrackerapp
+package com.shubham.tasktrackerapp.Adapter
 
 import android.content.Context
 import android.graphics.Color
@@ -10,10 +10,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.shubham.tasktrackerapp.Models.TimeLineTaskModel
+import com.shubham.tasktrackerapp.R
 import kotlinx.coroutines.*
 import java.util.*
 
-class TimeLineTasksAdapter(private val tasks : List<TimeLineTaskModel> , val context : Context) :
+class TimeLineTasksAdapter(private val tasks : List<TimeLineTaskModel>, val context : Context) :
 RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
     private val TAG  = "TimeLineTasksAdapter"
     private lateinit var mLayoutInflater: LayoutInflater
@@ -48,7 +50,7 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
         if(!::mLayoutInflater.isInitialized) {
             mLayoutInflater = LayoutInflater.from(parent.context)
         }
-        val view = mLayoutInflater.inflate(R.layout.item_timelineview , parent , false);
+        val view = mLayoutInflater.inflate(R.layout.item_timelineview, parent , false);
         val viewholder = TimeLineTaskViewHolder(view , viewType)
         viewHolderList.add(viewholder)
         return viewholder
@@ -168,7 +170,7 @@ RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
         }
     }
 
-    fun scale(vh: TimeLineTasksAdapter.TimeLineTaskViewHolder, j : Int , div: Int , dur : Long){
+    fun scale(vh: TimeLineTaskViewHolder, j : Int, div: Int, dur : Long){
         vh.viewTimeline.pivotY = 0F
         vh.viewTimeline.animate().duration = dur
         vh.viewTimeline.animate().scaleY(j.toFloat()/ div)

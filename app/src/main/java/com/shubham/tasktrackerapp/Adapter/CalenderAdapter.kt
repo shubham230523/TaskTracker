@@ -1,4 +1,4 @@
-package com.shubham.tasktrackerapp
+package com.shubham.tasktrackerapp.Adapter
 
 import android.content.Context
 import android.util.Log
@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.shubham.tasktrackerapp.Models.CalenderDateModel
+import com.shubham.tasktrackerapp.R
 
-class CalenderAdapter(val list: MutableList<CalenderDateModel>, val context: Context ,
-private val onItemClicked: (position: Int) -> Unit) :
+class CalenderAdapter(val list: MutableList<CalenderDateModel>, val context: Context,
+                      private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<CalenderAdapter.CalenderViewHolder>(){
     inner class CalenderViewHolder(view : View , private val onItemClicked: (position: Int) -> Unit) :
         RecyclerView.ViewHolder(view) , View.OnClickListener{
@@ -34,12 +36,16 @@ private val onItemClicked: (position: Int) -> Unit) :
             if(date.selected){
                 txtDay.setTextColor(ContextCompat.getColor(context , R.color.green))
                 txtDate.setTextColor(ContextCompat.getColor(context , R.color.green))
-                itemView.background = ContextCompat.getDrawable(context , R.drawable.dates_selected_background_stroke)
+                itemView.background = ContextCompat.getDrawable(context ,
+                    R.drawable.dates_selected_background_stroke
+                )
             }
             else {
                 txtDay.setTextColor(ContextCompat.getColor(context , R.color.grey))
                 txtDate.setTextColor(ContextCompat.getColor(context , R.color.black))
-                itemView.background = ContextCompat.getDrawable(context , R.drawable.dates_unselected_background_stroke)
+                itemView.background = ContextCompat.getDrawable(context ,
+                    R.drawable.dates_unselected_background_stroke
+                )
             }
         }
 
@@ -51,7 +57,7 @@ private val onItemClicked: (position: Int) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CalenderViewHolder {
         Log.d("onCreateVH" , "yes")
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.rv_dates_item , parent , false);
+            .inflate(R.layout.rv_dates_item, parent , false);
         return CalenderViewHolder(view , onItemClicked)
     }
 
