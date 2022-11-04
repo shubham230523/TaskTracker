@@ -10,22 +10,6 @@ import com.shubham.tasktrackerapp.Fragments.NewTaskFragment
 
 class MainActivity : AppCompatActivity() {
 
-    val taskCategories = listOf(
-        "Assignment",
-        "Project",
-        "Coding",
-        "Classes",
-        "Hobby",
-        "Project",
-        "Meeting",
-        "Playing",
-        "Hangout",
-        "Food",
-        "Television",
-        "Exercise",
-        "Remainder",
-        "Other"
-    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

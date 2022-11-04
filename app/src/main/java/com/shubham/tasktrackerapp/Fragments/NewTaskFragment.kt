@@ -48,7 +48,7 @@ class NewTaskFragment : Fragment(R.layout.fragment_new_task) {
             val view = layoutInflater.inflate(R.layout.task_type_item , null)
             val textView = view.findViewById<TextView>(R.id.task_type_item_name)
 
-            DrawableCompat.setTint(textView.background , colors[ind])
+            DrawableCompat.setTint(textView.background , colors[0])
             ind++
             if (ind == 4) ind = 0
 
@@ -59,6 +59,10 @@ class NewTaskFragment : Fragment(R.layout.fragment_new_task) {
             //constraint set for setting the constrains for new task type added
             val constraintSet = ConstraintSet()
             constraintSet.clone(constraintLayout)
+
+            val taskPopUpWindow = TaskTypePopUpWindow()
+            taskPopUpWindow.showPopUpWindow(it)
+
 
             view.post{
                 if(firstType){
