@@ -25,7 +25,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:text="No task type selected"
-                android:textStyle="italic"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:id="@+id/popUptxtTaskType"
