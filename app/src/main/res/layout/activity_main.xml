@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/cv_bottom_nav"
-        android:name="com.shubham.tasktrackerapp.Fragments.HomeFragment"
+        android:name="com.shubham.tasktrackerapp.Fragments.NewTaskFragment"
         android:id="@+id/fragment_container"/>
 
     <androidx.cardview.widget.CardView
