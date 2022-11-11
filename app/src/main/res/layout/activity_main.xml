@@ -5,80 +5,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
+    <!-- Container for placing fragments -->
     <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:name="com.shubham.tasktrackerapp.Fragments.NewTaskFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/cv_bottom_nav"
-        android:name="com.shubham.tasktrackerapp.Fragments.NewTaskFragment"
-        android:id="@+id/fragment_container"/>
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Card view for bottom navigation -->
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cv_bottom_nav"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:cardBackgroundColor="@color/black"
         app:cardCornerRadius="14dp"
-        >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <!-- Bottom navigation -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@color/black"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_nav"
-            app:itemIconTint="@color/white"
-            app:itemTextColor="@color/white"
-            app:menu="@menu/bottom_nav_items"
-            android:background="@color/black"
-            app:itemRippleColor="@color/grey"
             app:itemIconSize="20dp"
-            />
-
+            app:itemIconTint="@color/white"
+            app:itemRippleColor="@color/grey"
+            app:itemTextColor="@color/white"
+            app:menu="@menu/bottom_nav_items" />
     </androidx.cardview.widget.CardView>
-
-<!--    <androidx.cardview.widget.CardView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="600dp"-->
-<!--        android:id="@+id/new_task_cv"-->
-<!--        android:backgroundTint="@color/green"-->
-<!--        app:cardCornerRadius="25dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        >-->
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:padding="20dp"-->
-<!--            android:layout_height="match_parent">-->
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Create a new task"-->
-<!--                android:textSize="16sp"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:fontFamily="@font/robotoslab_medium"-->
-<!--                android:id="@+id/tv_create_task"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            <ImageView-->
-<!--                android:layout_width="24dp"-->
-<!--                android:layout_height="24dp"-->
-<!--                android:src="@drawable/ic_close"-->
-<!--                android:id="@+id/iv_close"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                android:layout_marginEnd="10dp"-->
-<!--                android:layout_marginTop="10dp"/>-->
-
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--    </androidx.cardview.widget.CardView>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/taskTypeItemCL"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <!-- Task type name -->
     <TextView
-        android:layout_marginTop="7dp"
+        android:id="@+id/task_type_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Assignment"
-        android:id="@+id/task_type_item_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textSize="14sp"
-        android:textColor="@color/white"
-        android:padding="10dp"
+        android:layout_marginTop="7dp"
         android:layout_marginEnd="7dp"
         android:background="@drawable/dates_unselected_background_stroke"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        android:padding="10dp"
+        android:text="Assignment"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <!-- Button remove task type -->
     <ImageView
+        android:id="@+id/iv_cancel"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:src="@drawable/ic_close_red"
-        android:id="@+id/iv_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

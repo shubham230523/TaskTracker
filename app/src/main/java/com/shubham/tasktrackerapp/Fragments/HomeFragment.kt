@@ -3,12 +3,10 @@ package com.shubham.tasktrackerapp.Fragments
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.DatePicker
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +19,6 @@ import com.shubham.tasktrackerapp.R
 import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
-
     private val tasks = listOf(
         TimeLineTaskModel(
             "BDA Assignment 5" ,
@@ -135,22 +132,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     var month = 0 ; var day = 0 ; var date = 0 ; var year = 0
     private lateinit var rvDates: RecyclerView
     private lateinit var tvMonth : TextView
-    private val scaleFractions = mutableListOf<Float>(1F, 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 1F , 0.4F)
+    // Booleans for indicating which option is selected
+    // "up coming" , "all upcoming" , "missed"
     var optUpcom = true
     var optAllupcom = false
     var optMissed = false
     var mContext = activity?.applicationContext
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         rvDates = view.findViewById(R.id.rv_dates)
         val rvTasks = view.findViewById<RecyclerView>(R.id.rv_tasks)
         tvMonth = view.findViewById(R.id.tv_month)
-
         val opt_upcoming = view.findViewById<TextView>(R.id.opt_upcoming_tasks)
         val opt_all_comming = view.findViewById<TextView>(R.id.opt_all_upcoming_tasks)
         val opt_missed_tasks = view.findViewById<TextView>(R.id.opt_missed)
-
         if(mContext != null){
             opt_upcoming.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
             opt_upcoming.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
@@ -199,10 +194,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 opt_missed_tasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
                 opt_missed_tasks.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
             }
-
             calenderAdapter = CalenderAdapter(setUpCalender(), mContext!!){ position ->  onListItemClick(position)}
             val tasksAdapter = TimeLineTasksAdapter(tasks , mContext!!)
-
             rvDates.apply {
                 adapter = calenderAdapter
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL , false)
@@ -212,42 +205,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 adapter = tasksAdapter
                 layoutManager = lm
             }
+            //Making today's date as selected
             lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH)-1
+            //Scroll the recyclerview to the selected position
             rvDates.scrollToPosition(lastSelectedPosition)
             calenderAdapter.changeSelectedDate(lastSelectedPosition , lastSelectedPosition)
             tvMonth.setOnClickListener { pickDate() }
-            Log.d("MainActivity" , "mainActivity")
-            rvTasks.runWhenReady {
-                tasksAdapter.scalingViewsTimeline(scaleFractions)
-            }
-
+            //calling the "scalingViewsTimeline()" method for showing the scaling of timeline
+            //when the recyclerview is ready
+            rvTasks.runWhenReady { tasksAdapter.scalingViewsTimeline() }
         }
-
         month = cal.get(Calendar.MONTH)
         day = cal.get(Calendar.DAY_OF_WEEK)
         date = cal.get(Calendar.DATE)
         year = cal.get(Calendar.YEAR)
-
         tvMonth.text = "$date ${getMonth(month)} $year"
-        //inserting and retrieving data to room database
-//        val task = Task(
-//            title = "ML_Viva" ,
-//            added_date = "03-Nov-22",
-//            due_date = "03-Nov-22" ,
-//            start_time = "9:10",
-//            end_time = "9:20",
-//            bg_img = "reading",
-//            attachments = mutableListOf("VIVA"),
-//            1
-//        )
-//        val db = TaskDatabase.getInstance(this)
-//        GlobalScope.launch (Dispatchers.IO){
-//            db.dao().updateTask(task)
-//            val taskList = db.dao().getAllTasks()
-//            Log.d("MainActivity" , "taskList - $taskList")
-//        }
     }
-
+    // Function for setting up the calender and getting the current date and day
     private fun setUpCalender() : MutableList<CalenderDateModel> {
         val dates = ArrayList<Date>()
         val month = cal.clone() as Calendar
@@ -269,10 +243,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return datesList;
     }
     private fun onListItemClick(position: Int){
-        Toast.makeText(mContext , "$lastSelectedPosition $position" , Toast.LENGTH_SHORT).show()
         calenderAdapter.changeSelectedDate(lastSelectedPosition , position)
         lastSelectedPosition = position
     }
+    // Function to pick up a date from DatePickerDialog
     private fun pickDate(){
         if(mContext != null){
             val datePickerDialog = DatePickerDialog(
@@ -291,12 +265,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             ).show()
         }
     }
+    // Function to update date
     private fun updateDate(){
         tvMonth.text = "$date ${getMonth(month)} $year"
         rvDates.scrollToPosition(date-1)
         calenderAdapter.changeSelectedDate(lastSelectedPosition , date-1)
         lastSelectedPosition = date-1
     }
+    // Function to get day from number
     private fun getDay(day: Int) : String{
         when(day){
             1 -> return "Sunday"
@@ -309,6 +285,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         return ""
     }
+    // Function to get month from number
     private fun getMonth(month: Int) : String{
         when(month){
             0 -> return "January"
@@ -326,6 +303,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         return ""
     }
+    // Extension method to override the "runWhenReady" method
     fun RecyclerView.runWhenReady(action: () -> Unit) {
         val globalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -335,10 +313,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     }
-
+    // setting up the mContext when the fragment is attached to the container
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
     }
-
 }
