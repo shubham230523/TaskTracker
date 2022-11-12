@@ -21,7 +21,9 @@ import androidx.core.content.ContextCompat
 import com.shubham.tasktrackerapp.R
 
 class TaskTypePopUpWindow() {
-    var taskCategories = mutableListOf<String>()
+    var taskCategories = mutableListOf("Assignment", "Project", "Coding",
+        "Classes", "Hobby" , "Meeting" , "Playing", "Hangout" , "Food", "Television",
+        "Exercise" , "Remainder" , "Other")
     val TAG = "PopUpWindow"
     var adapter : ArrayAdapter<String>? = null
     var inflater : LayoutInflater? = null
@@ -62,7 +64,7 @@ class TaskTypePopUpWindow() {
         clWidth = popView.measuredWidth - 30
         totalWidth = 0 //tatal width of elements added in constraint layout so far
         typeList.clear()
-        listView = popView.findViewById<ListView>(R.id.popTasksListView)
+        listView = popView.findViewById(R.id.popTasksListView)
         adapter = ArrayAdapter(view.context , android.R.layout.simple_list_item_1 , taskCategories)
         listView!!.adapter = adapter
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
@@ -81,6 +83,7 @@ class TaskTypePopUpWindow() {
             }
         })
         listView!!.setOnItemClickListener { adapterView, v, i, l ->
+
             itemsSelected++
             if(itemsSelected > 4){
                 // If the task type selected is more than 4
