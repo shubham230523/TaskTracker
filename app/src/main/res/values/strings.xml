@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Task Tracker App</string>
+    // CardView strings
+    <string name="no_date">dd-mm-yy</string>
+    <string name="no_time">00:00</string>
+    <string name="selected_time">%1$d:%2$d</string>
+    <string name="selected_date">%1$d-%2$d-%3$d</string>
 </resources>

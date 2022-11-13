@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="cardViewHeight" type="dimen">-600dp</item>
+    <item name="cardViewHeight" type="dimen">-575dp</item>
 </resources>

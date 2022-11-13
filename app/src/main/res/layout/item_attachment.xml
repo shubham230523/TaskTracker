@@ -2,38 +2,48 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/dates_unselected_background_stroke"
-    android:padding="10dp">
-    <!-- file type icon -->
-    <ImageView
-        android:id="@+id/ivFileType"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:src="@drawable/pdf"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <!-- file name -->
-    <TextView
-        android:id="@+id/tvAttachmentName"
-        android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:maxLines="1"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ivFileType"
-        app:layout_constraintTop_toTopOf="parent" />
-    <!-- button for removing attachment -->
-    <ImageView
-        android:id="@+id/ivRemoveAttachment"
-        android:layout_width="0dp"
-        android:layout_height="18dp"
-        android:clickable="true"
-        android:src="@drawable/ic_close"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/dates_unselected_background_stroke"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <!-- file type icon -->
+        <ImageView
+            android:id="@+id/ivFileType"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/pdf"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!-- file name -->
+        <TextView
+            android:id="@+id/tvAttachmentName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:maxLines="1"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/ivRemoveAttachment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivFileType"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!-- button for removing attachment -->
+        <ImageView
+            android:id="@+id/ivRemoveAttachment"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:clickable="true"
+            android:src="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

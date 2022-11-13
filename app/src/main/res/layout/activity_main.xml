@@ -43,21 +43,22 @@
     <!-- Card view for creating new task -->
     <androidx.cardview.widget.CardView
         android:id="@+id/new_task_cv"
-        android:focusable="true"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:layout_marginBottom="-600dp"
+        android:layout_height="575dp"
+        android:layout_marginBottom="-575dp"
         android:backgroundTint="@color/light_grey"
+        android:focusable="true"
         app:cardCornerRadius="35dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp"
             android:paddingTop="20dp"
+            android:paddingEnd="20dp"
             android:paddingBottom="40dp">
             <!-- Text "Create a new task" -->
             <TextView
@@ -97,9 +98,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
+                android:hint="Task title"
                 android:maxLines="1"
                 android:paddingEnd="20dp"
-                android:hint="Task title"
                 android:textColor="@color/black"
                 android:textColorHighlight="@color/black"
                 android:textSize="16sp"
@@ -133,9 +134,9 @@
             <ImageView
                 android:id="@+id/iv_calendar"
                 android:layout_width="16dp"
-                android:alpha="0.5"
                 android:layout_height="16dp"
                 android:layout_marginStart="15dp"
+                android:alpha="0.5"
                 android:src="@drawable/ic_calendar"
                 app:layout_constraintBottom_toBottomOf="@id/txt_due_date"
                 app:layout_constraintStart_toEndOf="@id/txt_due_date"
@@ -169,8 +170,8 @@
                 android:id="@+id/iv_clock_start"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:alpha="0.5"
                 android:layout_marginStart="15dp"
+                android:alpha="0.5"
                 android:src="@drawable/ic_clock"
                 app:layout_constraintBottom_toBottomOf="@id/txt_start"
                 app:layout_constraintStart_toEndOf="@id/txt_start"
@@ -181,7 +182,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:text="00:00 am/pm"
+                android:text="00:00"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@id/iv_clock_start"
                 app:layout_constraintStart_toEndOf="@id/iv_clock_start"
@@ -202,9 +203,9 @@
             <ImageView
                 android:id="@+id/iv_clock_end"
                 android:layout_width="16dp"
-                android:alpha="0.5"
                 android:layout_height="16dp"
                 android:layout_marginStart="15dp"
+                android:alpha="0.5"
                 android:src="@drawable/ic_clock"
                 app:layout_constraintBottom_toBottomOf="@id/txt_end"
                 app:layout_constraintStart_toEndOf="@id/txt_end"
@@ -215,7 +216,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:text="00:00 am/pm"
+                android:text="00:00"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@id/iv_clock_end"
                 app:layout_constraintStart_toEndOf="@id/iv_clock_end"
@@ -242,55 +243,68 @@
                 app:layout_constraintBottom_toBottomOf="@id/txt_task_type"
                 app:layout_constraintStart_toEndOf="@id/txt_task_type"
                 app:layout_constraintTop_toTopOf="@id/txt_task_type" />
-            <!-- Constraint layout for adding task type -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/task_type_constraintLayout"
+            <!-- Text "long press task type to delete" -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(long press task type to delete)"
+                android:id="@+id/txtLongPressDelete"
+                android:textSize="12sp"
+                android:visibility="invisible"
+                android:textStyle="italic"
+                android:alpha="0.5"
+                app:layout_constraintStart_toEndOf="@id/iv_add_task"
+                app:layout_constraintTop_toTopOf="@id/iv_add_task"
+                app:layout_constraintBottom_toBottomOf="@id/iv_add_task"
+                android:layout_marginStart="15dp"
+                android:maxLines="1"/>
+            <!-- Horizontal scroll view for task types -->
+            <HorizontalScrollView
+                android:id="@+id/taskTypeSV"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/txtAddAttachments"
-                android:layout_marginTop="5dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/dates_unselected_background_stroke"
+                android:orientation="horizontal"
+                android:scrollbarSize="1dp"
+                android:fadeScrollbars="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txt_task_type">
-                <!-- Background image indicating to add a task type-->
-                <ImageView
-                    android:id="@+id/ivAddTaskTypeBackground"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:alpha="0.7"
-                    android:src="@drawable/ic_add"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-                <!-- Background text showing that no task type has been added -->
-                <TextView
-                    android:id="@+id/tvNoTaskTypeBackground"
+
+                <LinearLayout
+                    android:id="@+id/taskTypeLL"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-10dp"
-                    android:alpha="0.7"
-                    android:fontFamily="@font/robotoslab_regular"
-                    android:text="Click on above add icon to see task types here"
-                    android:textColor="@color/grey"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ivAddTaskTypeBackground" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:isScrollContainer="true"
+                    android:orientation="horizontal">
+                    <!-- Background text showing that no task type has been added -->
+                    <TextView
+                        android:id="@+id/tvNoTaskTypeBackground"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:alpha="0.7"
+                        android:fontFamily="@font/robotoslab_regular"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:paddingTop="10dp"
+                        android:text="No task type selected"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </HorizontalScrollView>
             <!-- Text "No Attachments" -->
             <TextView
                 android:id="@+id/txtAddAttachments"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                app:layout_constraintBottom_toTopOf="@id/clAddAttachments"
                 android:text="No Attachments"
                 android:textColor="@color/black"
                 android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@id/attachmentLL"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/task_type_constraintLayout"/>
+                app:layout_constraintTop_toBottomOf="@id/taskTypeSV" />
             <!-- Button for adding attachments -->
             <ImageView
                 android:id="@+id/ivAddAttachments"
@@ -301,51 +315,37 @@
                 app:layout_constraintBottom_toBottomOf="@id/txtAddAttachments"
                 app:layout_constraintStart_toEndOf="@id/txtAddAttachments"
                 app:layout_constraintTop_toTopOf="@id/txtAddAttachments" />
-            <!-- Constraint Layout for adding attachments -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clAddAttachments"
+            <!-- Linear layout for adding attachments -->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:id="@+id/attachmentLL"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"
+                android:layout_height="100dp"
                 android:background="@drawable/dates_unselected_background_stroke"
-                app:layout_constraintBottom_toTopOf="@id/btnCreateTask"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txtAddAttachments">
-                <!-- Upload background image -->
-                <ImageView
-                    android:id="@+id/ivUploadFile"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:alpha="0.5"
-                    android:src="@drawable/ic_upload"
-                    app:layout_constraintBottom_toTopOf="@id/txtNoUploads"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-                <!-- Background image indicating that no attachments have been done -->
+                <!-- Background text indicating that no attachments have been done -->
                 <TextView
                     android:id="@+id/txtNoUploads"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.7"
-                    android:text="No uploads"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:text="Select a file to upload"
                     android:textColor="@color/grey"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@id/clAddAttachments"
-                    app:layout_constraintEnd_toEndOf="@id/ivUploadFile"
-                    app:layout_constraintStart_toStartOf="@id/ivUploadFile"
-                    app:layout_constraintTop_toBottomOf="@id/ivUploadFile" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:textSize="16sp" />
+            </LinearLayout>
             <!-- Button to create a task -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCreateTask"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:text="Create task"
                 android:backgroundTint="@color/green"
                 android:fontFamily="@font/robotoslab_medium"
+                android:text="Create task"
                 android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
