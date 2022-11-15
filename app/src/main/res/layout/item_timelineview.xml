@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Task start time -->
     <TextView
         android:id="@+id/tv_start_time"
@@ -70,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
         android:background="@drawable/documents"
         app:cardCornerRadius="15dp"
         app:cardElevation="0dp"
@@ -77,10 +79,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/view_timeline"
         app:layout_constraintTop_toTopOf="parent">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:padding="16dp">
             <!-- Task title -->
             <TextView
@@ -92,18 +94,26 @@
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"/>
+            <!-- Task option menu -->
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:id="@+id/timelineCardBtnMenu"
+                android:src="@drawable/ic_task_menu"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_card_title"
+                app:layout_constraintBottom_toBottomOf="@id/tv_card_title"/>
             <!-- Task added date -->
             <TextView
                 android:id="@+id/tv_card_task_added_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/robotoslab_medium"
+                android:fontFamily="@font/robotoslab_regular"
                 android:maxLines="1"
                 android:text="18 Oct"
-                android:textColor="@color/black"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_card_title" />
             <!-- Text "Due" -->
@@ -111,12 +121,12 @@
                 android:id="@+id/tv_card_txtdue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:fontFamily="@font/robotoslab_regular"
                 android:text="Due - "
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_card_task_added_date" />
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/tv_card_last_date"
+                app:layout_constraintTop_toTopOf="@id/tv_card_last_date"
+                app:layout_constraintBottom_toBottomOf="@id/tv_card_last_date" />
             <!-- Task Due date -->
             <TextView
                 android:id="@+id/tv_card_last_date"
@@ -125,22 +135,44 @@
                 android:fontFamily="@font/robotoslab_regular"
                 android:maxLines="1"
                 android:text="20 Oct"
+                android:layout_marginTop="5dp"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@id/tv_card_txtdue"
-                app:layout_constraintStart_toEndOf="@id/tv_card_txtdue"
-                app:layout_constraintTop_toTopOf="@id/tv_card_txtdue" />
+                app:layout_constraintTop_toBottomOf="@id/tv_card_title"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- Constraint layout for adding tags -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:id="@+id/clTaskType"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_card_task_added_date"
+                app:layout_constraintBottom_toTopOf="@id/tv_txt_attachments">
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Arrow for showing attachments -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:id="@+id/ivArrow"
+                android:clickable="true"
+                android:src="@drawable/ic_down_arrow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/clTaskType"
+                android:layout_marginTop="5dp"
+                android:focusable="true" />
             <!-- Text "No Attachments" -->
             <TextView
                 android:id="@+id/tv_txt_attachments"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
                 android:maxLines="1"
+                android:layout_marginTop="5dp"
                 android:text="No Attachments"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_card_txtdue" />
+                app:layout_constraintTop_toBottomOf="@id/clTaskType"/>
             <!-- Separation line for showing attachments -->
             <View
                 android:id="@+id/line_attachments"
@@ -151,35 +183,17 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_txt_attachments" />
-            <!-- Text "Attachments" -->
-            <TextView
-                android:id="@+id/tv_attachments"
-                android:layout_width="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_txt_attachments"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/clAttach"
                 android:layout_marginTop="10dp"
-                android:maxLines="1"
-                android:text="Attachments"
-                android:textSize="12sp"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/line_attachments" />
-            <!-- Guideline for task background image -->
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/task_background_img_guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.4" />
-            <!-- Task card background image -->
-            <ImageView
-                android:layout_width="150dp"
-                android:layout_height="0dp"
-                android:alpha="0.2"
-                android:src="@drawable/videos"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/task_background_img_guideline"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/line_attachments"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

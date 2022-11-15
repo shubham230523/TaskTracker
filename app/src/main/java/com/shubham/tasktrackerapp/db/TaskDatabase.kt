@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
 @Database(
     entities = [Task::class] ,
     exportSchema = false,
-    version = 2
+    version = 4
 )
 @TypeConverters(TaskConverter::class)
 abstract class TaskDatabase : RoomDatabase() {

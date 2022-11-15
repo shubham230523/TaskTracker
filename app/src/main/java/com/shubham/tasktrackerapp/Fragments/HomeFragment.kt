@@ -3,6 +3,7 @@ package com.shubham.tasktrackerapp.Fragments
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.DatePicker
@@ -14,206 +15,129 @@ import androidx.recyclerview.widget.RecyclerView
 import com.shubham.tasktrackerapp.Adapter.CalenderAdapter
 import com.shubham.tasktrackerapp.Adapter.TimeLineTasksAdapter
 import com.shubham.tasktrackerapp.Models.CalenderDateModel
-import com.shubham.tasktrackerapp.Models.TimeLineTaskModel
 import com.shubham.tasktrackerapp.R
+import com.shubham.tasktrackerapp.db.Task
+import com.shubham.tasktrackerapp.db.TaskDao
+import com.shubham.tasktrackerapp.db.TaskDatabase
+import kotlinx.coroutines.*
 import java.util.*
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
-    private val tasks = listOf(
-        TimeLineTaskModel(
-            "BDA Assignment 5" ,
-            "18 Oct" ,
-            "27 Oct",
-            true,
-            "7:15",
-            "18:30"
-        ),
-        TimeLineTaskModel(
-            "BDA Assignment 5" ,
-            "18 Oct" ,
-            "27 Oct",
-            true,
-            "7:20",
-            "18:30"
-        ),
-        TimeLineTaskModel(
-            "CSL Module 3 Quiz" ,
-            "12 March" ,
-            "12 Nov",
-            false,
-            "21:46",
-            "19:10"
-        ),
-        TimeLineTaskModel(
-            "AVR Practicals" ,
-            "12 May" ,
-            "14 Jun",
-            false,
-            "21:47",
-            "19:50"
-        ),
-//        TimeLineTaskModel(
-//            "Major Project" ,
-//            "11 Dec" ,
-//            "12 Jan",
-//            true,
-//            "11:20",
-//            "11:35"
-//        ),
-//        TimeLineTaskModel(
-//            "BDA Assignment 5" ,
-//            "18 Oct" ,
-//            "27 Oct",
-//            true,
-//            "11:50",
-//            "12:22"
-//        ),
-//        TimeLineTaskModel(
-//            "CSL Module 3 Quiz" ,
-//            "12 March" ,
-//            "12 Nov",
-//            false,
-//            "12:40",
-//            "12:55"
-//        ),
-//        TimeLineTaskModel(
-//            "AVR Practicals" ,
-//            "12 May" ,
-//            "14 Jun",
-//            false,
-//            "1:00",
-//            "1:15"
-//        ),
-//        TimeLineTaskModel(
-//            "Major Project" ,
-//            "11 Dec" ,
-//            "12 Jan",
-//            true,
-//            "1:25",
-//            "1:50"
-//        ),
-//        TimeLineTaskModel(
-//            "BDA Assignment 5" ,
-//            "18 Oct" ,
-//            "27 Oct",
-//            true,
-//            "2:00",
-//            "2:20"
-//        ),
-//        TimeLineTaskModel(
-//            "CSL Module 3 Quiz" ,
-//            "12 March" ,
-//            "12 Nov",
-//            false,
-//            "2:35",
-//            "2:40"
-//        ),
-//        TimeLineTaskModel(
-//            "AVR Practicals" ,
-//            "12 May" ,
-//            "14 Jun",
-//            false,
-//            "3:00",
-//            "3:22"
-//        ),
-//        TimeLineTaskModel(
-//            "Major Project" ,
-//            "11 Dec" ,
-//            "12 Jan",
-//            true,
-//            "4:00",
-//            "5:00"
-//        ),
-    )
+class HomeFragment() : Fragment(R.layout.fragment_home)  {
+    companion object{
+        private const val TAG = "HomeFragment"
+    }
+    private var tasks : List<Task>? = null
     private var datesList = mutableListOf<CalenderDateModel>()
     private var lastSelectedPosition = 0
     private lateinit var calenderAdapter: CalenderAdapter
-    val cal = Calendar.getInstance(Locale.ENGLISH)
-    var month = 0 ; var day = 0 ; var date = 0 ; var year = 0
+    private val cal = Calendar.getInstance(Locale.ENGLISH)
+    private var month = 0
+    private var day = 0
+    private var date = 0
+    private var year = 0
     private lateinit var rvDates: RecyclerView
-    private lateinit var tvMonth : TextView
+    private lateinit var tvMonth: TextView
     // Booleans for indicating which option is selected
     // "up coming" , "all upcoming" , "missed"
-    var optUpcom = true
-    var optAllupcom = false
-    var optMissed = false
-    var mContext = activity?.applicationContext
+    private var optUpcom = true
+    private var optAllupcom = false
+    private var optMissed = false
+    private var mContext = activity?.applicationContext
+    private lateinit var rvTasks : RecyclerView
+    private var taskDao : TaskDao? = null
+    private var job: Job? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         rvDates = view.findViewById(R.id.rv_dates)
-        val rvTasks = view.findViewById<RecyclerView>(R.id.rv_tasks)
+        rvTasks= view.findViewById<RecyclerView>(R.id.rv_tasks)
         tvMonth = view.findViewById(R.id.tv_month)
-        val opt_upcoming = view.findViewById<TextView>(R.id.opt_upcoming_tasks)
-        val opt_all_comming = view.findViewById<TextView>(R.id.opt_all_upcoming_tasks)
-        val opt_missed_tasks = view.findViewById<TextView>(R.id.opt_missed)
-        if(mContext != null){
-            opt_upcoming.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
-            opt_upcoming.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
-            opt_upcoming.setOnClickListener {
-                if(optAllupcom) {
+        val btnUpComingTasks = view.findViewById<TextView>(R.id.btnUpcommingTasks)
+        val btnAllUpcomingTasks = view.findViewById<TextView>(R.id.btnAllUpcomingTasks)
+        val btnMissedTasks = view.findViewById<TextView>(R.id.btnTaskMissed)
+        if (mContext != null) {
+            btnUpComingTasks.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
+            btnUpComingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
+            btnUpComingTasks.setOnClickListener {
+                if (optAllupcom) {
                     optAllupcom = false
-                    opt_all_comming.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
-                    opt_all_comming.background = ContextCompat.getDrawable(mContext!!, R.drawable.dates_unselected_background_stroke)
+                    btnAllUpcomingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
+                    btnAllUpcomingTasks.background = ContextCompat.getDrawable(
+                        mContext!!,
+                        R.drawable.dates_unselected_background_stroke
+                    )
                 }
-                if(optMissed){
+                if (optMissed) {
                     optMissed = false
-                    opt_missed_tasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
-                    opt_missed_tasks.background = ContextCompat.getDrawable(mContext!!, R.drawable.dates_unselected_background_stroke)
+                    btnMissedTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
+                    btnMissedTasks.background = ContextCompat.getDrawable(
+                        mContext!!,
+                        R.drawable.dates_unselected_background_stroke
+                    )
                 }
                 optUpcom = true
-                opt_upcoming.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
-                opt_upcoming.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
+                btnUpComingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
+                btnUpComingTasks.background =
+                    ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
             }
-            opt_all_comming.setOnClickListener {
-                if(optUpcom) {
+            btnAllUpcomingTasks.setOnClickListener {
+                if (optUpcom) {
                     optUpcom = false
-                    opt_upcoming.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
-                    opt_upcoming.background = ContextCompat.getDrawable(mContext!!, R.drawable.dates_unselected_background_stroke)
+                    btnUpComingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
+                    btnUpComingTasks.background = ContextCompat.getDrawable(
+                        mContext!!,
+                        R.drawable.dates_unselected_background_stroke
+                    )
                 }
-                if(optMissed){
+                if (optMissed) {
                     optMissed = false
-                    opt_missed_tasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
-                    opt_missed_tasks.background = ContextCompat.getDrawable(mContext!!, R.drawable.dates_unselected_background_stroke)
+                    btnMissedTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
+                    btnMissedTasks.background = ContextCompat.getDrawable(
+                        mContext!!,
+                        R.drawable.dates_unselected_background_stroke
+                    )
                 }
                 optAllupcom = true
-                opt_all_comming.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
-                opt_all_comming.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
+                btnAllUpcomingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
+                btnAllUpcomingTasks.background =
+                    ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
             }
-            opt_missed_tasks.setOnClickListener {
-                if(optAllupcom) {
+            btnMissedTasks.setOnClickListener {
+                if (optAllupcom) {
                     optAllupcom = false
-                    opt_all_comming.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
-                    opt_all_comming.background = ContextCompat.getDrawable(mContext!!, R.drawable.dates_unselected_background_stroke)
+                    btnAllUpcomingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
+                    btnAllUpcomingTasks.background = ContextCompat.getDrawable(
+                        mContext!!,
+                        R.drawable.dates_unselected_background_stroke
+                    )
                 }
-                if(optUpcom){
+                if (optUpcom) {
                     optUpcom = false
-                    opt_upcoming.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
-                    opt_upcoming.background = ContextCompat.getDrawable(mContext!!, R.drawable.dates_unselected_background_stroke)
+                    btnUpComingTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.grey))
+                    btnUpComingTasks.background = ContextCompat.getDrawable(
+                        mContext!!,
+                        R.drawable.dates_unselected_background_stroke
+                    )
                 }
                 optMissed = true
-                opt_missed_tasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
-                opt_missed_tasks.background = ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
+                btnMissedTasks.setTextColor(ContextCompat.getColor(mContext!!, R.color.blue))
+                btnMissedTasks.background =
+                    ContextCompat.getDrawable(mContext!!, R.drawable.task_opt_selected)
             }
-            calenderAdapter = CalenderAdapter(setUpCalender(), mContext!!){ position ->  onListItemClick(position)}
-            val tasksAdapter = TimeLineTasksAdapter(tasks , mContext!!)
+            calenderAdapter = CalenderAdapter(setUpCalender(), mContext!!)
+            { position -> onListItemClick(position) }
             rvDates.apply {
                 adapter = calenderAdapter
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL , false)
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
-            val lm = LinearLayoutManager(context , LinearLayoutManager.VERTICAL , false)
-            rvTasks.apply {
-                adapter = tasksAdapter
-                layoutManager = lm
-            }
+            taskDao = TaskDatabase.getInstance(mContext!!).dao()
+            setUpRvDates()
             //Making today's date as selected
-            lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH)-1
+            lastSelectedPosition = cal.get(Calendar.DAY_OF_MONTH) - 1
             //Scroll the recyclerview to the selected position
             rvDates.scrollToPosition(lastSelectedPosition)
-            calenderAdapter.changeSelectedDate(lastSelectedPosition , lastSelectedPosition)
+            calenderAdapter.changeSelectedDate(lastSelectedPosition, lastSelectedPosition)
             tvMonth.setOnClickListener { pickDate() }
-            //calling the "scalingViewsTimeline()" method for showing the scaling of timeline
-            //when the recyclerview is ready
-            rvTasks.runWhenReady { tasksAdapter.scalingViewsTimeline() }
         }
         month = cal.get(Calendar.MONTH)
         day = cal.get(Calendar.DAY_OF_WEEK)
@@ -221,15 +145,41 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         year = cal.get(Calendar.YEAR)
         tvMonth.text = "$date ${getMonth(month)} $year"
     }
+
+    //Function to set recyclerview tasks
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun setUpRvDates(){
+        var tasksAdapter : TimeLineTasksAdapter? = null
+        job = GlobalScope.launch(Dispatchers.Main) {
+            tasks = taskDao!!.getAllTasks()
+            delay(100)
+            if(tasks!=null){
+                Log.d(TAG , "tasks size is - ${tasks!!.size}")
+                tasksAdapter = TimeLineTasksAdapter(tasks!! , mContext!!)
+                val lm = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                rvTasks.apply {
+                    adapter = tasksAdapter
+                    layoutManager = lm
+                }
+                //calling the "scalingViewsTimeline()" method for showing the scaling of timeline
+                //when the recyclerview is ready
+                rvTasks.runWhenReady { tasksAdapter!!.scalingViewsTimeline() }
+                delay(100)
+                job!!.cancelAndJoin()
+            }
+            else Log.d(TAG , "tasks are null")
+        }
+    }
+
     // Function for setting up the calender and getting the current date and day
-    private fun setUpCalender() : MutableList<CalenderDateModel> {
+    private fun setUpCalender(): MutableList<CalenderDateModel> {
         val dates = ArrayList<Date>()
         val month = cal.clone() as Calendar
         val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
         dates.clear()
         datesList.clear()
-        month.set(Calendar.DAY_OF_MONTH , 1)
-        while(dates.size < maxDaysInMonth){
+        month.set(Calendar.DAY_OF_MONTH, 1)
+        while (dates.size < maxDaysInMonth) {
             dates.add(month.time)
             datesList.add(
                 CalenderDateModel(
@@ -238,17 +188,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     false
                 )
             )
-            month.add(Calendar.DAY_OF_MONTH , 1)
+            month.add(Calendar.DAY_OF_MONTH, 1)
         }
         return datesList;
     }
-    private fun onListItemClick(position: Int){
-        calenderAdapter.changeSelectedDate(lastSelectedPosition , position)
+
+    private fun onListItemClick(position: Int) {
+        calenderAdapter.changeSelectedDate(lastSelectedPosition, position)
         lastSelectedPosition = position
     }
+
     // Function to pick up a date from DatePickerDialog
-    private fun pickDate(){
-        if(mContext != null){
+    private fun pickDate() {
+        if (mContext != null) {
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
                 object : DatePickerDialog.OnDateSetListener {
@@ -258,23 +210,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         this@HomeFragment.date = day
                         updateDate()
                     }
-                } ,
+                },
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
     }
+
     // Function to update date
-    private fun updateDate(){
+    private fun updateDate() {
         tvMonth.text = "$date ${getMonth(month)} $year"
-        rvDates.scrollToPosition(date-1)
-        calenderAdapter.changeSelectedDate(lastSelectedPosition , date-1)
-        lastSelectedPosition = date-1
+        rvDates.scrollToPosition(date - 1)
+        calenderAdapter.changeSelectedDate(lastSelectedPosition, date - 1)
+        lastSelectedPosition = date - 1
     }
+
     // Function to get day from number
-    private fun getDay(day: Int) : String{
-        when(day){
+    private fun getDay(day: Int): String {
+        when (day) {
             1 -> return "Sunday"
             2 -> return "Monday"
             3 -> return "Tuesday"
@@ -285,9 +239,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         return ""
     }
+
     // Function to get month from number
-    private fun getMonth(month: Int) : String{
-        when(month){
+    private fun getMonth(month: Int): String {
+        when (month) {
             0 -> return "January"
             1 -> return "February"
             2 -> return "March"
@@ -303,9 +258,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         return ""
     }
+
     // Extension method to override the "runWhenReady" method
     fun RecyclerView.runWhenReady(action: () -> Unit) {
-        val globalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener {
+        val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 action()
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -313,6 +269,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     }
+
     // setting up the mContext when the fragment is attached to the container
     override fun onAttach(context: Context) {
         super.onAttach(context)

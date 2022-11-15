@@ -7,6 +7,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -25,10 +26,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.shubham.tasktrackerapp.Fragments.DashboardFragment
 import com.shubham.tasktrackerapp.Fragments.HomeFragment
+import com.shubham.tasktrackerapp.db.Task
+import com.shubham.tasktrackerapp.db.TaskDatabase
 import kotlinx.coroutines.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , FileInterface{
     companion object {
         const val TAG = "taskTag"
     }
@@ -63,8 +66,16 @@ class MainActivity : AppCompatActivity() {
     private var fstAttach = "FirstAttachment"
     private var sndAttach = "SecondAttachment"
     private val cal = Calendar.getInstance(Locale.ENGLISH)
-    private val uriList = mutableListOf<Uri>()
+    private val uriList = mutableListOf<String>()
     private val allTypesSelectedList = mutableListOf<String>()
+    private val colors = arrayOf(
+        Color.parseColor("#FFEBEE"), // light red
+        Color.parseColor("#F3E5F5"), // light purple
+        Color.parseColor("#E0F7FA"), // light blue
+        Color.parseColor("#FFF3E0"), // light orange
+        Color.parseColor("#EFEBE9"), // light grey
+    )
+    val hashMap = hashMapOf<String , String>()
 
     //popUpWindow
     private var taskCategories = mutableListOf(
@@ -144,6 +155,9 @@ class MainActivity : AppCompatActivity() {
         ivStartClock!!.setOnClickListener(clickListener)
         tvEndTime!!.setOnClickListener(clickListener)
         ivEndClock!!.setOnClickListener(clickListener)
+        //setting the home fragment as the first fragment
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, HomeFragment()).commit()
         // click listeners
         bottomNavBar.setOnItemSelectedListener {
             when (it.itemId) {
@@ -166,6 +180,9 @@ class MainActivity : AppCompatActivity() {
                         fragmentContainer!!.foreground =
                             ContextCompat.getDrawable(this@MainActivity, R.drawable.bg_transparent)
                         delay(500)
+                        allTypesSelectedList.clear()
+                        uriList.clear()
+                        hashMap.clear()
                         job?.cancelAndJoin()
                     }
                     return@setOnItemSelectedListener true
@@ -247,7 +264,7 @@ class MainActivity : AppCompatActivity() {
         DatePickerDialog(
             this,
             { _, year, month, day ->
-                tvDueDate!!.text = getString(R.string.selected_date , day , month , year)
+                tvDueDate!!.text = getString(R.string.selected_date , day , month+1 , year)
             },
             cal.get(Calendar.YEAR),
             cal.get(Calendar.MONTH),
@@ -293,7 +310,8 @@ class MainActivity : AppCompatActivity() {
             val uri = data.data
             if (uri != null) {
                 val filename = getNameFromUri(uri)
-                uriList.add(uri)
+                hashMap[uri.toString()] = filename
+                uriList.add(uri.toString())
                 addAttachmentToLinearLayout(filename)
             } else Toast.makeText(this, "Some error occurred, try again", Toast.LENGTH_SHORT).show()
         } else Toast.makeText(this, "Some error occurred, try again", Toast.LENGTH_SHORT).show()
@@ -304,17 +322,31 @@ class MainActivity : AppCompatActivity() {
         if (v.tag == fstAttach) {
             val attachment = linearLayoutAttachments!!.findViewById<View>(firstAttachmentId)
             val fileName = attachment.findViewById<TextView>(R.id.tvAttachmentName).text
-            uriList.remove(Uri.parse(fileName as String?))
+            uriList.remove(fileName as String?)
+            var k = ""
+            for((key , value) in hashMap){
+                if(value == fileName){
+                    k = key
+                }
+            }
+            hashMap.remove(k)
             linearLayoutAttachments!!.removeView(attachment)
         } else {
             val attachment = linearLayoutAttachments!!.findViewById<View>(secondAttachmentId)
             val fileName = attachment
                 .findViewById<TextView>(R.id.tvAttachmentName).text
-            uriList.remove(Uri.parse(fileName as String?))
+            uriList.remove(fileName as String?)
+            var k = ""
+            for((key , value) in hashMap){
+                if(value == fileName){
+                    k = key
+                }
+            }
+            hashMap.remove(k)
             linearLayoutAttachments!!.removeView(attachment)
         }
         attachmentCount--
-        if (attachmentCount == 0) {
+        if(attachmentCount == 0) {
             linearLayoutAttachments!!.setBackgroundResource(R.drawable.dates_unselected_background_stroke)
             tvBgLLAttachments!!.visibility = View.VISIBLE
         }
@@ -361,7 +393,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Function to get file name from its uri
-    private fun getNameFromUri(uri: Uri): String {
+    fun getNameFromUri(uri: Uri): String {
         val cursor = this.contentResolver.query(uri, null, null, null, null)
         val indexedName = cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
         cursor.moveToFirst()
@@ -396,13 +428,30 @@ class MainActivity : AppCompatActivity() {
         popUpMenu!!.show()
     }
 
-    // Function to getting the new task values
+    // Function to getting the new task values and inserting into the database
+    @OptIn(DelicateCoroutinesApi::class)
     private fun createTask() {
-        val title = title!!.text
-        val dueDate = tvDueDate!!.text
-        val startTime = tvStartTime!!.text
-        val endTime = tvEndTime!!.text
-
+        val title = title!!.text.toString()
+        val dueDate = tvDueDate!!.text.toString()
+        val startTime = tvStartTime!!.text.toString()
+        val endTime = tvEndTime!!.text.toString()
+        val todayDate = "${cal.get(Calendar.DATE)}-${cal.get(Calendar.MONTH)+1}-${cal.get(Calendar.YEAR)}"
+        val task = Task(
+            title = title,
+            added_date = todayDate,
+            due_date = dueDate,
+            start_time = startTime,
+            end_time = endTime,
+            taskTypes = allTypesSelectedList,
+            attachments = hashMap,
+            bgColor = colors.random()
+        )
+        val taskDao = TaskDatabase.getInstance(this).dao()
+        job = GlobalScope.launch {
+            taskDao.insertTask(task)
+            delay(200)
+            job!!.cancelAndJoin()
+        }
         clearAndHideCard()
     }
 
@@ -416,7 +465,6 @@ class MainActivity : AppCompatActivity() {
         for (i in allTypesSelectedList) {
             taskCategories.add(i)
         }
-        allTypesSelectedList.clear()
         //removing all child views of task linearlayout except background text which present at index 0
         for (i in 0 until taskTypeCount) {
             linearLayoutTasks!!.removeViewAt(1)
@@ -594,5 +642,14 @@ class MainActivity : AppCompatActivity() {
             taskCategories.add(name)
             cbSelectedTypesList.remove(name)
         }
+    }
+
+    override fun getFileNameFromUri(uri : Uri): String {
+        val cursor = this.contentResolver.query(uri, null, null, null, null)
+        val indexedName = cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        cursor.moveToFirst()
+        val filename = cursor.getString(indexedName)
+        cursor.close()
+        return filename
     }
 }

@@ -19,4 +19,15 @@ class TaskConverter {
         val listType = object  : TypeToken<MutableList<String>>() {}.type
         return gson.fromJson(string , listType)
     }
+
+    @TypeConverter
+    fun uriHashMapToString(hashMap : HashMap<String , String>): String {
+        return gson.toJson(hashMap)
+    }
+
+    @TypeConverter
+    fun stringToUriHashMap(string : String) : HashMap<String , String> {
+        val map = object: TypeToken<HashMap<String , String>>() {}.type
+        return gson.fromJson(string , map)
+    }
 }

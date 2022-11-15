@@ -1,60 +1,96 @@
 package com.shubham.tasktrackerapp.Adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import com.shubham.tasktrackerapp.Models.TimeLineTaskModel
+import com.shubham.tasktrackerapp.FileInterface
+import com.shubham.tasktrackerapp.MainActivity
 import com.shubham.tasktrackerapp.R
+import com.shubham.tasktrackerapp.db.Task
 import kotlinx.coroutines.*
 import java.util.*
 
 class TimeLineTasksAdapter(
-    private val tasks : List<TimeLineTaskModel>,
-    val context : Context
+    private val tasks: List<Task>,
+    val context: Context
 ) : RecyclerView.Adapter<TimeLineTasksAdapter.TimeLineTaskViewHolder>(){
-    private val TAG  = "TimeLineTasksAdapter"
+    companion object{
+        const val TAG = "TimeLineTaskAdapter"
+    }
     private lateinit var mLayoutInflater: LayoutInflater
-    val colors = arrayOf(
-        Color.parseColor("#03A9F4"),
-        Color.parseColor("#E64A19"),
-        Color.parseColor("#D81B60"),
-        Color.parseColor("#9C27B0"),
-        Color.parseColor("#FBC02D"),
-    )
     private var cal = Calendar.getInstance(Locale.ENGLISH)
-    var firstItem = true
+    private var firstItem = true
     private val viewHolderList = mutableListOf<TimeLineTaskViewHolder>()
-    var job: Job = Job()
-    inner class TimeLineTaskViewHolder(itemView: View, viewType: Int) : RecyclerView.ViewHolder(itemView){
+    private var job: Job = Job()
+    private val constraintSet = ConstraintSet()
+    private val clickListener = View.OnClickListener {
+        val tag : String = it.tag as String
+        val subStrings = tag.split(":")
+        val position = subStrings[0].toInt()
+        val check = subStrings[1]
+        if(check == "0"){
+            // if down arrow is currently displayed then we are changing it to up arrow and making cl
+            // layout visible
+            viewHolderList[position].attachControlArrow.setImageResource(R.drawable.ic_up_arrow)
+            viewHolderList[position].clAttach.visibility = View.VISIBLE
+//            viewHolderList[position].clAttach.animate().translationY(
+//                context.resources.getDimensionPixelOffset(R.dimen.taskClAttach).toFloat()
+//            )
+            it.tag = "$position:1"
+        }
+        else {
+            // else if up arrow is displayed then we are changing it to the down arrow and making the
+            // cl layout visibility as gone
+            viewHolderList[position].attachControlArrow.setImageResource(R.drawable.ic_down_arrow)
+            viewHolderList[position].clAttach.visibility = View.GONE
+            it.tag = "$position:0"
+        }
+    }
+
+    inner class TimeLineTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val title: TextView = itemView.findViewById(R.id.tv_card_title)
         val addedDate: TextView = itemView.findViewById(R.id.tv_card_task_added_date)
         val dueDate = itemView.findViewById<TextView>(R.id.tv_card_last_date)
         val viewTimeline: View = itemView.findViewById(R.id.view_timeline)
         val txtAttachments : TextView = itemView.findViewById(R.id.tv_txt_attachments)
         val startTime = itemView.findViewById<TextView>(R.id.tv_start_time)
-        val attachment : TextView = itemView.findViewById(R.id.tv_attachments)
         val attachmentLine : View = itemView.findViewById(R.id.line_attachments)
-        val endTime: TextView = itemView.findViewById<TextView>(R.id.tv_end_time)
+        val endTime: TextView = itemView.findViewById(R.id.tv_end_time)
         val taskCard = itemView.findViewById<MaterialCardView>(R.id.task_card)
         val ivTaskStop = itemView.findViewById<ImageView>(R.id.iv_task_stop)
         val viewTimeLineCurrent = itemView.findViewById<View>(R.id.view_timeline_current)
+        val clTaskType = itemView.findViewById<ConstraintLayout>(R.id.clTaskType)
+        val clAttach = itemView.findViewById<ConstraintLayout>(R.id.clAttach)
+        val attachControlArrow = itemView.findViewById<ImageView>(R.id.ivArrow)
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineTaskViewHolder {
         if(!::mLayoutInflater.isInitialized) {
             mLayoutInflater = LayoutInflater.from(parent.context)
         }
         val view = mLayoutInflater.inflate(R.layout.item_timelineview, parent , false);
-        val viewholder = TimeLineTaskViewHolder(view , viewType)
+        val viewholder = TimeLineTaskViewHolder(view)
         viewHolderList.add(viewholder)
         return viewholder
     }
+
     override fun onBindViewHolder(holder: TimeLineTaskViewHolder, position: Int) {
         val task = tasks[position]
         if(firstItem){
@@ -67,17 +103,24 @@ class TimeLineTasksAdapter(
         }
         holder.addedDate.text = task.added_date
         holder.title.text = task.title
-        holder.startTime.text = task.startTime
-        holder.endTime.text = task.endTime
+        holder.startTime.text = task.start_time
+        holder.endTime.text = task.end_time
         holder.dueDate.text = task.due_date
-        if(task.attachments) {
-            holder.attachment.visibility = View.VISIBLE
-            holder.attachment.text = "Attachments"
-            holder.attachmentLine.visibility = View.VISIBLE
+        if(task.attachments.size > 0) {
+            holder.txtAttachments.text = "${task.attachments.size} Attachments"
         }
-        holder.taskCard.setCardBackgroundColor(colors.random())
+        holder.taskCard.setCardBackgroundColor(task.bgColor)
+        addTagsToLinearLayout(holder , task)
+        if(task.attachments.size > 0) addAttachmentsToLinearLayout(holder , task)
+        holder.attachControlArrow.tag = "$position:0"
+        holder.attachControlArrow.setOnClickListener(clickListener)
     }
-    override fun getItemCount() = tasks.size
+
+    override fun getItemCount() : Int{
+        if(tasks.size < 4) return tasks.size
+        return 4
+    }
+
     fun scalingViewsTimeline(){
         val task1TimeArr = viewHolderList[1].startTime.text.toString().split(":").toTypedArray()
         val task2TimeArr = viewHolderList[2].startTime.text.toString().split(":").toTypedArray()
@@ -156,11 +199,223 @@ class TimeLineTasksAdapter(
             }
         }
     }
+
     // Function to scale view vertically
-    fun scale(vh: TimeLineTaskViewHolder, j : Int, div: Int, dur : Long){
+    private fun scale(vh: TimeLineTaskViewHolder, j : Int, div: Int, dur : Long){
         vh.viewTimeline.pivotY = 0F
         vh.viewTimeline.animate().duration = dur
         vh.viewTimeline.animate().scaleY(j.toFloat()/ div)
         vh.viewTimeline.animate().start()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun addTagsToLinearLayout(viewHolder: TimeLineTaskViewHolder , task : Task){
+        val id1 = View.generateViewId()
+        val id2 = View.generateViewId()
+        val tg1 = TextView(context)
+        val tg2 = TextView(context)
+        tg1.id = id1
+        tg2.id = id2
+        tg1.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        tg1.setPadding(15, 10, 15, 10)
+        tg1.text = task.taskTypes[0]
+        tg1.textSize = 10F
+        tg1.setTextColor(ContextCompat.getColor(context , R.color.white))
+
+        tg2.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        tg2.setPadding(15, 10, 15, 10)
+        tg2.text = task.taskTypes[1]
+        tg2.textSize = 10F
+        tg2.setTextColor(ContextCompat.getColor(context , R.color.white))
+        //giving random background drawable to task tags
+        val random = Random()
+        val randomNum = random.nextInt(4-0)
+        when(randomNum){
+            0 -> {
+                tg1.setBackgroundResource(R.drawable.bg_rect_blue)
+                tg2.setBackgroundResource(R.drawable.bg_rect_orange)
+            }
+            1 -> {
+                tg1.setBackgroundResource(R.drawable.bg_rect_purple)
+                tg2.setBackgroundResource(R.drawable.bg_rect_green)
+            }
+            2 -> {
+                tg1.setBackgroundResource(R.drawable.bg_rect_blue)
+                tg2.setBackgroundResource(R.drawable.bg_rect_purple)
+            }
+            else -> {
+                tg1.setBackgroundResource(R.drawable.bg_rect_green)
+                tg2.setBackgroundResource(R.drawable.bg_rect_orange)
+            }
+        }
+        viewHolder.clTaskType.addView(tg1)
+        viewHolder.clTaskType.addView(tg2)
+        var id3 = 0
+        if(task.taskTypes.size > 2){
+            id3 = View.generateViewId()
+            val tvMoreTypes = TextView(context)
+            tvMoreTypes.id = id3
+            tvMoreTypes.layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+            tvMoreTypes.text = "+${task.taskTypes.size-2} more"
+            tvMoreTypes.textSize = 10F
+            viewHolder.clTaskType.addView(tvMoreTypes)
+        }
+        constraintSet.clone(viewHolder.clTaskType)
+        constraintSet.connect(id1 , ConstraintSet.START , ConstraintSet.PARENT_ID , ConstraintSet.START)
+        constraintSet.connect(id1 , ConstraintSet.TOP , ConstraintSet.PARENT_ID , ConstraintSet.TOP)
+        constraintSet.connect(id2 , ConstraintSet.START , id1 , ConstraintSet.END , 15)
+        constraintSet.connect(id2 , ConstraintSet.TOP , ConstraintSet.PARENT_ID , ConstraintSet.TOP)
+        if(task.taskTypes.size > 2){
+            constraintSet.connect(id3 , ConstraintSet.START , id2 , ConstraintSet.END , 15)
+            constraintSet.connect(id3 , ConstraintSet.TOP , id2 , ConstraintSet.TOP)
+            constraintSet.connect(id3 , ConstraintSet.BOTTOM , id2 , ConstraintSet.BOTTOM)
+        }
+        constraintSet.applyTo(viewHolder.clTaskType)
+    }
+
+    @SuppressLint("InflateParams")
+    private fun addAttachmentsToLinearLayout(viewHolder: TimeLineTaskViewHolder , task: Task){
+        val bgDrawable : GradientDrawable = ContextCompat.getDrawable(context , R.drawable.dates_unselected_background_stroke)
+            ?.mutate() as GradientDrawable
+        bgDrawable.cornerRadius = 15F
+        var uri1 = ""
+        var uri2 = ""
+        var fn1 = ""
+        var fn2 = ""
+        for((key , value) in task.attachments){
+            if(uri1 == ""){
+                uri1 = key
+                fn1 = value
+            }
+            else {
+                uri2 = key
+                fn2 = value
+            }
+        }
+        val cl1 = ConstraintLayout(context)
+        val id1 = View.generateViewId()
+        cl1.id = id1
+        cl1.setPadding(20 , 15, 20, 15)
+        cl1.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        cl1.background = bgDrawable
+        val idFt1 = View.generateViewId()
+        val idFn1 = View.generateViewId()
+        val ivFileType1 = ImageView(context)
+        ivFileType1.id = idFt1
+        val tvFileName1 = TextView(context)
+        tvFileName1.id = idFn1
+        tvFileName1.text = fn1
+        tvFileName1.textSize = 10F
+        tvFileName1.maxLines = 1
+        var subStr = fn1.split(".")
+        var ext = subStr[subStr.size-1]
+        when(ext){
+            "pdf" -> ivFileType1.setImageResource(R.drawable.pdf)
+            "png" , "jpg" , "jpeg" -> ivFileType1.setImageResource(R.drawable.ic_image)
+            "txt" , "odt"-> ivFileType1.setImageResource(R.drawable.txt)
+            "doc" , "docx" -> ivFileType1.setImageResource(R.drawable.word)
+            "ppt" , "pptx" -> ivFileType1.setImageResource(R.drawable.powerpoint)
+            "mp4" -> ivFileType1.setImageResource(R.drawable.video)
+            else -> ivFileType1.setImageResource(R.drawable.unknown_file_type)
+        }
+
+        ivFileType1.layoutParams = ConstraintLayout.LayoutParams(
+            36,
+            36
+        )
+        tvFileName1.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        // adding the iv and tv created in the constraint layout created above
+        cl1.addView(ivFileType1)
+        cl1.addView(tvFileName1)
+        constraintSet.clone(cl1)
+        // constraining the fileType imageview and filename imageview in the constraint layout
+        constraintSet.connect(idFt1 , ConstraintSet.START , ConstraintSet.PARENT_ID , ConstraintSet.START)
+        constraintSet.connect(idFt1 , ConstraintSet.TOP , ConstraintSet.PARENT_ID , ConstraintSet.TOP)
+        constraintSet.connect(idFn1 , ConstraintSet.START, idFt1 , ConstraintSet.END , 10)
+        constraintSet.connect(idFn1 , ConstraintSet.TOP, idFt1 , ConstraintSet.TOP)
+        constraintSet.connect(idFn1 , ConstraintSet.BOTTOM, idFt1 , ConstraintSet.BOTTOM)
+        constraintSet.applyTo(cl1)
+
+        // now placing the above created constraint layout in the original constraint layout
+        // and then constraining it
+        viewHolder.clAttach.addView(cl1)
+        val id2 = View.generateViewId()
+
+        if(task.attachments.size > 1){
+            val cl2 = ConstraintLayout(context)
+            cl2.id = id2
+            cl2.setPadding(20 , 15, 20, 15)
+            cl2.layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+            cl2.background = bgDrawable
+            val idFt2 = View.generateViewId()
+            val idFn2 = View.generateViewId()
+            val ivFileType2 = ImageView(context)
+            ivFileType2.id = idFt2
+            val tvFileName2 = TextView(context)
+            tvFileName2.id = idFn2
+            tvFileName2.text = fn2
+            tvFileName2.textSize = 10F
+            tvFileName2.maxLines = 1
+            subStr = fn2.split(".")
+            ext = subStr[subStr.size-1]
+            when(ext){
+                "pdf" -> ivFileType2.setImageResource(R.drawable.pdf)
+                "png" , "jpg" , "jpeg" -> ivFileType2.setImageResource(R.drawable.ic_image)
+                "txt" , "odt"-> ivFileType2.setImageResource(R.drawable.txt)
+                "doc" , "docx" -> ivFileType2.setImageResource(R.drawable.word)
+                "ppt" , "pptx" -> ivFileType2.setImageResource(R.drawable.powerpoint)
+                "mp4" -> ivFileType2.setImageResource(R.drawable.video)
+                else -> ivFileType2.setImageResource(R.drawable.unknown_file_type)
+            }
+
+            ivFileType2.layoutParams = ConstraintLayout.LayoutParams(
+                36,
+                36
+            )
+            tvFileName2.layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+            // adding the iv and tv created in the constraint layout created above
+            cl2.addView(ivFileType2)
+            cl2.addView(tvFileName2)
+            constraintSet.clone(cl2)
+            // constraining the fileType imageview and filename imageview in the constraint layout
+            constraintSet.connect(idFt2 , ConstraintSet.START , ConstraintSet.PARENT_ID , ConstraintSet.START)
+            constraintSet.connect(idFt2 , ConstraintSet.TOP , ConstraintSet.PARENT_ID , ConstraintSet.TOP)
+            constraintSet.connect(idFn2 , ConstraintSet.START, idFt2 , ConstraintSet.END , 10)
+            constraintSet.connect(idFn2 , ConstraintSet.TOP, idFt2 , ConstraintSet.TOP)
+            constraintSet.connect(idFn2 , ConstraintSet.BOTTOM, idFt2 , ConstraintSet.BOTTOM)
+            constraintSet.applyTo(cl2)
+            viewHolder.clAttach.addView(cl2)
+        }
+        constraintSet.clone(viewHolder.clAttach)
+        constraintSet.connect(id1 , ConstraintSet.START , ConstraintSet.PARENT_ID , ConstraintSet.START)
+        constraintSet.connect(id1 , ConstraintSet.END , ConstraintSet.PARENT_ID , ConstraintSet.END)
+        constraintSet.connect(id1 , ConstraintSet.TOP , ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+        if(task.attachments.size > 1){
+            constraintSet.connect(id2 , ConstraintSet.START , ConstraintSet.PARENT_ID , ConstraintSet.START)
+            constraintSet.connect(id2 , ConstraintSet.END , ConstraintSet.PARENT_ID , ConstraintSet.END)
+            constraintSet.connect(id2 , ConstraintSet.TOP , id1 , ConstraintSet.BOTTOM , 10)
+        }
+        constraintSet.applyTo(viewHolder.clAttach)
     }
 }

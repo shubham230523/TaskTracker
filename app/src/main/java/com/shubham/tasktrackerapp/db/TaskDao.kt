@@ -2,6 +2,7 @@ package com.shubham.tasktrackerapp.db
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.DeleteTable
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -20,4 +21,7 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task : Task)
+
+    @Query("DELETE FROM tb_task")
+    suspend fun deleteTable()
 }

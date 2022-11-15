@@ -16,10 +16,12 @@ data class Task(
     val start_time: String,
     @ColumnInfo(name = "end_time")
     val end_time: String,
-    @ColumnInfo(name = "bg_img")
-    val bg_img : String,
+    @ColumnInfo(name = "taskTypes")
+    val taskTypes: MutableList<String> = mutableListOf(),
     @ColumnInfo(name = "attachments")
-    val attachments: MutableList<String> = mutableListOf<String>(),
+    val attachments: HashMap<String , String> = hashMapOf(),
+    @ColumnInfo(name = "bgColor")
+    val bgColor : Int,
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0
 )

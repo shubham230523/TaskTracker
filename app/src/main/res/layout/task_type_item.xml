@@ -16,7 +16,7 @@
         android:padding="10dp"
         android:text="Assignment"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
