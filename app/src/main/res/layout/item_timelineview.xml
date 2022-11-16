@@ -97,10 +97,10 @@
                 app:layout_constraintTop_toTopOf="parent"/>
             <!-- Task option menu -->
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:id="@+id/timelineCardBtnMenu"
-                android:src="@drawable/ic_task_menu"
+                android:src="@drawable/ic_menu"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tv_card_title"
                 app:layout_constraintBottom_toBottomOf="@id/tv_card_title"/>
@@ -189,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/clAttach"
                 android:layout_marginTop="10dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/line_attachments"

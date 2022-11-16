@@ -26,7 +26,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.shubham.tasktrackerapp.Fragments.DashboardFragment
 import com.shubham.tasktrackerapp.Fragments.HomeFragment
+import com.shubham.tasktrackerapp.Fragments.UpcomingTasksFragment
 import com.shubham.tasktrackerapp.db.Task
+import com.shubham.tasktrackerapp.db.TaskDao
 import com.shubham.tasktrackerapp.db.TaskDatabase
 import kotlinx.coroutines.*
 import java.util.*
@@ -83,6 +85,8 @@ class MainActivity : AppCompatActivity() , FileInterface{
         "Classes", "Hobby", "Meeting", "Playing", "Hangout", "Food", "Television",
         "Exercise", "Remainder", "Other"
     )
+    private var tasks: List<Task>? = null
+    private var taskDao: TaskDao? = null
     private var btnSelectTasks: Button? = null
     private var txtTasks: TextView? = null
     private var cbSelectedTypesList = mutableListOf<String>()
@@ -155,6 +159,8 @@ class MainActivity : AppCompatActivity() , FileInterface{
         ivStartClock!!.setOnClickListener(clickListener)
         tvEndTime!!.setOnClickListener(clickListener)
         ivEndClock!!.setOnClickListener(clickListener)
+        taskDao = TaskDatabase.getInstance(this).dao()
+        getTasksFromDatabase()
         //setting the home fragment as the first fragment
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, HomeFragment()).commit()
@@ -230,6 +236,19 @@ class MainActivity : AppCompatActivity() , FileInterface{
             }
         }
     }
+
+    //Function to set recyclerview tasks
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun getTasksFromDatabase() {
+        job = GlobalScope.launch(Dispatchers.IO) {
+            tasks = taskDao!!.getAllTasks()
+            Log.d(TAG, "current time - ${System.currentTimeMillis()}")
+            delay(100)
+            job!!.cancelAndJoin()
+        }
+    }
+
+    fun getTasksList() = tasks
 
     // Function to add task type in the linear layout
     @SuppressLint("InflateParams")

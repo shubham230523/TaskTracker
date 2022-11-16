@@ -15,6 +15,7 @@ import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
@@ -63,6 +64,7 @@ class TimeLineTasksAdapter(
             it.tag = "$position:0"
         }
     }
+    private var popUpMenu : PopupMenu? = null
 
     inner class TimeLineTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val title: TextView = itemView.findViewById(R.id.tv_card_title)
@@ -79,6 +81,7 @@ class TimeLineTasksAdapter(
         val clTaskType = itemView.findViewById<ConstraintLayout>(R.id.clTaskType)
         val clAttach = itemView.findViewById<ConstraintLayout>(R.id.clAttach)
         val attachControlArrow = itemView.findViewById<ImageView>(R.id.ivArrow)
+        val taskOptMenu = itemView.findViewById<ImageView>(R.id.timelineCardBtnMenu)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineTaskViewHolder {
@@ -113,98 +116,165 @@ class TimeLineTasksAdapter(
         addTagsToLinearLayout(holder , task)
         if(task.attachments.size > 0) addAttachmentsToLinearLayout(holder , task)
         holder.attachControlArrow.tag = "$position:0"
-        holder.attachControlArrow.setOnClickListener(clickListener)
+        //holder.attachControlArrow.setOnClickListener(clickListener)
+        holder.taskOptMenu.setOnClickListener{
+            showPopUpMenuForTask(it)
+        }
     }
 
     override fun getItemCount() : Int{
         if(tasks.size < 4) return tasks.size
         return 4
     }
-
+    private fun showPopUpMenuForTask(view : View){
+        popUpMenu = PopupMenu(context , view)
+        popUpMenu!!.inflate(R.menu.task_card_menu)
+        popUpMenu!!.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.taskEdit -> Log.d(TAG , "taskEdit clicked ")
+                R.id.deleteTask -> Log.d(TAG , "delete task called")
+                R.id.taskMarkDone -> Log.d(TAG , "Mark as done called")
+            }
+            return@setOnMenuItemClickListener true
+        }
+        popUpMenu!!.show()
+    }
+    @OptIn(DelicateCoroutinesApi::class)
     fun scalingViewsTimeline(){
         val task1TimeArr = viewHolderList[1].startTime.text.toString().split(":").toTypedArray()
         val task2TimeArr = viewHolderList[2].startTime.text.toString().split(":").toTypedArray()
         val task3TimeArr = viewHolderList[3].startTime.text.toString().split(":").toTypedArray()
         val currentHour = cal.get(Calendar.HOUR_OF_DAY)
         val currentMin = cal.get(Calendar.MINUTE)
-        val currentTime = (currentHour*60 + currentMin)*60*1000
+        val currentSec = cal.get(Calendar.SECOND)
+        val currentMilliSec = cal.get(Calendar.MILLISECOND)
+
+        var currentTime = ((currentHour*60 + currentMin)*60 + currentSec)*1000 + currentMilliSec
         var task1Time = (task1TimeArr[0].toInt()*60 + task1TimeArr[1].toInt())*60*1000 * 1L
         var task2Time = (task2TimeArr[0].toInt()*60 + task2TimeArr[1].toInt())*60*1000 * 1L
         var task3Time = (task3TimeArr[0].toInt()*60 + task3TimeArr[1].toInt())*60*1000 * 1L
 
-        task1Time = currentTime * 1L
-        task2Time = task1Time * 1L
-        task3Time = task2Time * 1L
-        var upperBound = 0L
-        if(task1Time > currentTime) upperBound = task1Time
-        else if(task2Time > currentTime) upperBound = task2Time
-        else if(task3Time > currentTime) upperBound = task3Time
-        GlobalScope.launch (Dispatchers.Main){
-            if(upperBound == task1Time){
-                for(i in 0..2){
-                    var incr = 0L
-                    if(i == 0) incr = task1Time - currentTime
-                    else if(i == 1) incr = task2Time - task1Time
-                    else incr = task3Time - task2Time
-                    val del = incr / 100
-                    for(j in 1..100) {
-                        scale(viewHolderList[i] , j , 100 , 1)
-                        delay(del-1)
+
+        job = GlobalScope.launch(Dispatchers.Main) {
+            task1Time = currentTime *1L
+            task2Time = task1Time * 1L
+            task3Time = task2Time * 1L
+            var isTask1Complete = false
+            var isTask2Complete = false
+
+            for(i in 0 until 3){
+                //currentTime = ((currentHour*60 + currentMin)*60 + currentSec)*1000 + currentMilliSec
+                if(i == 0){
+                    if(currentTime < task1Time){
+                        val diff = task1Time - currentTime
+                        var incr = 500F/diff
+                        while(currentTime < task1Time){
+                            scale(viewHolderList[0] , incr , 500)
+                            delay(500)
+                            currentTime += 500
+                            incr += 500F/diff
+                        }
+                        viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                        isTask1Complete = true
                     }
-                    viewHolderList[i+1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
                 }
-            }
-            else if(upperBound == task2Time){
-                scale(viewHolderList[0] , 1 , 1 , 1000)
-                delay(1000)
-                viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
-                for(i in 1..2){
-                    var incr = 0L
-                    Log.d(TAG , "i(upperbound - task2Time) = $i" )
-                    if(i == 1) incr = task2Time - task1Time
-                    else incr = task3Time - task2Time
-                    val del = incr / 100
-                    for(j in 1..100) {
-                        scale(viewHolderList[i] , j , 100 , 1)
-                        delay(del-1)
+                else if(i == 1){
+                    if(currentTime < task2Time){
+                        val diff = task2Time - currentTime
+                        var incr = 500F/diff
+                        var count = 0 ; var i = 0; var check = 0
+                        while(currentTime < task2Time){
+                            if(!isTask1Complete){
+                                scale(viewHolderList[0] , 1F , 1000)
+                                isTask1Complete = true
+                                count = 2
+                            }
+                            i++
+                            // using the count variable to not showing scaling for 1 sec so that
+                            // first item viewHolderList[0] completes its scaling
+                            if(i > count){
+                                if(count == 2 && check == 0){
+                                    check = 1
+                                    viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                                }
+                                scale(viewHolderList[1] , incr , 500)
+                            }
+                            delay(500)
+                            currentTime += 500
+                            incr += 500F/diff
+                        }
+                        viewHolderList[2].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                        isTask2Complete = true
                     }
-                    viewHolderList[i+1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
                 }
-            }
-            else if(upperBound == task3Time){
-                scale(viewHolderList[0] , 1 , 1 , 1000)
-                delay(1000)
-                viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
-                scale(viewHolderList[1] , 1 , 1 , 1000)
-                delay(1000)
-                viewHolderList[2].ivTaskStop.setImageResource(R.drawable.ic_task_done)
-                val incr = task3Time - task2Time
-                val del = incr / 100
-                for(j in 1..100){
-                    scale(viewHolderList[2] , j , 100 , 1)
-                    delay(del-1)
+                else {
+                    if(currentTime < task3Time){
+                        val diff = task3Time - currentTime
+                        var incr = 500F/diff
+                        var count1 = 0; var count2 = 0; var i = 0; var j = 0; var check = 0
+                        if(!isTask2Complete){
+                            count2 = 2
+                            if(!isTask1Complete){
+                                count2 = 4
+                                count1 = 2
+                            }
+                        }
+                        while(currentTime < task3Time){
+                            i++
+                            j++
+                            if(!isTask2Complete){
+                                if(!isTask1Complete){
+                                    scale(viewHolderList[0] , 1F, 1000)
+                                    isTask1Complete = true
+                                }
+                                if(i > count1){
+                                    if(count1 == 2) viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                                    scale(viewHolderList[1] , 1F , 1000)
+                                    isTask2Complete = true
+                                }
+                            }
+                            if(j > count2) {
+                                if(count2 == 4 && check == 0) {
+                                    check = 1
+                                    viewHolderList[2].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                                }
+                                scale(viewHolderList[2] , incr , 500)
+                            }
+                            delay(500)
+                            currentTime += 500
+                            incr += 500F/diff
+                        }
+                        viewHolderList[3].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                        job.cancelAndJoin()
+                    }
+                    else {
+                        if(!isTask1Complete){
+                            isTask1Complete = true
+                            scale(viewHolderList[0] , 1F , 500)
+                            delay(500)
+                            viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                        }
+                        if(!isTask2Complete){
+                            isTask2Complete = true
+                            scale(viewHolderList[1] , 1F , 500)
+                            delay(500)
+                            viewHolderList[2].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                        }
+                        scale(viewHolderList[2] , 1F  , 500)
+                        delay(500)
+                        viewHolderList[3].ivTaskStop.setImageResource(R.drawable.ic_task_done)
+                        job.cancelAndJoin()
+                    }
                 }
-                viewHolderList[3].ivTaskStop.setImageResource(R.drawable.ic_task_done)
-            }
-            else {
-                scale(viewHolderList[0] , 1 , 1 , 1000)
-                delay(1000)
-                viewHolderList[1].ivTaskStop.setImageResource(R.drawable.ic_task_done)
-                scale(viewHolderList[1] , 1 , 1 , 1000)
-                delay(1000)
-                viewHolderList[2].ivTaskStop.setImageResource(R.drawable.ic_task_done)
-                scale(viewHolderList[2] , 1 , 1 , 1000)
-                delay(1000)
-                viewHolderList[3].ivTaskStop.setImageResource(R.drawable.ic_task_done)
             }
         }
     }
 
     // Function to scale view vertically
-    private fun scale(vh: TimeLineTaskViewHolder, j : Int, div: Int, dur : Long){
+    private fun scale(vh: TimeLineTaskViewHolder, j : Float,  dur : Long){
         vh.viewTimeline.pivotY = 0F
         vh.viewTimeline.animate().duration = dur
-        vh.viewTimeline.animate().scaleY(j.toFloat()/ div)
+        vh.viewTimeline.animate().scaleY(j.toFloat())
         vh.viewTimeline.animate().start()
     }
 
