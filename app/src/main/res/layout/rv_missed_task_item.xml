@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvRvMissedTasks"
+        app:cardCornerRadius="15dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:id="@+id/clCvMissedTask">
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BDA Assignment"
+                android:textSize="16sp"
+                android:id="@+id/tvMissedTaskTitle"
+                android:fontFamily="@font/robotoslab_medium"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/clCvMissedTask"
+                app:layout_constraintTop_toTopOf="@id/clCvMissedTask"/>
+            <!-- Txt Due -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtDue"
+                android:text="Due - "
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/clCvMissedTask"
+                app:layout_constraintTop_toBottomOf="@id/tvMissedTaskTitle"
+                android:layout_marginTop="5dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvDueDate"
+                android:textSize="14sp"
+                android:text="12 Oct"
+                app:layout_constraintStart_toEndOf="@id/txtDue"
+                app:layout_constraintTop_toTopOf="@id/txtDue"
+                app:layout_constraintBottom_toBottomOf="@id/txtDue"/>
+            <!-- tags -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtTags"
+                android:text="Tags - "
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/clCvMissedTask"
+                app:layout_constraintTop_toBottomOf="@id/txtDue"
+                android:layout_marginTop="5dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvTags"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:text="Assignments, Coding +2 more"
+                app:layout_constraintStart_toEndOf="@id/txtTags"
+                app:layout_constraintTop_toTopOf="@id/txtTags"
+                app:layout_constraintBottom_toBottomOf="@id/txtTags"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtReason"
+                android:text="Reason - "
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/clCvMissedTask"
+                app:layout_constraintTop_toBottomOf="@id/txtTags"
+                android:layout_marginTop="5dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvReason"
+                android:textSize="14sp"
+                android:text="Missed"
+                app:layout_constraintStart_toEndOf="@id/txtReason"
+                app:layout_constraintTop_toTopOf="@id/txtReason"
+                app:layout_constraintBottom_toBottomOf="@id/txtReason"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

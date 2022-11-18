@@ -9,9 +9,16 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.withTranslation
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import app.futured.donut.DonutProgressView
+import app.futured.donut.DonutSection
+import com.shubham.tasktrackerapp.Adapter.MissedTasksAdapter
 import com.shubham.tasktrackerapp.CustomView
 import com.shubham.tasktrackerapp.R
+import com.shubham.tasktrackerapp.db.Task
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     companion object {
@@ -32,6 +39,72 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private lateinit var tvThu: TextView
     private lateinit var tvFri: TextView
     private lateinit var tvSat: TextView
+    private lateinit var donutView : DonutProgressView
+    private lateinit var rvMissedTasks : RecyclerView
+    private var hashMap = hashMapOf<String , String>()
+
+    private val taskList = listOf<Task>(
+        Task(
+            "Title1",
+            "12 Nov",
+            "14 Nov",
+            "9:00AM",
+            "9:30AM",
+            mutableListOf("Assignment"),
+            hashMap,
+            R.color.red,
+        ),
+        Task(
+            "Title1",
+            "12 Nov",
+            "14 Nov",
+            "9:00AM",
+            "9:30AM",
+            mutableListOf("Assignment"),
+            hashMap,
+            R.color.red,
+        ),
+        Task(
+            "Title1",
+            "12 Nov",
+            "14 Nov",
+            "9:00AM",
+            "9:30AM",
+            mutableListOf("Assignment"),
+            hashMap,
+            R.color.red,
+        ),
+        Task(
+            "Title1",
+            "12 Nov",
+            "14 Nov",
+            "9:00AM",
+            "9:30AM",
+            mutableListOf("Assignment"),
+            hashMap,
+            R.color.red,
+        ),
+        Task(
+            "Title1",
+            "12 Nov",
+            "14 Nov",
+            "9:00AM",
+            "9:30AM",
+            mutableListOf("Assignment"),
+            hashMap,
+            R.color.red,
+        ),
+        Task(
+            "Title1",
+            "12 Nov",
+            "14 Nov",
+            "9:00AM",
+            "9:30AM",
+            mutableListOf("Assignment"),
+            hashMap,
+            R.color.red,
+        )
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,9 +122,17 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         tvThu = view.findViewById(R.id.tvThu)
         tvFri = view.findViewById(R.id.tvFri)
         tvSat = view.findViewById(R.id.tvSat)
+        donutView = view.findViewById(R.id.donut_view)
+        rvMissedTasks = view.findViewById(R.id.missedTasksRV)
         setUpGraphView()
+        setUpDonutView()
+        val missedTaskAdapter = MissedTasksAdapter(requireContext() , taskList)
+        rvMissedTasks.apply {
+            adapter = missedTaskAdapter
+            layoutManager = LinearLayoutManager(context , LinearLayoutManager.HORIZONTAL , false)
+        }
     }
-
+    // function for showing the graph
     private fun setUpGraphView() {
         //sample data for plotting
         val listNoOfMissedTasksPerDay = arrayOf(5, 7, 15, 10, 12, 4, 18)
@@ -86,7 +167,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             val paint1 = Paint()
             // paint2 for creating the stroke
             val paint2 = Paint()
-            canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.light_grey))
+            //canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.light_grey))
             paint1.style = Paint.Style.FILL
             paint1.color = ContextCompat.getColor(requireContext(), R.color.green)
             paint1.isAntiAlias = true
@@ -96,7 +177,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 0F,
                 heightPx * 1F,
                 ContextCompat.getColor(requireContext(), R.color.green),
-                Color.WHITE,
+                ContextCompat.getColor(requireContext() , R.color.white),
                 Shader.TileMode.MIRROR
             )
             paint2.style = Paint.Style.STROKE
@@ -230,8 +311,39 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             path.lineTo(prevX, heightPx * 1F)
             path.lineTo(0F, heightPx * 1F)
             //for filling the path
-            canvas.drawPath(path, paint1)
+            canvas.drawPath(path , paint1)
         }
+    }
+
+    // function for showing the donut view
+    private fun setUpDonutView(){
+        val section1 = DonutSection(
+            name = "Assignment",
+            color = ContextCompat.getColor(requireContext() , R.color.red),
+            amount = 0.4f
+        )
+        val section2 = DonutSection(
+            name = "Classes",
+            color = ContextCompat.getColor(requireContext() , R.color.yellow),
+            amount = 0.2f
+        )
+        val section3 = DonutSection(
+            name = "Hangout",
+            color = ContextCompat.getColor(requireContext() , R.color.orange),
+            amount = 0.1f
+        )
+        val section4 = DonutSection(
+            name = "Television",
+            color = ContextCompat.getColor(requireContext() , R.color.blue),
+            amount = 0.1f
+        )
+        val section5 = DonutSection(
+            name = "Other",
+            color = ContextCompat.getColor(requireContext() , R.color.purple_200),
+            amount = 0.2f
+        )
+        donutView.cap = 1f
+        donutView.submitData(listOf(section1 , section2 , section3 , section4 , section5))
     }
 
     //Extension for converting int to dp and int to px
