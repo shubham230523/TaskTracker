@@ -41,7 +41,7 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
     private lateinit var tvMonth: TextView
     private var mContext = activity?.applicationContext
     private var job: Job? = null
-    var tabsList = arrayOf("Upcoming", "All Upcoming", "Missed")
+    var tabsList = arrayOf("Upcoming", "All Upcoming")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

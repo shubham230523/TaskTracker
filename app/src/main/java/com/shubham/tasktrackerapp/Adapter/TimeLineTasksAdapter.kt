@@ -212,6 +212,8 @@ class TimeLineTasksAdapter(
                         val diff = task3Time - currentTime
                         var incr = 500F/diff
                         var count1 = 0; var count2 = 0; var i = 0; var j = 0; var check = 0
+                        // count 1 is used to determine when to start scaling timeline1
+                        // count 2 is used to determine when to start scaling timeline2
                         if(!isTask2Complete){
                             count2 = 2
                             if(!isTask1Complete){

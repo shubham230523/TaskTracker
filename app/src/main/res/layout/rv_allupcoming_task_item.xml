@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginTop="7dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvAllTasks"
+        android:elevation="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="10dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:background="@drawable/bg_rect_blue"
+            android:id="@+id/cvCL">
+            <!-- task date -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="17 Nov"
+                android:id="@+id/tvDate"
+                app:layout_constraintStart_toStartOf="@id/cvCL"
+                app:layout_constraintTop_toTopOf="@id/cvCL"
+                android:textSize="14sp"
+                android:fontFamily="@font/robotoslab_medium"
+                android:textColor="@color/white"/>
+            <!-- task duration -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "9:00 - 10:00"
+                android:id="@+id/tvDur"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/cvCL"
+                app:layout_constraintTop_toBottomOf="@id/tvDate"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/robotoslab_medium"/>
+
+            <!-- Guideline for title -->
+            <androidx.constraintlayout.widget.Guideline
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id = "@+id/guideline_title"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25"/>
+            <!-- Task title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskTitle"
+                android:text="BDA Assignment 1"
+                android:maxLines="1"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintEnd_toStartOf="@id/optMenu"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                android:fontFamily="@font/robotoslab_medium"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toEndOf="@id/guideline_title"
+                app:layout_constraintTop_toTopOf="@id/cvCL"/>
+            <!-- options menu -->
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:id="@+id/optMenu"
+                android:src="@drawable/menu__colon"
+                app:layout_constraintTop_toTopOf="@id/taskTitle"
+                app:layout_constraintStart_toEndOf="@id/taskTitle"
+                app:layout_constraintBottom_toBottomOf="@id/taskTitle"
+                app:layout_constraintEnd_toEndOf="@id/cvCL"/>
+            <!-- Text "Tags: " -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tags: "
+                android:textColor="@color/black"
+                android:layout_marginTop="5dp"
+                android:id="@+id/txtTags"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@id/guideline_title"
+                app:layout_constraintTop_toBottomOf="@id/taskTitle"/>
+            <!-- Task tags -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvTaskTags"
+                android:fontFamily="@font/robotoslab_regular"
+                android:text="Assignment , Classes , Remainder , Other"
+                android:maxLines="1"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toEndOf="@id/txtTags"
+                app:layout_constraintTop_toTopOf="@id/txtTags"
+                app:layout_constraintBottom_toBottomOf="@id/txtTags"/>
+            <!-- Attachments -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskAttachments"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="1 Attachment"
+                app:layout_constraintStart_toEndOf="@id/guideline_title"
+                app:layout_constraintTop_toBottomOf="@id/txtTags"
+                android:layout_marginTop="5dp"
+                android:maxLines="1"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

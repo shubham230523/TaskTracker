@@ -12,15 +12,14 @@ import com.shubham.tasktrackerapp.Fragments.UpcomingTasksFragment
 class ViewPagerTasksAdapter(private val mContext : Context, fragmentManager: FragmentManager , lifecycle: Lifecycle)
     :FragmentStateAdapter(fragmentManager, lifecycle){
     companion object{
-        private const val NUM_TABS = 3
+        private const val NUM_TABS = 2
     }
     override fun getItemCount() = NUM_TABS
 
     override fun createFragment(position: Int): Fragment {
         when(position){
             0 -> return UpcomingTasksFragment(mContext)
-            1 -> return AllUpcomingFragment()
         }
-        return MissedTasksFragment()
+        return AllUpcomingFragment(mContext)
     }
 }

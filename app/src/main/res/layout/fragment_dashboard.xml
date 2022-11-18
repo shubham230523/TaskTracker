@@ -2,12 +2,396 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="15dp"
     android:layout_height="match_parent">
-
+    <!-- Text Dashboard -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DashBoard"
-        tools:ignore="MissingConstraints" />
-
+        android:text="Dashboard"
+        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboldslab_bold"
+        android:id="@+id/tvDashBoard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <!-- Weekly -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvWeekly"
+        android:padding="10dp"
+        android:background="@drawable/dates_unselected_background_stroke"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDashBoard"
+        android:text="Weekly"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/robotoslab_regular"
+        android:textSize="12sp"/>
+    <!-- Monthly -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvMonthly"
+        android:padding="10dp"
+        android:background="@drawable/dates_unselected_background_stroke"
+        app:layout_constraintStart_toEndOf="@id/tvWeekly"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/tvDashBoard"
+        android:text="Monthly"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/robotoslab_regular"
+        android:textSize="12sp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvWeekly"
+        android:layout_marginTop="10dp"
+        android:id="@+id/svDashboard">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/clSVDashboard">
+            <!-- Cardview tasks missed -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:0.75"
+                android:id="@+id/cvMissedTasks"
+                android:elevation="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/clSVDashboard"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toStartOf="@id/cvTasksCompletedBefore"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                android:backgroundTint="@color/brown"
+                android:layout_marginEnd="7dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:paddingTop="15dp"
+                    android:id="@+id/clMissedTasks">
+                    <!-- Text "missed" -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Missed - "
+                        android:fontFamily="@font/robotoslab_regular"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:id="@+id/txtMissed"/>
+                    <!-- Text no of tasks missed -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3/10"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/roboldslab_bold"
+                        app:layout_constraintStart_toEndOf="@id/txtMissed"
+                        app:layout_constraintTop_toTopOf="@id/txtMissed"
+                        app:layout_constraintBottom_toBottomOf="@id/txtMissed"
+                        android:id="@+id/tvMissedTasks"
+                        android:textSize="16sp" />
+                    <!-- Text Accuracy -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="70% Accuracy"
+                        android:id="@+id/tvAccuracy"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtMissed"
+                        android:fontFamily="@font/robotoslab_medium"
+                        android:textSize="16sp" />
+                    <!-- Accuracy bg image -->
+                    <ImageView
+                        android:layout_width="70dp"
+                        android:alpha="0.3"
+                        android:id="@+id/ivAccuracy"
+                        android:layout_height="70dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:src="@drawable/ic_accuracy"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+            <!-- Cardview tasks completed before time -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:0.75"
+                app:layout_constraintStart_toEndOf="@id/cvMissedTasks"
+                app:layout_constraintTop_toTopOf="@id/clSVDashboard"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/cvTasksCompletedBefore"
+                android:elevation="10dp"
+                android:layout_marginStart="7dp"
+                app:cardCornerRadius="15dp"
+                android:backgroundTint ="@color/darkGreen"
+                >
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:paddingTop="15dp"
+                    android:id="@+id/clTasksCompletedBefore">
+                    <!-- Text "Before Deadline" -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtBeforeDeadlline"
+                        android:text="Before deadline - "
+                        android:fontFamily="@font/robotoslab_regular"
+                        android:textColor="@color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <!-- Number of tasks done before deadline -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2/7"
+                        app:layout_constraintStart_toEndOf="@id/txtBeforeDeadlline"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="@id/txtBeforeDeadlline"
+                        app:layout_constraintBottom_toBottomOf="@id/txtBeforeDeadlline"
+                        android:fontFamily="@font/roboldslab_bold"
+                        android:id="@+id/tvNoOfTasksCompBefore"
+                        android:textSize="16sp"/>
+                    <!-- text more percent -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tvMorePercent"
+                        android:text="5% more than last week"
+                        android:fontFamily="@font/robotoslab_regular"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toBottomOf="@id/txtBeforeDeadlline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginTop="5dp"/>
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:alpha="0.3"
+                        android:layout_marginBottom="5dp"
+                        android:src="@drawable/ic_before_deadline"
+                        android:id="@+id/ivBeforeDeadline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+            <!-- Text Performance chart -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvPeformanceChart"
+                android:text="Performance Graph"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cvMissedTasks"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/robotoslab_medium"
+                android:textSize="18sp"
+                android:textColor="@color/black"/>
+            <!-- Before deadline -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvPCBeforeDeadline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPeformanceChart"
+                android:layout_marginTop="10dp"
+                android:text="Before Deadline"
+                android:textSize="12sp"
+                android:background="@drawable/dates_unselected_background_stroke"
+                android:padding="10dp"/>
+            <!-- Missed -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvPCMissed"
+                app:layout_constraintStart_toEndOf="@id/tvPCBeforeDeadline"
+                app:layout_constraintTop_toBottomOf="@id/tvPeformanceChart"
+                android:layout_marginTop="10dp"
+                android:text="Missed"
+                android:textSize="12sp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/dates_unselected_background_stroke"
+                android:padding="10dp"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:id="@+id/ivGraph"
+                app:layout_constraintTop_toBottomOf="@id/tvPCBeforeDeadline"
+                android:layout_marginTop="20dp"
+                app:layout_constraintBottom_toTopOf="@id/tvSun"
+                app:layout_constraintStart_toEndOf="@id/tvYaxis1"
+                app:layout_constraintEnd_toEndOf="@id/tvSat"/>
+            <!-- graph y axis values -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYaxis1"
+                android:text="25"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/tvYaxis2"
+                app:layout_constraintEnd_toEndOf="@id/tvYaxis2"
+                app:layout_constraintTop_toBottomOf="@id/tvPCBeforeDeadline"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYaxis2"
+                android:text="20"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tvYaxis3"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textColor="@color/black"
+               app:layout_constraintEnd_toEndOf="@id/tvYaxis3"
+                app:layout_constraintTop_toBottomOf="@id/tvYaxis1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYaxis3"
+                android:text="15"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tvYaxis4"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="@id/tvYaxis4"
+                app:layout_constraintTop_toBottomOf="@id/tvYaxis2"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYaxis4"
+                android:text="10"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tvYaxis5"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="@id/tvYaxis5"
+                app:layout_constraintTop_toBottomOf="@id/tvYaxis3"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYaxis5"
+                android:text="5"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tvYaxis6"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="@id/tvYaxis6"
+                app:layout_constraintTop_toBottomOf="@id/tvYaxis4"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYaxis6"
+                android:text="0"
+                android:layout_marginTop="20dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@id/tvSun"
+                app:layout_constraintTop_toBottomOf="@id/tvYaxis5"/>
+            <!-- graph x axis values -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvSun"
+                android:text="Sun"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                app:layout_constraintEnd_toStartOf="@id/tvMon"
+                app:layout_constraintStart_toEndOf="@id/tvYaxis6"
+                app:layout_constraintTop_toBottomOf="@id/tvYaxis6" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvMon"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:text="Mon"
+                app:layout_constraintStart_toEndOf="@id/tvSun"
+                app:layout_constraintTop_toTopOf="@id/tvSun"
+                app:layout_constraintEnd_toStartOf="@id/tvTue"
+                app:layout_constraintBottom_toBottomOf="@id/tvSun"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvTue"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:text="Tue"
+                app:layout_constraintStart_toEndOf="@id/tvMon"
+                app:layout_constraintTop_toTopOf="@id/tvMon"
+                app:layout_constraintEnd_toStartOf="@id/tvWed"
+                app:layout_constraintBottom_toBottomOf="@id/tvMon"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvWed"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:text="Wed"
+                app:layout_constraintStart_toEndOf="@id/tvTue"
+                app:layout_constraintTop_toTopOf="@id/tvTue"
+                app:layout_constraintEnd_toStartOf="@id/tvThu"
+                app:layout_constraintBottom_toBottomOf="@id/tvTue"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvThu"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:text="Thu"
+                app:layout_constraintStart_toEndOf="@id/tvWed"
+                app:layout_constraintTop_toTopOf="@id/tvWed"
+                app:layout_constraintEnd_toStartOf="@id/tvFri"
+                app:layout_constraintBottom_toBottomOf="@id/tvWed"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvFri"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:text="Fri"
+                app:layout_constraintStart_toEndOf="@id/tvThu"
+                app:layout_constraintTop_toTopOf="@id/tvThu"
+                app:layout_constraintEnd_toStartOf="@id/tvSat"
+                app:layout_constraintBottom_toBottomOf="@id/tvThu"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvSat"
+                android:textColor="@color/black"
+                android:fontFamily="@font/robotoslab_regular"
+                android:textSize="12sp"
+                android:text="Sat"
+                app:layout_constraintStart_toEndOf="@id/tvFri"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvFri"
+                app:layout_constraintBottom_toBottomOf="@id/tvFri"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

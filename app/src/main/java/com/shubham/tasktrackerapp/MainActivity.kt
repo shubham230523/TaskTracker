@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() , FileInterface{
         getTasksFromDatabase()
         //setting the home fragment as the first fragment
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, HomeFragment()).commit()
+            .replace(R.id.fragment_container, DashboardFragment()).commit()
         // click listeners
         bottomNavBar.setOnItemSelectedListener {
             when (it.itemId) {

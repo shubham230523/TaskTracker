@@ -30,10 +30,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/grey"
+            android:background="@color/light_grey"
             app:itemIconSize="20dp"
             app:labelVisibilityMode="unlabeled"
-            app:itemIconTint="@color/black"
+            app:itemIconTint="@color/bottom_nav_icon_tint"
             app:itemRippleColor="@color/white"
             app:itemTextColor="@color/white"
             app:menu="@menu/bottom_nav_items" />

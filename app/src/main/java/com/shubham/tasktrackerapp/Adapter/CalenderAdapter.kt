@@ -35,8 +35,8 @@ class CalenderAdapter(
             }
             txtDate.text = date.date
             if(date.selected){
-                txtDay.setTextColor(ContextCompat.getColor(context , R.color.green))
-                txtDate.setTextColor(ContextCompat.getColor(context , R.color.green))
+                txtDay.setTextColor(ContextCompat.getColor(context , R.color.white))
+                txtDate.setTextColor(ContextCompat.getColor(context , R.color.white))
                 itemView.background = ContextCompat.getDrawable(context ,
                     R.drawable.dates_selected_background_stroke
                 )
