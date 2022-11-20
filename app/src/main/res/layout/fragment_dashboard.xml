@@ -1,567 +1,683 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="15dp"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp">
     <!-- Text Dashboard -->
     <TextView
+        android:id="@+id/tvDashBoard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dashboard"
-        android:textSize="24sp"
-        android:textColor="@color/black"
         android:fontFamily="@font/roboldslab_bold"
-        android:id="@+id/tvDashBoard"
+        android:text="Dashboard"
+        android:textColor="@color/black"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
     <!-- Weekly -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/tvWeekly"
-        android:padding="10dp"
-        android:background="@drawable/dates_unselected_background_stroke"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDashBoard"
-        android:text="Weekly"
-        android:layout_marginTop="10dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/dates_selected_background_stroke"
         android:fontFamily="@font/robotoslab_regular"
-        android:textSize="12sp"/>
+        android:padding="10dp"
+        android:text="Weekly"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/tvMonthly"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDashBoard" />
     <!-- Monthly -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/tvMonthly"
-        android:padding="10dp"
-        android:background="@drawable/dates_unselected_background_stroke"
-        app:layout_constraintStart_toEndOf="@id/tvWeekly"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        app:layout_constraintTop_toBottomOf="@id/tvDashBoard"
-        android:text="Monthly"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/dates_unselected_background_stroke"
         android:fontFamily="@font/robotoslab_regular"
-        android:textSize="12sp"/>
+        android:padding="10dp"
+        android:text="Monthly"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tvWeekly"
+        app:layout_constraintTop_toBottomOf="@id/tvDashBoard" />
+
     <ScrollView
+        android:id="@+id/svDashboard"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvWeekly"
         android:layout_marginTop="10dp"
-        android:id="@+id/svDashboard">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvWeekly">
+
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSVDashboard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/clSVDashboard">
+            android:layout_height="wrap_content">
             <!-- Cardview tasks missed -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvMissedTasks"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintDimensionRatio="1:0.75"
-                android:id="@+id/cvMissedTasks"
-                android:elevation="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/clSVDashboard"
                 android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toStartOf="@id/cvTasksCompletedBefore"
-                app:cardCornerRadius="15dp"
-                app:layout_constraintHorizontal_chainStyle="spread"
+                android:layout_marginEnd="7dp"
                 android:backgroundTint="@color/brown"
-                android:layout_marginEnd="7dp">
+                android:elevation="10dp"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintDimensionRatio="1:0.75"
+                app:layout_constraintEnd_toStartOf="@id/cvTasksCompletedBefore"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/clSVDashboard">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clMissedTasks"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="15dp"
-                    android:paddingEnd="15dp"
                     android:paddingTop="15dp"
-                    android:id="@+id/clMissedTasks">
+                    android:paddingEnd="15dp">
                     <!-- Text "missed" -->
                     <TextView
+                        android:id="@+id/txtMissed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Missed - "
                         android:fontFamily="@font/robotoslab_regular"
+                        android:text="Missed - "
                         android:textColor="@color/white"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:id="@+id/txtMissed"/>
+                        app:layout_constraintTop_toTopOf="parent" />
                     <!-- Text no of tasks missed -->
                     <TextView
+                        android:id="@+id/tvMissedTasks"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboldslab_bold"
                         android:text="3/10"
                         android:textColor="@color/white"
-                        android:fontFamily="@font/roboldslab_bold"
-                        app:layout_constraintStart_toEndOf="@id/txtMissed"
-                        app:layout_constraintTop_toTopOf="@id/txtMissed"
+                        android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@id/txtMissed"
-                        android:id="@+id/tvMissedTasks"
-                        android:textSize="16sp" />
+                        app:layout_constraintStart_toEndOf="@id/txtMissed"
+                        app:layout_constraintTop_toTopOf="@id/txtMissed" />
                     <!-- Text Accuracy -->
                     <TextView
+                        android:id="@+id/tvAccuracy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="70% Accuracy"
-                        android:id="@+id/tvAccuracy"
                         android:layout_marginTop="5dp"
-                        android:textColor="@color/white"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/txtMissed"
                         android:fontFamily="@font/robotoslab_medium"
-                        android:textSize="16sp" />
+                        android:text="70% Accuracy"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtMissed" />
                     <!-- Accuracy bg image -->
                     <ImageView
-                        android:layout_width="70dp"
-                        android:alpha="0.3"
                         android:id="@+id/ivAccuracy"
+                        android:layout_width="70dp"
                         android:layout_height="70dp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        android:alpha="0.3"
+                        android:src="@drawable/ic_accuracy"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:src="@drawable/ic_accuracy"/>
+                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
             <!-- Cardview tasks completed before time -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvTasksCompletedBefore"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintDimensionRatio="1:0.75"
-                app:layout_constraintStart_toEndOf="@id/cvMissedTasks"
-                app:layout_constraintTop_toTopOf="@id/clSVDashboard"
-                android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/cvTasksCompletedBefore"
-                android:elevation="10dp"
                 android:layout_marginStart="7dp"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/darkGreen"
+                android:elevation="10dp"
                 app:cardCornerRadius="15dp"
-                android:backgroundTint ="@color/darkGreen"
-                >
+                app:layout_constraintDimensionRatio="1:0.75"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cvMissedTasks"
+                app:layout_constraintTop_toTopOf="@id/clSVDashboard">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clTasksCompletedBefore"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="15dp"
-                    android:paddingEnd="15dp"
                     android:paddingTop="15dp"
-                    android:id="@+id/clTasksCompletedBefore">
+                    android:paddingEnd="15dp">
                     <!-- Text "Before Deadline" -->
                     <TextView
+                        android:id="@+id/txtBeforeDeadlline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/txtBeforeDeadlline"
-                        android:text="Before deadline - "
                         android:fontFamily="@font/robotoslab_regular"
+                        android:text="Before deadline - "
                         android:textColor="@color/white"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                     <!-- Number of tasks done before deadline -->
                     <TextView
+                        android:id="@+id/tvNoOfTasksCompBefore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2/7"
-                        app:layout_constraintStart_toEndOf="@id/txtBeforeDeadlline"
-                        android:textColor="@color/white"
-                        app:layout_constraintTop_toTopOf="@id/txtBeforeDeadlline"
-                        app:layout_constraintBottom_toBottomOf="@id/txtBeforeDeadlline"
                         android:fontFamily="@font/roboldslab_bold"
-                        android:id="@+id/tvNoOfTasksCompBefore"
-                        android:textSize="16sp"/>
+                        android:text="2/7"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/txtBeforeDeadlline"
+                        app:layout_constraintStart_toEndOf="@id/txtBeforeDeadlline"
+                        app:layout_constraintTop_toTopOf="@id/txtBeforeDeadlline" />
                     <!-- text more percent -->
                     <TextView
+                        android:id="@+id/tvMorePercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/tvMorePercent"
-                        android:text="5% more than last week"
+                        android:layout_marginTop="5dp"
                         android:fontFamily="@font/robotoslab_regular"
-                        android:textSize="16sp"
+                        android:text="5% more than last week"
                         android:textColor="@color/white"
-                        app:layout_constraintTop_toBottomOf="@id/txtBeforeDeadlline"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginTop="5dp"/>
+                        app:layout_constraintTop_toBottomOf="@id/txtBeforeDeadlline" />
+
                     <ImageView
+                        android:id="@+id/ivBeforeDeadline"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:alpha="0.3"
                         android:layout_marginBottom="5dp"
+                        android:alpha="0.3"
                         android:src="@drawable/ic_before_deadline"
-                        android:id="@+id/ivBeforeDeadline"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
             <!-- Text Performance chart -->
             <TextView
+                android:id="@+id/tvPeformanceChart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvPeformanceChart"
-                android:text="Performance Graph"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cvMissedTasks"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="25dp"
                 android:fontFamily="@font/robotoslab_medium"
+                android:text="Performance Graph"
+                android:textColor="@color/black"
                 android:textSize="18sp"
-                android:textColor="@color/black"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cvMissedTasks" />
             <!-- Before deadline -->
             <TextView
+                android:id="@+id/tvPCBeforeDeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvPCBeforeDeadline"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvPeformanceChart"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/dates_selected_background_stroke"
+                android:padding="10dp"
                 android:text="Before Deadline"
                 android:textSize="12sp"
-                android:background="@drawable/dates_unselected_background_stroke"
-                android:padding="10dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPeformanceChart" />
             <!-- Missed -->
             <TextView
+                android:id="@+id/tvPCMissed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvPCMissed"
-                app:layout_constraintStart_toEndOf="@id/tvPCBeforeDeadline"
-                app:layout_constraintTop_toBottomOf="@id/tvPeformanceChart"
-                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/dates_unselected_background_stroke"
+                android:padding="10dp"
                 android:text="Missed"
                 android:textSize="12sp"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/dates_unselected_background_stroke"
-                android:padding="10dp"/>
+                app:layout_constraintStart_toEndOf="@id/tvPCBeforeDeadline"
+                app:layout_constraintTop_toBottomOf="@id/tvPeformanceChart" />
             <!-- graph y axis values -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/tvYaxis1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/robotoslab_regular"
                 android:text="25"
-                android:layout_marginTop="20dp"
-                android:textSize="14sp"
-                android:fontFamily="@font/robotoslab_regular"
                 android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/tvYaxis2"
-                app:layout_constraintEnd_toEndOf="@id/tvYaxis2"
-                app:layout_constraintTop_toBottomOf="@id/tvPCBeforeDeadline"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvYaxis2"
-                android:text="20"
-                android:layout_marginTop="20dp"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/tvYaxis3"
-                android:fontFamily="@font/robotoslab_regular"
-                android:textColor="@color/black"
-               app:layout_constraintEnd_toEndOf="@id/tvYaxis3"
-                app:layout_constraintTop_toBottomOf="@id/tvYaxis1"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvYaxis3"
-                android:text="15"
-                android:layout_marginTop="20dp"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/tvYaxis4"
-                android:fontFamily="@font/robotoslab_regular"
-                android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="@id/tvYaxis4"
-                app:layout_constraintTop_toBottomOf="@id/tvYaxis2"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvYaxis4"
-                android:text="10"
-                android:layout_marginTop="20dp"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/tvYaxis5"
-                android:fontFamily="@font/robotoslab_regular"
-                android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="@id/tvYaxis5"
-                app:layout_constraintTop_toBottomOf="@id/tvYaxis3"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvYaxis5"
-                android:text="5"
-                android:layout_marginTop="20dp"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/tvYaxis6"
-                android:fontFamily="@font/robotoslab_regular"
-                android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="@id/tvYaxis6"
-                app:layout_constraintTop_toBottomOf="@id/tvYaxis4"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvYaxis6"
-                android:text="0"
-                android:layout_marginTop="20dp"
-                android:textSize="14sp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@id/ivGraph"
+                app:layout_constraintEnd_toStartOf="@id/ivGraph"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@id/clSVDashboard"
+                app:layout_constraintTop_toTopOf="@id/ivGraph" />
+
+            <TextView
+                android:id="@+id/tvYaxis2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
                 android:fontFamily="@font/robotoslab_regular"
+                android:text="20"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toStartOf="@id/tvSun"
-                app:layout_constraintTop_toBottomOf="@id/tvYaxis5"/>
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/ivGraph"
+                app:layout_constraintTop_toTopOf="@id/tvYaxis1" />
+
+            <TextView
+                android:id="@+id/tvYaxis3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/robotoslab_regular"
+                android:text="15"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/ivGraph"
+                app:layout_constraintTop_toTopOf="@id/tvYaxis2" />
+
+            <TextView
+                android:id="@+id/tvYaxis4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/robotoslab_regular"
+                android:text="10"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/ivGraph"
+                app:layout_constraintTop_toTopOf="@id/tvYaxis3" />
+
+            <TextView
+                android:id="@+id/tvYaxis5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/robotoslab_regular"
+                android:text="5"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/ivGraph"
+                app:layout_constraintTop_toTopOf="@id/tvYaxis4" />
+
+            <TextView
+                android:id="@+id/tvYaxis6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/robotoslab_regular"
+                android:text="0"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@id/ivGraph"
+                app:layout_constraintTop_toTopOf="@id/tvYaxis5" />
+            <!-- Image view for creating graph -->
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="0dp"
                 android:id="@+id/ivGraph"
-                app:layout_constraintTop_toBottomOf="@id/tvPCBeforeDeadline"
-                android:layout_marginTop="20dp"
-                app:layout_constraintBottom_toTopOf="@id/tvSun"
-                app:layout_constraintStart_toEndOf="@id/tvYaxis1"
-                app:layout_constraintEnd_toEndOf="@id/tvSat"/>
+                android:layout_width="315dp"
+                android:layout_height="250dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="40dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPCMissed" />
             <!-- graph x axis values -->
-            <TextView
+            <!-- guideline for tvXaxis1 -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glTvXaxis1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvSun"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="70dp" />
+
+            <TextView
+                android:id="@+id/tvXaxis1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/robotoslab_regular"
                 android:text="Sun"
-                android:textSize="12sp"
                 android:textColor="@color/black"
-                android:fontFamily="@font/robotoslab_regular"
-                app:layout_constraintEnd_toStartOf="@id/tvMon"
-                app:layout_constraintStart_toEndOf="@id/tvYaxis6"
-                app:layout_constraintTop_toBottomOf="@id/tvYaxis6" />
-            <TextView
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/glTvXaxis1"
+                app:layout_constraintStart_toStartOf="@id/glTvXaxis1"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+            <!-- guideline for tvXaxis2 -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glTvXaxis2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvMon"
-                android:textColor="@color/black"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="115dp"
+                app:layout_goneMarginStart="45dp" />
+
+            <TextView
+                android:id="@+id/tvXaxis2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
-                android:textSize="12sp"
                 android:text="Mon"
-                app:layout_constraintStart_toEndOf="@id/tvSun"
-                app:layout_constraintTop_toTopOf="@id/tvSun"
-                app:layout_constraintEnd_toStartOf="@id/tvTue"
-                app:layout_constraintBottom_toBottomOf="@id/tvSun"/>
-            <TextView
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/glTvXaxis2"
+                app:layout_constraintStart_toStartOf="@id/glTvXaxis2"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+            <!-- guideline for tvXaxis3 -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glTvXaxis3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvTue"
-                android:textColor="@color/black"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="160dp"
+                app:layout_goneMarginStart="45dp" />
+
+            <TextView
+                android:id="@+id/tvXaxis3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
-                android:textSize="12sp"
                 android:text="Tue"
-                app:layout_constraintStart_toEndOf="@id/tvMon"
-                app:layout_constraintTop_toTopOf="@id/tvMon"
-                app:layout_constraintEnd_toStartOf="@id/tvWed"
-                app:layout_constraintBottom_toBottomOf="@id/tvMon"/>
-            <TextView
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/glTvXaxis3"
+                app:layout_constraintStart_toStartOf="@id/glTvXaxis3"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+            <!-- guideline for tvXaxis4 -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glTvXaxis4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvWed"
-                android:textColor="@color/black"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="205dp"
+                app:layout_goneMarginStart="45dp" />
+
+            <TextView
+                android:id="@+id/tvXaxis4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
-                android:textSize="12sp"
                 android:text="Wed"
-                app:layout_constraintStart_toEndOf="@id/tvTue"
-                app:layout_constraintTop_toTopOf="@id/tvTue"
-                app:layout_constraintEnd_toStartOf="@id/tvThu"
-                app:layout_constraintBottom_toBottomOf="@id/tvTue"/>
-            <TextView
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/glTvXaxis4"
+                app:layout_constraintStart_toStartOf="@+id/glTvXaxis4"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+            <!-- guideline for tvXaxis -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glTvXaxis5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvThu"
-                android:textColor="@color/black"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="250dp"
+                app:layout_goneMarginStart="45dp" />
+
+            <TextView
+                android:id="@+id/tvXaxis5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
-                android:textSize="12sp"
                 android:text="Thu"
-                app:layout_constraintStart_toEndOf="@id/tvWed"
-                app:layout_constraintTop_toTopOf="@id/tvWed"
-                app:layout_constraintEnd_toStartOf="@id/tvFri"
-                app:layout_constraintBottom_toBottomOf="@id/tvWed"/>
-            <TextView
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/glTvXaxis5"
+                app:layout_constraintStart_toStartOf="@id/glTvXaxis5"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+            <!-- guideline for tvXaxis6 -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glTvXaxis6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvFri"
-                android:textColor="@color/black"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="295dp"
+                app:layout_goneMarginStart="45dp" />
+
+            <TextView
+                android:id="@+id/tvXaxis6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
-                android:textSize="12sp"
                 android:text="Fri"
-                app:layout_constraintStart_toEndOf="@id/tvThu"
-                app:layout_constraintTop_toTopOf="@id/tvThu"
-                app:layout_constraintEnd_toStartOf="@id/tvSat"
-                app:layout_constraintBottom_toBottomOf="@id/tvThu"/>
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/glTvXaxis6"
+                app:layout_constraintStart_toStartOf="@id/glTvXaxis6"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+
             <TextView
+                android:id="@+id/tvXaxis7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvSat"
-                android:textColor="@color/black"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/robotoslab_regular"
-                android:textSize="12sp"
                 android:text="Sat"
-                app:layout_constraintStart_toEndOf="@id/tvFri"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvFri"
-                app:layout_constraintBottom_toBottomOf="@id/tvFri"/>
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@id/ivGraph"
+                app:layout_constraintStart_toEndOf="@id/ivGraph"
+                app:layout_constraintTop_toBottomOf="@id/ivGraph" />
+            <!-- guideline for month dates on x-axis -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glDate5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="77.5dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glDate10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="130dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glDate15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="182.5dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glDate20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="235dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/glDate25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="287.5dp" />
             <!-- tasks by categories -->
             <TextView
+                android:id="@+id/tvTxtTasksByCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tasks by categories"
-                android:id="@+id/tvTxtTasksByCategories"
-                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
-                app:layout_constraintTop_toBottomOf="@id/tvSun"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:fontFamily="@font/robotoslab_medium"
+                android:text="Tasks by categories"
+                android:textColor="@color/black"
                 android:textSize="18sp"
-                android:textColor="@color/black"/>
+                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
+                app:layout_constraintTop_toBottomOf="@id/tvXaxis1" />
             <!-- Before deadline -->
             <TextView
+                android:id="@+id/tvDVBeforeDeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvDVBeforeDeadline"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvTxtTasksByCategories"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/dates_unselected_background_stroke"
+                android:padding="10dp"
                 android:text="Before Deadline"
                 android:textSize="12sp"
-                android:background="@drawable/dates_unselected_background_stroke"
-                android:padding="10dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTxtTasksByCategories" />
             <!-- Missed -->
             <TextView
+                android:id="@+id/tvDVMissed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvDVMissed"
-                app:layout_constraintStart_toEndOf="@id/tvDVBeforeDeadline"
-                app:layout_constraintTop_toBottomOf="@id/tvTxtTasksByCategories"
-                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/dates_unselected_background_stroke"
+                android:padding="10dp"
                 android:text="Missed"
                 android:textSize="12sp"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/dates_unselected_background_stroke"
-                android:padding="10dp"/>
+                app:layout_constraintStart_toEndOf="@id/tvDVBeforeDeadline"
+                app:layout_constraintTop_toBottomOf="@id/tvTxtTasksByCategories" />
             <!-- donut view -->
             <app.futured.donut.DonutProgressView
                 android:id="@+id/donut_view"
                 android:layout_width="150dp"
-                android:layout_marginTop="20dp"
                 android:layout_height="150dp"
-                app:donut_bgLineColor="@color/light_grey"
-                app:donut_gapWidth="20"
                 android:layout_marginStart="20dp"
-                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
-                app:layout_constraintTop_toBottomOf="@id/tvDVBeforeDeadline"
+                android:layout_marginTop="25dp"
+                app:donut_bgLineColor="@color/light_grey"
                 app:donut_gapAngle="270"
-                app:donut_strokeWidth="16dp"/>
+                app:donut_gapWidth="20"
+                app:donut_strokeWidth="16dp"
+                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
+                app:layout_constraintTop_toBottomOf="@id/tvDVBeforeDeadline" />
             <!-- legends for donut view -->
             <View
+                android:id="@+id/legend1Color"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
+                android:layout_marginEnd="10dp"
                 android:background="@color/red"
-                android:id="@+id/legend1Color"
-                app:layout_constraintTop_toTopOf="@id/tvLegend1"
                 app:layout_constraintBottom_toBottomOf="@id/tvLegend1"
                 app:layout_constraintEnd_toStartOf="@id/tvLegend1"
-                android:layout_marginEnd="10dp"/>
+                app:layout_constraintTop_toTopOf="@id/tvLegend1" />
+
             <TextView
+                android:id="@+id/tvLegend1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvLegend1"
-                android:text="Assignment"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="30dp"
                 android:fontFamily="@font/robotoslab_regular"
+                android:text="Assignment"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="@id/clSVDashboard"
-                app:layout_constraintTop_toBottomOf="@id/tvDVMissed"
-                android:layout_marginEnd="30dp"
-                android:layout_marginTop="20dp"/>
+                app:layout_constraintTop_toBottomOf="@id/tvDVMissed" />
+
             <View
+                android:id="@+id/legend2Color"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:background="@color/yellow"
-                android:id="@+id/legend2Color"
-                app:layout_constraintTop_toBottomOf="@id/legend1Color"
                 android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/yellow"
                 app:layout_constraintStart_toStartOf="@id/legend1Color"
-                android:layout_marginEnd="10dp"/>
+                app:layout_constraintTop_toBottomOf="@id/legend1Color" />
+
             <TextView
+                android:id="@+id/tvLegend2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvLegend2"
-                android:text="Classes"
+                android:layout_marginStart="10dp"
                 android:fontFamily="@font/robotoslab_regular"
+                android:text="Classes"
                 android:textSize="14sp"
-                app:layout_constraintTop_toTopOf="@id/legend2Color"
                 app:layout_constraintBottom_toBottomOf="@id/legend2Color"
                 app:layout_constraintStart_toEndOf="@id/legend2Color"
-                android:layout_marginStart="10dp"/>
+                app:layout_constraintTop_toTopOf="@id/legend2Color" />
+
             <View
+                android:id="@+id/legend3Color"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/orange"
-                android:id="@+id/legend3Color"
-                app:layout_constraintTop_toBottomOf="@id/legend2Color"
                 app:layout_constraintStart_toStartOf="@id/legend2Color"
-                android:layout_marginTop="10dp"/>
+                app:layout_constraintTop_toBottomOf="@id/legend2Color" />
+
             <TextView
+                android:id="@+id/tvLegend3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvLegend3"
-                android:text="Hangout"
+                android:layout_marginStart="10dp"
                 android:fontFamily="@font/robotoslab_regular"
+                android:text="Hangout"
                 android:textSize="14sp"
-                app:layout_constraintTop_toTopOf="@id/legend3Color"
                 app:layout_constraintBottom_toBottomOf="@id/legend3Color"
                 app:layout_constraintStart_toEndOf="@id/legend3Color"
-                android:layout_marginStart="10dp"/>
+                app:layout_constraintTop_toTopOf="@id/legend3Color" />
+
             <View
+                android:id="@+id/legend4Color"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/blue"
-                android:id="@+id/legend4Color"
-                app:layout_constraintTop_toBottomOf="@id/legend3Color"
                 app:layout_constraintStart_toStartOf="@id/legend3Color"
-                android:layout_marginTop="10dp"/>
+                app:layout_constraintTop_toBottomOf="@id/legend3Color" />
+
             <TextView
+                android:id="@+id/tvLegend4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvLegend4"
-                android:text="Television"
+                android:layout_marginStart="10dp"
                 android:fontFamily="@font/robotoslab_regular"
+                android:text="Television"
                 android:textSize="14sp"
-                app:layout_constraintTop_toTopOf="@id/legend4Color"
                 app:layout_constraintBottom_toBottomOf="@id/legend4Color"
                 app:layout_constraintStart_toEndOf="@id/legend4Color"
-                android:layout_marginStart="10dp"/>
+                app:layout_constraintTop_toTopOf="@id/legend4Color" />
+
             <View
+                android:id="@+id/legend5Color"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/purple_200"
-                android:id="@+id/legend5Color"
-                app:layout_constraintTop_toBottomOf="@id/legend4Color"
                 app:layout_constraintStart_toStartOf="@id/legend4Color"
-                android:layout_marginTop="10dp"/>
+                app:layout_constraintTop_toBottomOf="@id/legend4Color" />
+
             <TextView
+                android:id="@+id/tvLegend5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvLegend5"
-                android:text="Television"
+                android:layout_marginStart="10dp"
                 android:fontFamily="@font/robotoslab_regular"
+                android:text="Television"
                 android:textSize="14sp"
-                app:layout_constraintTop_toTopOf="@id/legend5Color"
                 app:layout_constraintBottom_toBottomOf="@id/legend5Color"
                 app:layout_constraintStart_toEndOf="@id/legend5Color"
-                android:layout_marginStart="10dp"/>
+                app:layout_constraintTop_toTopOf="@id/legend5Color" />
             <!-- Text Recent Missed Tasks -->
             <TextView
+                android:id="@+id/tvTxtRecentMissedTasks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Recent Missed Tasks"
-                android:id="@+id/tvTxtRecentMissedTasks"
-                android:textSize="18sp"
+                android:layout_marginTop="30dp"
                 android:fontFamily="@font/robotoslab_medium"
+                android:text="Recent Missed Tasks"
                 android:textColor="@color/black"
+                android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="@id/clSVDashboard"
-                app:layout_constraintTop_toBottomOf="@id/donut_view"
-                android:layout_marginTop="20dp"/>
+                app:layout_constraintTop_toBottomOf="@id/donut_view" />
             <!-- recyclerview for missed tasks -->
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/missedTasksRV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/missedTasksRV"
-                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
-                app:layout_constraintEnd_toEndOf="@id/clSVDashboard"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/tvTxtRecentMissedTasks"/>
+                app:layout_constraintEnd_toEndOf="@id/clSVDashboard"
+                app:layout_constraintStart_toStartOf="@id/clSVDashboard"
+                app:layout_constraintTop_toBottomOf="@id/tvTxtRecentMissedTasks" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

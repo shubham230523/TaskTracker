@@ -1,6 +1,7 @@
 package com.shubham.tasktrackerapp.Adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,10 +41,12 @@ class MissedTasksAdapter(
         var tags = "${task.taskTypes[0]}"
         if(task.taskTypes.size>1){
             tags+=", ${task.taskTypes[1]}"
+            Log.d(TAG , "tags - $tags size - ${task.taskTypes.size}")
             if(task.taskTypes.size>2){
                 tags+=" +${task.taskTypes.size-2} more"
             }
         }
+        Log.d(TAG , "tags - $tags")
         holder.tags.text = tags
         holder.reason.text = "Missed"
     }
