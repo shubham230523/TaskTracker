@@ -322,8 +322,18 @@
                 android:layout_height="250dp"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="40dp"
+                android:visibility="invisible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvPCMissed" />
+                app:layout_constraintTop_toBottomOf="@id/tvPCMissed"/>
+            <View
+                android:id="@+id/ivGraphRevealView"
+                android:layout_width="315dp"
+                android:layout_height="250dp"
+                android:background="@color/white"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="40dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPCMissed"/>
             <!-- graph x axis values -->
             <!-- guideline for tvXaxis1 -->
             <androidx.constraintlayout.widget.Guideline

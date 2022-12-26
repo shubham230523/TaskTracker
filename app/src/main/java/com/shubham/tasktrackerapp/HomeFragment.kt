@@ -1,11 +1,9 @@
-package com.shubham.tasktrackerapp.Fragments
+package com.shubham.tasktrackerapp
 
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,14 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.shubham.tasktrackerapp.Adapter.CalenderAdapter
-import com.shubham.tasktrackerapp.Adapter.ViewPagerTasksAdapter
-import com.shubham.tasktrackerapp.Models.CalenderDateModel
-import com.shubham.tasktrackerapp.R
-import com.shubham.tasktrackerapp.db.Task
-import com.shubham.tasktrackerapp.db.TaskDao
-import com.shubham.tasktrackerapp.db.TaskDatabase
-import kotlinx.coroutines.*
+import com.shubham.tasktrackerapp.data.local.Task
+import com.shubham.tasktrackerapp.selecteddate.CalenderAdapter
+import com.shubham.tasktrackerapp.selecteddate.CalenderDateModel
 import java.util.*
 
 class HomeFragment() : Fragment(R.layout.fragment_home) {
@@ -40,16 +33,16 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
     private lateinit var rvDates: RecyclerView
     private lateinit var tvMonth: TextView
     private var mContext = activity?.applicationContext
-    private var job: Job? = null
     var tabsList = arrayOf("Upcoming", "All Upcoming")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         rvDates = view.findViewById(R.id.rv_dates)
         tvMonth = view.findViewById(R.id.tv_month)
         val viewPager = view.findViewById<ViewPager2>(R.id.tasksViewPager)
         val tabLayout = view.findViewById<TabLayout>(R.id.tasksTabLayout)
-        val pagerAdapter = ViewPagerTasksAdapter(mContext!! , parentFragmentManager, lifecycle)
+        val pagerAdapter = ViewPagerTasksAdapter(mContext!!, parentFragmentManager, lifecycle)
 
         viewPager.adapter = pagerAdapter
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -77,7 +70,10 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
         tvMonth.text = "$date ${getMonth(month)} $year"
     }
 
-    // Function for setting up the calender and getting the current date and day
+    /**
+     * Function for setting up the calender i.e to get no of days in the month and
+     * corresponding day and also for getting the current date and day
+     */
     private fun setUpCalender(): MutableList<CalenderDateModel> {
         val dates = ArrayList<Date>()
         val month = cal.clone() as Calendar
@@ -104,18 +100,18 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
         lastSelectedPosition = position
     }
 
-    // Function to pick up a date from DatePickerDialog
+    /**
+     * Function to pick up a date from DatePickerDialog
+     */
     private fun pickDate() {
         if (mContext != null) {
-            val datePickerDialog = DatePickerDialog(
+            DatePickerDialog(
                 requireContext(),
-                object : DatePickerDialog.OnDateSetListener {
-                    override fun onDateSet(p0: DatePicker?, year: Int, month: Int, day: Int) {
-                        this@HomeFragment.month = month
-                        this@HomeFragment.year = year
-                        this@HomeFragment.date = day
-                        updateDate()
-                    }
+                { p0, year, month, day ->
+                    this@HomeFragment.month = month
+                    this@HomeFragment.year = year
+                    this@HomeFragment.date = day
+                    updateDate()
                 },
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -124,7 +120,6 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
         }
     }
 
-    // Function to update date
     private fun updateDate() {
         tvMonth.text = "$date ${getMonth(month)} $year"
         rvDates.scrollToPosition(date - 1)
@@ -132,7 +127,11 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
         lastSelectedPosition = date - 1
     }
 
-    // Function to get month from number
+    /**
+     * Function to get month from number
+     *
+     * @param month Number of month in a year
+     */
     private fun getMonth(month: Int): String {
         when (month) {
             0 -> return "January"
@@ -151,7 +150,6 @@ class HomeFragment() : Fragment(R.layout.fragment_home) {
         return ""
     }
 
-    // setting up the mContext when the fragment is attached to the container
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context

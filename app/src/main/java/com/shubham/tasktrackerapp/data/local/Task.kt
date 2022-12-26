@@ -1,4 +1,4 @@
-package com.shubham.tasktrackerapp.db
+package com.shubham.tasktrackerapp.data.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "tb_task")
 data class Task(
     @ColumnInfo(name = "title")
-    val title : String,
+    val title: String,
     @ColumnInfo(name = "added_date")
-    val added_date : String,
+    val added_date: String,
     @ColumnInfo(name = "due_date")
-    val due_date : String,
+    val due_date: String,
     @ColumnInfo(name = "start_time")
     val start_time: String,
     @ColumnInfo(name = "end_time")
@@ -19,9 +19,9 @@ data class Task(
     @ColumnInfo(name = "taskTypes")
     val taskTypes: MutableList<String> = mutableListOf(),
     @ColumnInfo(name = "attachments")
-    val attachments: HashMap<String , String> = hashMapOf(),
+    val attachments: HashMap<String, String> = hashMapOf(),
     @ColumnInfo(name = "bgColor")
-    val bgColor : Int,
+    val bgColor: Int,
     @PrimaryKey(autoGenerate = true)
-    var id : Int = 0
+    var id: Int = 0
 )

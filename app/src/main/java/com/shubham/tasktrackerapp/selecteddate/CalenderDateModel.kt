@@ -1,6 +1,4 @@
-package com.shubham.tasktrackerapp.Models
-
-import java.util.*
+package com.shubham.tasktrackerapp.selecteddate
 
 data class CalenderDateModel(
     val day: String,

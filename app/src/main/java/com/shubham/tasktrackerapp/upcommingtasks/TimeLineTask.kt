@@ -1,6 +1,9 @@
-package com.shubham.tasktrackerapp.Models
+package com.shubham.tasktrackerapp.upcommingtasks
 
-data class TimeLineTaskModel(
+/**
+ * Data class of tasks shown in home page
+ */
+data class TimeLineTask(
     val title: String,
     val added_date : String,
     val due_date: String,
