@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AllUpcomingTasksViewModel(): ViewModel() {
+class AllUpcomingTasksViewModel @Inject constructor(): ViewModel() {
 
     /**
      * Function to get short form of the month based on month number counting from 1

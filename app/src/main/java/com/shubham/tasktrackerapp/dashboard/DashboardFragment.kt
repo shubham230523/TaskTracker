@@ -374,24 +374,24 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         //animator for sliding the reveal view to 315 px to the right so that graph view is visible in small steps
         val animator = ObjectAnimator.ofFloat(revealView, "translationX", 315.px.toFloat())
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                super.onAnimationEnd(animation)
-                // making the reveal view invisible and bringing back to its original position
-                revealView.visibility = View.INVISIBLE
-                ObjectAnimator.ofFloat(revealView, "translationX", 0.px.toFloat()).setDuration(0)
-                    .start()
-            }
-
-            override fun onAnimationStart(animation: Animator?) {
-                super.onAnimationStart(animation)
-                // making the graphview visible only at the start of the animation so that it graph doesn't appear before
-                // sliding the reveal view
-                revealView.visibility = View.VISIBLE
-                graphView.visibility = View.VISIBLE
-            }
-        })
-        animator.setDuration(2000).start()
+//        animator.addListener(object : AnimatorListenerAdapter() {
+//            override fun onAnimationEnd(animation: Animator?) {
+//                super.onAnimationEnd(animation)
+//                // making the reveal view invisible and bringing back to its original position
+//                revealView.visibility = View.INVISIBLE
+//                ObjectAnimator.ofFloat(revealView, "translationX", 0.px.toFloat()).setDuration(0)
+//                    .start()
+//            }
+//
+//            override fun onAnimationStart(animation: Animator?) {
+//                super.onAnimationStart(animation)
+//                // making the graphview visible only at the start of the animation so that it graph doesn't appear before
+//                // sliding the reveal view
+//                revealView.visibility = View.VISIBLE
+//                graphView.visibility = View.VISIBLE
+//            }
+//        })
+//        animator.setDuration(2000).start()
     }
 
     /**

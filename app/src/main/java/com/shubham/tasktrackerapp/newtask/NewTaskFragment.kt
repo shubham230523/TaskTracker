@@ -12,22 +12,56 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.Gravity
+import android.view.RoundedCorner
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
 import com.shubham.tasktrackerapp.MainActivity
 import com.shubham.tasktrackerapp.R
 import com.shubham.tasktrackerapp.RoomViewModel
 import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.data.local.TaskDaoImpl
 import com.shubham.tasktrackerapp.data.local.TaskDatabase
+import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
+import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
 import com.shubham.tasktrackerapp.util.newTaskColors
 import com.shubham.tasktrackerapp.util.taskCategories
 import dagger.hilt.android.AndroidEntryPoint
@@ -618,5 +652,385 @@ class NewTaskFragment @Inject constructor(
             taskCategories.add(name)
             cbSelectedTypesList.remove(name)
         }
+    }
+}
+
+@Composable
+fun NewTask(visible: MutableState<Boolean>) {
+    var visibleState = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter = slideInVertically(
+                initialOffsetY = {1500},
+                animationSpec = tween(
+                    durationMillis = 2000,
+                    easing = LinearEasing
+                )
+            ),
+        exit = slideOutVertically(
+            targetOffsetY = {1500},
+            animationSpec = tween(
+                durationMillis = 2000,
+                easing = LinearEasing
+            )
+        )
+    ) {
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(top = 20.dp),
+        color = Transparent,
+        elevation = 10.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
+                )
+                .padding(15.dp),
+        ) {
+            var taskTitle by rememberSaveable { mutableStateOf("") }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Create a new task",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Icon(
+                    imageVector  = Icons.Filled.Close,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            OutlinedTextField(
+                value = taskTitle,
+                onValueChange = {
+                    taskTitle = it
+                },
+                label = { Text(
+                    "Title",
+                    style = MaterialTheme.typography.bodyMedium,
+                ) },
+                placeholder = {
+                    Text(
+                        text = "Task title ",
+                        modifier = Modifier.alpha(0.4f),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+                    .height(60.dp),
+
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+                    cursorColor = MaterialTheme.colorScheme.onSurface,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                    placeholderColor = MaterialTheme.colorScheme.onSurface,
+                )
+            )
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 18.dp)
+            ){
+                Text(
+                    text = "Due date",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.width(80.dp)
+                )
+                Image(
+                    painterResource(id = R.drawable.ic_calendar),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 9.dp)
+                        .size(18.dp)
+                        .alpha(0.4f)
+                )
+                Text(
+                    text = "dd-mm-yy",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Row (modifier = Modifier.padding(top = 10.dp)){
+                Text(
+                    text = "Start",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.width(80.dp)
+                )
+                Image(
+                    painterResource(id = R.drawable.ic_clock),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 7.dp)
+                        .size(20.dp)
+                        .alpha(0.4f)
+                )
+                Text(
+                    text = "00:00",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Row (modifier = Modifier.padding(top = 10.dp)){
+                Text(
+                    text = "End",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.width(80.dp)
+                )
+                Image(
+                    painterResource(id = R.drawable.ic_clock),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 7.dp)
+                        .size(20.dp)
+                        .alpha(0.4f)
+                )
+                Text(
+                    text = "00:00",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Row (modifier = Modifier.padding(top = 18.dp)){
+                Text(
+                    text = "Task Type",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Image(
+                    painterResource(id = R.drawable.ic_add_task),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp)
+                        .size(24.dp)
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .border(
+                        1.dp,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(10.dp),
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.background,
+                    )
+                    .padding(15.dp),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    Text(
+                        text = "Assignment",
+                        style = TaskTrackerTopography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    )
+                    Text(
+                        text = "Project",
+                        style = TaskTrackerTopography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.secondary,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    )
+                    Text(
+                        text = "Assignment",
+                        style = TaskTrackerTopography.labelMedium,
+                        color = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.tertiary,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    Text(
+                        text = "Hangout",
+                        style = TaskTrackerTopography.labelMedium,
+                        color = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.tertiary,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    )
+                }
+            }
+            Row (modifier = Modifier.padding(top = 18.dp)){
+                Text(
+                    text = "No Attachments",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Image(
+                    painterResource(id = R.drawable.ic_add_task),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp)
+                        .size(24.dp)
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .fillMaxWidth()
+                    .height(115.dp)
+                    .border(
+                        1.dp,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(10.dp),
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    .padding(15.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                for(i in 0 until 2){
+                    ConstraintLayout(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(10.dp),
+                            )
+                            .background(
+                                color = MaterialTheme.colorScheme.background,
+                            )
+                    ) {
+                        val (fileType , fileName , close) = createRefs()
+                        Image(
+                            painterResource(id = R.drawable.pdf),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .constrainAs(fileType) {
+                                    top.linkTo(parent.top, 10.dp)
+                                    bottom.linkTo(parent.bottom, 10.dp)
+                                    start.linkTo(parent.start, 10.dp)
+                                }
+                                .width(16.dp)
+                        )
+                        Text(
+                            text = "BDA_Assignmentgowjsnfioweal;sfjioweisfjocknsdiolfjzxciodsjfkcsdjfjcops",
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines  = 1,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .constrainAs(fileName){
+                                    top.linkTo(fileType.top)
+                                    bottom.linkTo(fileType.bottom)
+                                    start.linkTo(fileType.end , 5.dp)
+                                    end.linkTo(close.start , 5.dp)
+                                    width = Dimension.fillToConstraints
+                                }
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = null,
+                            modifier = Modifier.constrainAs(close){
+                                top.linkTo(fileName.top)
+                                bottom.linkTo(fileName.bottom)
+                                end.linkTo(parent.end , 10.dp)
+                                width = Dimension.value(16.dp)
+                            }
+                        )
+                    }
+                    Spacer(
+                        modifier = if (i == 1) {
+                            Modifier.height(10.dp)
+                        }else {
+                            Modifier.height(10.dp)
+                        }
+                    )
+                }
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                ),
+                modifier = Modifier
+                    .padding(top = 20.dp, start = 10.dp, end = 10.dp)
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(10.dp)
+                    )
+            ) {
+                Text(
+                    text = "Create task",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun NewTaskPreview(){
+    val visible = remember {
+        mutableStateOf(true)
+    }
+    NewTask(visible)
+}
+
+@Preview
+@Composable
+fun NewTaskDarkPreview() {
+    val visible = remember {
+        mutableStateOf(true)
+    }
+    TaskTrackerTheme(isDarkTheme = true) {
+        NewTask(visible)
     }
 }

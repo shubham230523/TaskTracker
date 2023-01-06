@@ -18,4 +18,14 @@
     <color name="brown">#6D4C41</color>
     <color name="orange">#FF6633</color>
     <color name="yellow">#F4D03F</color>
+
+    <color name="Blue600">#0077C2</color>
+    <color name="Teal400">#26A69A</color>
+    <color name="Teal600">#00766C</color>
+    <color name="Teal200">#64D8CB</color>
+    <color name="Blue200">#80d6ff</color>
+
+    <!-- Status bar -->
+    <color name="black30">#4D000000</color>
+
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="5dp"
@@ -30,7 +31,7 @@
                 app:layout_constraintStart_toStartOf="@id/cvCL"
                 app:layout_constraintTop_toTopOf="@id/cvCL"
                 android:textSize="14sp"
-                android:fontFamily="@font/robotoslab_medium"
+                android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/white"/>
             <!-- task duration -->
             <TextView
@@ -43,7 +44,7 @@
                 app:layout_constraintStart_toStartOf="@id/cvCL"
                 app:layout_constraintTop_toBottomOf="@id/tvDate"
                 android:layout_marginTop="10dp"
-                android:fontFamily="@font/robotoslab_medium"/>
+                android:fontFamily="@font/roboto_medium"/>
 
             <!-- Guideline for title -->
             <androidx.constraintlayout.widget.Guideline
@@ -62,7 +63,7 @@
                 android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toStartOf="@id/optMenu"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
-                android:fontFamily="@font/robotoslab_medium"
+                android:fontFamily="@font/roboto_medium"
                 android:textSize="16sp"
                 android:textColor="@color/white"
                 app:layout_constraintStart_toEndOf="@id/guideline_title"
@@ -85,7 +86,7 @@
                 android:textColor="@color/black"
                 android:layout_marginTop="5dp"
                 android:id="@+id/txtTags"
-                android:fontFamily="@font/robotoslab_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/guideline_title"
                 app:layout_constraintTop_toBottomOf="@id/taskTitle"/>
@@ -94,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvTaskTags"
-                android:fontFamily="@font/robotoslab_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="Assignment , Classes , Remainder , Other"
                 android:maxLines="1"
                 android:textSize="12sp"
@@ -107,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/taskAttachments"
-                android:fontFamily="@font/robotoslab_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:textSize="12sp"
                 android:textColor="@color/black"
                 android:text="1 Attachment"
