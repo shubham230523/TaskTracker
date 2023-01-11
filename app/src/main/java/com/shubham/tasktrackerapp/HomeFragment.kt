@@ -32,6 +32,7 @@ import com.shubham.tasktrackerapp.allupcommingtasks.AllUpcomingTasksList
 import com.shubham.tasktrackerapp.newtask.NewTask
 import com.shubham.tasktrackerapp.selecteddate.CalenderDateModel
 import com.shubham.tasktrackerapp.selecteddate.CalenderViewModel
+import com.shubham.tasktrackerapp.upcommingtasks.UpcomingTasks
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -219,7 +220,7 @@ fun HorizontalPagerScreen() {
             modifier = Modifier.weight(1f)
         ) { currentPage ->
             if (currentPage == 0) {
-
+                UpcomingTasks()
             } else {
                 tasks?.let { AllUpcomingTasksList(taskList = it) }
             }

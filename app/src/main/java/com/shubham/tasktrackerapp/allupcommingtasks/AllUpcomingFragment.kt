@@ -92,7 +92,7 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
         color = Color.Transparent,
         tonalElevation = 2.dp,
         modifier = Modifier
-            .padding(top = 5.dp)
+            .padding(top = 8.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
 
@@ -101,7 +101,7 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
                 .padding(15.dp)
         ) {
             Row(
@@ -110,7 +110,7 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
             ) {
                 Text(
                     text = task.title,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = TaskTrackerTopography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -132,14 +132,14 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
                 Text(
                     text = task.due_date,
                     style = TaskTrackerTopography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1
                 )
                 Text(
                     text = "${task.start_time}-${task.end_time}",
                     style = TaskTrackerTopography.labelMedium,
                     modifier = Modifier.padding(start = 20.dp),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1
                 )
             }
@@ -154,35 +154,21 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
                     Text(
                         text = task.taskTypes[i],
                         style = TaskTrackerTopography.labelMedium,
-                        color = if (i == 0) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.onSecondary
-                        },
-                        modifier = if (i == 0) {
-                            Modifier
-                                .padding(end = 8.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.primary,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(8.dp)
-                        } else {
-                            Modifier
-                                .padding(end = 8.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.secondary,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(8.dp)
-                        }
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.secondary,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
                     )
                 }
                 if (task.taskTypes.size > 2) {
                     Text(
                         text = "+${task.taskTypes.size - 2} more",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
             }
@@ -196,7 +182,7 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
                     text = "${task.attachments.size} " + if (task.attachments.size > 1) "Attachments" else "Attachment",
                     style = TaskTrackerTopography.labelMedium,
                     modifier = Modifier,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
         }

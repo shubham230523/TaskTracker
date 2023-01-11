@@ -32,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -44,6 +46,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.shubham.tasktrackerapp.dashboard.DashBoard
 import com.shubham.tasktrackerapp.dashboard.DashboardFragment
 import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.data.local.TaskDao
@@ -83,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                         mutableStateOf(false)
                     }
                     Scaffold(
-                        drawerContent = { Text(text = "drawerContent") },
                         content = {padding ->
                             Column(
                                 modifier = Modifier.padding(padding)
@@ -92,45 +94,11 @@ class MainActivity : AppCompatActivity() {
                                     navController = navController,
                                     startDestination = Screen.Home.route,
                                     enterTransition = {
-                                        if(initialState.destination.hierarchy.any{
-                                                Log.d("initialState" , "${it.route}")
-                                                it.route == Screen.NewTask.route
-                                        }){
-                                            slideInVertically(
-                                                initialOffsetY = {1000},
-                                                animationSpec = tween(
-                                                    durationMillis = 2000,
-                                                    easing = LinearEasing
-                                                )
-                                            )
-                                        }
-                                        else {
-                                            slideInHorizontally(
-                                                initialOffsetX = {1000},
-                                                animationSpec = tween(
-                                                    durationMillis = 2000,
-                                                    easing = LinearEasing
-                                                )
-                                            )
-                                        }
+                                        slideInHorizontally(initialOffsetX = {500}) + fadeIn()
                                     },
                                     exitTransition = {
-                                        if(targetState.destination.hierarchy.any{
-                                                Log.d("targetState" , "${it.route}")
-                                                it.route == Screen.NewTask.route
-                                        }){
-                                            ExitTransition.None
-                                        }
-                                        else {
-                                            slideOutHorizontally(
-                                                targetOffsetX = {1000},
-                                                animationSpec = tween(
-                                                    durationMillis = 2000,
-                                                    easing = LinearEasing
-                                                )
-                                            )
-                                        }
-                                    },
+                                        slideOutHorizontally(targetOffsetX = {-500}) + fadeOut()
+                                    }
                                 ){
                                     composable(
                                         route = Screen.Home.route,
@@ -139,25 +107,23 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     composable(
                                         route = Screen.NewTask.route,
-//                                        enterTransition ={
-//                                            slideInVertically(
-//                                                initialOffsetY = {3000},
-//                                                animationSpec = tween(
-//                                                    delayMillis = 2000,
-//                                                    easing = LinearEasing
-//                                                )
-//                                            )
-//                                        },
-//                                        exitTransition = {
-//                                            slideOutVertically(
-//                                                targetOffsetY = {3000}
-//                                            )
-//                                        }
+                                        enterTransition = {
+                                            slideInVertically(
+                                                initialOffsetY = {1000},
+                                                animationSpec = tween(durationMillis = 1000)
+                                            ) + fadeIn()
+                                        },
+                                        exitTransition = {
+                                            slideOutVertically(
+                                                targetOffsetY = {1000},
+                                                animationSpec = tween(durationMillis = 1000)
+                                            ) + fadeOut()
+                                        }
                                     ){
-                                        NewTask(visible = state)
+                                        NewTask()
                                     }
                                     composable(route = Screen.DashBoard.route){
-
+                                        DashBoard()
                                     }
                                 }
                             }
@@ -165,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                         },
                         bottomBar = {
                             BottomNavigation(
-                                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                                backgroundColor = MaterialTheme.colorScheme.surface,
                                 modifier = Modifier
                                     .height(40.dp)
                                     .fillMaxWidth()
@@ -177,23 +143,25 @@ class MainActivity : AppCompatActivity() {
                                         icon = {
                                             Icon(
                                                 painter = painterResource(id = item.icon) ,
-                                                contentDescription = null
+                                                contentDescription = null,
+                                                modifier = Modifier.size(24.dp)
                                             )
                                         },
                                         selectedContentColor = MaterialTheme.colorScheme.primary,
-                                        unselectedContentColor = MaterialTheme.colorScheme.inversePrimary,
+                                        unselectedContentColor = MaterialTheme.colorScheme.primaryContainer,
                                         selected = currentRoute == item.route,
                                         onClick = {
                                             navController.navigate(
                                                 item.route,
                                             ){
-                                                navController.graph.startDestinationRoute?.let{
-                                                    popUpTo(item.route){
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
                                                 }
+                                                // Avoid multiple copies of the same destination when
+                                                // reselecting the same item
+                                                launchSingleTop = true
+                                                // Restore state when reselecting a previously selected item
+                                                restoreState = true
                                             }
                                         },
                                     )
@@ -288,18 +256,19 @@ fun NavGraphBuilder.composable(
 }
 
 @Composable
-fun SlideUpAnimation(comp: @Composable (AnimatedVisibilityScope.() -> Unit)) {
+fun RevealViewAnimation(modifier : Modifier , comp: @Composable (AnimatedVisibilityScope.() -> Unit)) {
     val state = remember {
         MutableTransitionState(false).apply {
             targetState = true
         }
     }
+    val density = LocalDensity.current
     AnimatedVisibility(
         visibleState = state,
-        enter = slideInVertically(
-            initialOffsetY = {300},
+        enter = slideInHorizontally(
+            initialOffsetX = {with(density){-320.dp.roundToPx()} },
             animationSpec =  tween(
-                durationMillis = 3000,
+                durationMillis = 1000,
                 easing = LinearEasing
             )
         ),
@@ -309,6 +278,7 @@ fun SlideUpAnimation(comp: @Composable (AnimatedVisibilityScope.() -> Unit)) {
                 easing = LinearEasing
             )
         ),
-        content = comp
+        content = comp,
+        modifier = modifier
     )
 }

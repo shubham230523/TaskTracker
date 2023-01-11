@@ -93,7 +93,7 @@ val TaskTrackerTopography = Typography(
     bodySmall = TextStyle(
         fontFamily = RobotoFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
+        fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),

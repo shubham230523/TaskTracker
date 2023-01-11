@@ -1,6 +1,9 @@
 package com.shubham.tasktrackerapp.util
 
 import android.graphics.Color
+import androidx.compose.material3.ColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.luminance
 
 val newTaskColors = arrayOf(
     Color.parseColor("#FFEBEE"), // light red
@@ -15,3 +18,6 @@ var taskCategories = mutableListOf(
     "Classes", "Hobby", "Meeting", "Playing", "Hangout", "Food", "Television",
     "Exercise", "Remainder", "Other"
 )
+
+@Composable
+fun ColorScheme.isLight() = this.background.luminance() > 0.5

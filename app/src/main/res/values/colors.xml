@@ -28,4 +28,29 @@
     <!-- Status bar -->
     <color name="black30">#4D000000</color>
 
+    <!-- light theme colors -->
+    <color name="primary">#FF00766C</color>
+    <color name="onPrimary">#FFFFFFFF</color>
+    <color name="inversePrimary">#FF64D8CB</color>
+    <color name="primaryContainer">#FFb2dfdb</color>
+    <color name="onPrimaryContainer">#FF00766C</color>
+    <color name="secondary">#FF0077C2</color>
+    <color name="onSecondary">#FFFFFFFF</color>
+    <color name="secondaryContainer">#FFBBDBFB</color>
+    <color name="onSecondaryContainer">#FF0077C2</color>
+    <color name="tertiary">#FF790E8B</color>
+    <color name="onTertiary">#FFFFFFFF</color>
+    <color name="tertiaryContainer">#FFE1BEE7</color>
+    <color name="onTertiaryContainer">#FF790E8B</color>
+    <color name="error">#FFB00020</color>
+    <color name="onError">#FFFFFFFF</color>
+    <color name="errorContainer">#FFFFCDD2</color>
+    <color name="onErrorContainer">#FFB00020</color>
+    <color name="background">#FFFFFFFF</color>
+    <color name="onBackground">#FF000000</color>
+    <color name="surface">#FFF8F9F9</color>
+    <color name="onSurface">#FF000000</color>
+    <color name="surfaceVariant">#FFF6F5FD</color>
+    <color name="onSurfaceVariant">#FF000000</color>
+
 </resources>

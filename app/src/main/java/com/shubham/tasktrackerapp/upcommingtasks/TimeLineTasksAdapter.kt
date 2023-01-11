@@ -294,10 +294,10 @@ class TimeLineTasksAdapter(
     }
 
     /**
-     * Function to show tags in recycer view item
+     * Function to show tags in recycler view item
      * More specifically it add tags in linear layout created inside in the recycer view item
      *
-     * @param viewHolder Recycler view item viewholder
+     * @param viewHolder Recycler view item view holder
      * @param task task to be shown
      */
     @SuppressLint("InflateParams")
