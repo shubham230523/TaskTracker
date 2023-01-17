@@ -24,4 +24,36 @@ class TaskDaoImpl(val taskDao: TaskDao) : TaskDao {
     override suspend fun deleteTable() {
         return taskDao.deleteTable()
     }
+
+    override suspend fun insertTaskIntoMissedTable(task: MissedTask) {
+        return taskDao.insertTaskIntoMissedTable(task)
+    }
+
+    override fun getLastWeekMissedTasks(date: String): LiveData<List<MissedTask>> {
+        return taskDao.getLastWeekMissedTasks(date)
+    }
+
+    override fun getLastMonthMissedTasks(date: String): LiveData<List<MissedTask>> {
+        return taskDao.getLastMonthMissedTasks(date)
+    }
+
+    override suspend fun deleteMissedTasksOlderThanOneMonth(currentDate: String) {
+        return taskDao.deleteMissedTasksOlderThanOneMonth(currentDate)
+    }
+
+    override  fun getLastWeekDoneTasks(date: String): LiveData<List<TaskDone>> {
+        return taskDao.getLastWeekDoneTasks(date)
+    }
+
+    override  fun getLastMonthDoneTasks(date: String): LiveData<List<TaskDone>> {
+        return taskDao.getLastMonthDoneTasks(date)
+    }
+
+    override fun deleteDoneTasksOlderThanOneMonth(currentDate: String) {
+        return taskDao.deleteDoneTasksOlderThanOneMonth(currentDate)
+    }
+
+    override suspend fun insertTaskIntoDoneTable(task: TaskDone) {
+        return taskDao.insertTaskIntoDoneTable(task)
+    }
 }

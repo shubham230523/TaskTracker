@@ -100,15 +100,14 @@ class TimeLineTasksAdapter(
             holder.startTime.visibility = View.GONE
             holder.endTime.visibility = View.GONE
         }
-        holder.addedDate.text = task.added_date
+        holder.addedDate.text = task.added_date.toString()
         holder.title.text = task.title
-        holder.startTime.text = task.start_time
-        holder.endTime.text = task.end_time
-        holder.dueDate.text = task.due_date
+        holder.startTime.text = task.start_time.toString()
+        holder.endTime.text = task.end_time.toString()
+        holder.dueDate.text = task.due_date.toString()
         if (task.attachments.size > 0) {
             holder.txtAttachments.text = "${task.attachments.size} Attachments"
         }
-        holder.taskCard.setCardBackgroundColor(task.bgColor)
         addTagsToLinearLayout(holder, task)
         if (task.attachments.size > 0) addAttachmentsToLinearLayout(holder, task)
         holder.attachControlArrow.tag = "$position:0"

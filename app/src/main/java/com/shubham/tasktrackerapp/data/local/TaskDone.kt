@@ -8,8 +8,8 @@ import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalTime
 
-@Entity(tableName = "tbTask")
-data class Task(
+@Entity(tableName = "tbTasksDone")
+data class TaskDone(
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "added_date")

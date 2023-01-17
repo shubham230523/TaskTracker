@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.Gravity
 import android.view.RoundedCorner
 import android.view.View
@@ -27,6 +28,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -42,9 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -52,20 +57,30 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
 import com.shubham.tasktrackerapp.MainActivity
 import com.shubham.tasktrackerapp.R
 import com.shubham.tasktrackerapp.RoomViewModel
-import com.shubham.tasktrackerapp.data.local.Task
-import com.shubham.tasktrackerapp.data.local.TaskDaoImpl
-import com.shubham.tasktrackerapp.data.local.TaskDatabase
+import com.shubham.tasktrackerapp.data.local.*
 import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
 import com.shubham.tasktrackerapp.util.newTaskColors
 import com.shubham.tasktrackerapp.util.taskCategories
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.datetime.time.TimePickerColors
+import com.vanpra.composematerialdialogs.datetime.time.TimePickerDefaults
+import com.vanpra.composematerialdialogs.datetime.time.timepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
@@ -479,13 +494,12 @@ class NewTaskFragment @Inject constructor(
             "${cal.get(Calendar.DATE)}-${cal.get(Calendar.MONTH) + 1}-${cal.get(Calendar.YEAR)}"
         val task = Task(
             title = title,
-            added_date = todayDate,
-            due_date = dueDate,
-            start_time = startTime,
-            end_time = endTime,
+            added_date = LocalDate.of(2023 , 1 , 23),
+            due_date = LocalDate.of(2023 , 1 , 23),
+            start_time = LocalTime.now(),
+            end_time = LocalTime.now(),
             taskTypes = allTypesSelectedList,
             attachments = hashMap,
-            bgColor = newTaskColors.random()
         )
         viewModel.insertIntoDatabase(task)
         (mContext as MainActivity).onBackPressed()
@@ -654,30 +668,441 @@ class NewTaskFragment @Inject constructor(
         }
     }
 }
+private const val TAG = "NewTaskFragment"
 
 @Composable
 fun NewTask() {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Bottom,
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(630.dp),
+                .wrapContentHeight()
+                .zIndex(1f),
             color = Transparent,
-            elevation = 10.dp
         ) {
+            val roomViewModel = hiltViewModel<RoomViewModel>()
+//            val missedTask1 = TaskDone(
+//                "TaskDone1",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 14),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask2 = TaskDone(
+//                "TaskDone2",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 13),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask3 = TaskDone(
+//                "TaskDone3",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 12),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask4 = TaskDone(
+//                "TaskDone4",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 11),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask5 = TaskDone(
+//                "TaskDone5",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 11),
+//                LocalTime.of(10 , 30 , 0),
+//                LocalTime.of(11 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask6 = TaskDone(
+//                "TaskDone6",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 10),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask7 = TaskDone(
+//                "TaskDone7",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 9),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask8 = TaskDone(
+//                "TaskDone8",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 8),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask9 = TaskDone(
+//                "TaskDone9",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 7),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask10 = TaskDone(
+//                "TaskDone10",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 6),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask11 = TaskDone(
+//                "TaskDone11",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 6),
+//                LocalTime.of(11 , 30 , 0),
+//                LocalTime.of(12 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask12 = TaskDone(
+//                "TaskDone12",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 5),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask13 = TaskDone(
+//                "TaskDone13",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 5),
+//                LocalTime.of(11 , 30 , 0),
+//                LocalTime.of(12 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask14 = TaskDone(
+//                "TaskDone14",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 4),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask15 = TaskDone(
+//                "TaskDone15",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 3),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask16 = TaskDone(
+//                "TaskDone16",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 2),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask17 = TaskDone(
+//                "TaskDone17",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 2),
+//                LocalTime.of(10 , 30 , 0),
+//                LocalTime.of(11 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask18 = TaskDone(
+//                "TaskDone18",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2023 , 1 , 1),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask19 = TaskDone(
+//                "TaskDone19",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 31),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf(),
+//            )
+//            val missedTask20 = TaskDone(
+//                "TaskDone20",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 29),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask21 = TaskDone(
+//                "TaskDone21",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 28),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask22 = TaskDone(
+//                "TaskDone22",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 27),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask23 = TaskDone(
+//                "TaskDone23",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 26),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask24 = TaskDone(
+//                "TaskDone24",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 25),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask25 = TaskDone(
+//                "TaskDone25",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 24),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask26 = TaskDone(
+//                "TaskDone26",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 23),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask27 = TaskDone(
+//                "TaskDone27",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 22),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask28 = TaskDone(
+//                "TaskDone28",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 21),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask29 = TaskDone(
+//                "TaskDone29",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 20),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask30 = TaskDone(
+//                "TaskDone30",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 19),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask31 = TaskDone(
+//                "TaskDone31",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 18),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask32 = TaskDone(
+//                "TaskDone32",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 17),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask33 = TaskDone(
+//                "TaskDone33",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 16),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask34 = TaskDone(
+//                "TaskDone34",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 15),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask35 = TaskDone(
+//                "TaskDone35",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 14),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask36 = TaskDone(
+//                "TaskDone36",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 13),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask37 = TaskDone(
+//                "TaskDone37",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 12),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask38 = TaskDone(
+//                "TaskDone38",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 11),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask39 = TaskDone(
+//                "TaskDone39",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12 , 10),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            val missedTask40 = TaskDone(
+//                "TaskDone40",
+//                LocalDate.of(2023 , 1 , 15),
+//                LocalDate.of(2022 , 12, 9),
+//                LocalTime.of(13 , 30 , 0),
+//                LocalTime.of(14 , 30 , 0),
+//                mutableListOf("Assignment , Coding"),
+//                hashMapOf()
+//            )
+//            roomViewModel.insertTaskDone(missedTask1)
+//            roomViewModel.insertTaskDone(missedTask2)
+//            roomViewModel.insertTaskDone(missedTask3)
+//            roomViewModel.insertTaskDone(missedTask4)
+//            roomViewModel.insertTaskDone(missedTask5)
+//            roomViewModel.insertTaskDone(missedTask6)
+//            roomViewModel.insertTaskDone(missedTask7)
+//            roomViewModel.insertTaskDone(missedTask8)
+//            roomViewModel.insertTaskDone(missedTask9)
+//            roomViewModel.insertTaskDone(missedTask10)
+//            roomViewModel.insertTaskDone(missedTask11)
+//            roomViewModel.insertTaskDone(missedTask12)
+//            roomViewModel.insertTaskDone(missedTask13)
+//            roomViewModel.insertTaskDone(missedTask14)
+//            roomViewModel.insertTaskDone(missedTask15)
+//            roomViewModel.insertTaskDone(missedTask16)
+//            roomViewModel.insertTaskDone(missedTask17)
+//            roomViewModel.insertTaskDone(missedTask18)
+//            roomViewModel.insertTaskDone(missedTask19)
+//            roomViewModel.insertTaskDone(missedTask20)
+//            roomViewModel.insertTaskDone(missedTask21)
+//            roomViewModel.insertTaskDone(missedTask22)
+//            roomViewModel.insertTaskDone(missedTask23)
+//            roomViewModel.insertTaskDone(missedTask24)
+//            roomViewModel.insertTaskDone(missedTask25)
+//            roomViewModel.insertTaskDone(missedTask26)
+//            roomViewModel.insertTaskDone(missedTask27)
+//            roomViewModel.insertTaskDone(missedTask28)
+//            roomViewModel.insertTaskDone(missedTask29)
+//            roomViewModel.insertTaskDone(missedTask30)
+//            roomViewModel.insertTaskDone(missedTask31)
+//            roomViewModel.insertTaskDone(missedTask32)
+//            roomViewModel.insertTaskDone(missedTask33)
+//            roomViewModel.insertTaskDone(missedTask34)
+//            roomViewModel.insertTaskDone(missedTask35)
+//            roomViewModel.insertTaskDone(missedTask36)
+//            roomViewModel.insertTaskDone(missedTask37)
+//            roomViewModel.insertTaskDone(missedTask38)
+//            roomViewModel.insertTaskDone(missedTask39)
+//            roomViewModel.insertTaskDone(missedTask40)
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                     .background(
                         color = MaterialTheme.colorScheme.surface,
                         RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
                     )
-                    .padding(15.dp),
+                    .padding(top = 20.dp, start = 15.dp, end = 15.dp, bottom = 15.dp),
             ) {
                 var taskTitle by rememberSaveable { mutableStateOf("") }
+                var pickedDate by remember { mutableStateOf(LocalDate.now()) }
+                var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+                var endTime by remember { mutableStateOf(LocalTime.now()) }
+                val dateDialogState = rememberMaterialDialogState()
+                val timeDialogState = rememberMaterialDialogState()
+                val endTimeDialogState = rememberMaterialDialogState()
+                var showPopUpMenu = remember { mutableStateOf(false)}
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -695,37 +1120,141 @@ fun NewTask() {
                 }
                 OutlinedTextField(
                     value = taskTitle,
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     onValueChange = {
                         taskTitle = it
                     },
                     label = { Text(
                         "Title",
                         style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     ) },
                     placeholder = {
                         Text(
                             text = "Task title ",
                             modifier = Modifier.alpha(0.4f),
                             style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp)
+                        .padding(top = 15.dp)
                         .height(60.dp),
 
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         cursorColor = MaterialTheme.colorScheme.onSurface,
                         focusedLabelColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
                         placeholderColor = MaterialTheme.colorScheme.onSurface,
+                        textColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
+                MaterialDialog(
+                    dialogState = dateDialogState,
+                    buttons = {
+                        positiveButton(
+                            text = "Ok",
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                        negativeButton(
+                            "Cancel",
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                    },
+                    properties = DialogProperties(
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = true,
+                    ),
+                ) {
+                    datepicker(
+                        initialDate = LocalDate.now(),
+                        title = "Pick a date",
+                        colors = DatePickerDefaults.colors(
+                            headerBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                            headerTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            dateActiveBackgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            dateActiveTextColor = MaterialTheme.colorScheme.onSurface,
+                            calendarHeaderTextColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        allowedDateValidator = {
+                            it > LocalDate.now()
+                        },
+                    ) { date ->
+                        pickedDate = date
+                    }
+                }
+                MaterialDialog(
+                    dialogState = timeDialogState,
+                    buttons = {
+                        positiveButton(
+                            text = "Ok",
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                        negativeButton(
+                            "Cancel",
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                    },
+                    properties = DialogProperties(
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = true,
+                    ),
+                ) {
+                    timepicker(
+                        initialTime = LocalTime.now(),
+                        title = "Select a time",
+                        is24HourClock = true,
+                        colors = TimePickerDefaults.colors(
+                            activeBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                            inactiveBackgroundColor = MaterialTheme.colorScheme.primary,
+                            activeTextColor = MaterialTheme.colorScheme.primary,
+                            inactiveTextColor = MaterialTheme.colorScheme.onPrimary,
+                            selectorColor = MaterialTheme.colorScheme.secondary,
+                            selectorTextColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ){
+                        selectedTime = it
+                    }
+                }
+                MaterialDialog(
+                    dialogState = endTimeDialogState,
+                    buttons = {
+                        positiveButton(
+                            text = "Ok",
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                        negativeButton(
+                            "Cancel",
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                    },
+                    properties = DialogProperties(
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = true,
+                    ),
+                ) {
+                    timepicker(
+                        initialTime = LocalTime.now(),
+                        title = "Select a time",
+                        is24HourClock = true,
+                        colors = TimePickerDefaults.colors(
+                            activeBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                            inactiveBackgroundColor = MaterialTheme.colorScheme.primary,
+                            activeTextColor = MaterialTheme.colorScheme.primary,
+                            inactiveTextColor = MaterialTheme.colorScheme.onPrimary,
+                            selectorColor = MaterialTheme.colorScheme.secondary,
+                            selectorTextColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ){
+                        endTime = it
+                    }
+                }
                 Row (
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 18.dp)
+                    modifier = Modifier.padding(top = 20.dp)
                 ){
                     Text(
                         text = "Due date",
@@ -740,11 +1269,13 @@ fun NewTask() {
                             .padding(start = 20.dp, end = 9.dp)
                             .size(18.dp)
                             .alpha(0.4f)
+                            .clickable { dateDialogState.show() },
                     )
                     Text(
-                        text = "dd-mm-yy",
+                        text = pickedDate.toString(),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.clickable { dateDialogState.show() }
                     )
                 }
                 Row (modifier = Modifier.padding(top = 10.dp)){
@@ -761,11 +1292,13 @@ fun NewTask() {
                             .padding(start = 20.dp, end = 7.dp)
                             .size(20.dp)
                             .alpha(0.4f)
+                            .clickable { timeDialogState.show() }
                     )
                     Text(
-                        text = "00:00",
+                        text = "${selectedTime.hour}:${selectedTime.minute}",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.clickable { timeDialogState.show() }
                     )
                 }
                 Row (modifier = Modifier.padding(top = 10.dp)){
@@ -784,12 +1317,17 @@ fun NewTask() {
                             .alpha(0.4f)
                     )
                     Text(
-                        text = "00:00",
+                        text = "${endTime.hour}:${endTime.minute}",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .clickable { endTimeDialogState.show() }
                     )
                 }
-                Row (modifier = Modifier.padding(top = 18.dp)){
+                if(showPopUpMenu.value){
+                    TaskTypePopUpMenu(modifier = Modifier.zIndex(1f))
+                }
+                Row (modifier = Modifier.padding(top = 20.dp)){
                     Text(
                         text = "Task Type",
                         style = MaterialTheme.typography.bodyLarge,
@@ -801,6 +1339,10 @@ fun NewTask() {
                         modifier = Modifier
                             .padding(start = 10.dp, end = 10.dp)
                             .size(24.dp)
+                            .clickable {
+                                Log.d("NewTaskFragment" , "new task .click called")
+                                showPopUpMenu.value = true
+                            }
                     )
                 }
                 Column(
@@ -808,13 +1350,14 @@ fun NewTask() {
                         .padding(top = 10.dp)
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .border(
-                            1.dp,
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            RoundedCornerShape(10.dp),
-                        )
                         .background(
-                            color = MaterialTheme.colorScheme.background,
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .border(
+                            0.5.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                            RoundedCornerShape(10.dp),
                         )
                         .padding(15.dp),
                     verticalArrangement = Arrangement.Top
@@ -830,7 +1373,7 @@ fun NewTask() {
                             style = TaskTrackerTopography.labelMedium,
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier
-                                .padding(end = 8.dp)
+                                .padding(end = 16.dp)
                                 .background(
                                     MaterialTheme.colorScheme.primary,
                                     RoundedCornerShape(8.dp)
@@ -842,7 +1385,7 @@ fun NewTask() {
                             style = TaskTrackerTopography.labelMedium,
                             color = MaterialTheme.colorScheme.onSecondary,
                             modifier = Modifier
-                                .padding(end = 8.dp)
+                                .padding(end = 16.dp)
                                 .background(
                                     MaterialTheme.colorScheme.secondary,
                                     RoundedCornerShape(8.dp)
@@ -854,7 +1397,7 @@ fun NewTask() {
                             style = TaskTrackerTopography.labelMedium,
                             color = MaterialTheme.colorScheme.onTertiary,
                             modifier = Modifier
-                                .padding(end = 8.dp)
+                                .padding(end = 16.dp)
                                 .background(
                                     MaterialTheme.colorScheme.tertiary,
                                     RoundedCornerShape(8.dp)
@@ -865,7 +1408,7 @@ fun NewTask() {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(top = 5.dp)
+                            .padding(top = 8.dp)
                             .fillMaxWidth()
                             .wrapContentHeight()
                     ) {
@@ -883,7 +1426,7 @@ fun NewTask() {
                         )
                     }
                 }
-                Row (modifier = Modifier.padding(top = 18.dp)){
+                Row (modifier = Modifier.padding(top = 20.dp)){
                     Text(
                         text = "No Attachments",
                         style = MaterialTheme.typography.bodyLarge,
@@ -901,29 +1444,20 @@ fun NewTask() {
                     modifier = Modifier
                         .padding(top = 10.dp)
                         .fillMaxWidth()
-                        .height(115.dp)
-                        .border(
-                            1.dp,
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            RoundedCornerShape(10.dp),
-                        )
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                        .padding(15.dp),
-                    verticalArrangement = Arrangement.Center
+                        .wrapContentHeight()
                 ) {
                     for(i in 0 until 2){
                         ConstraintLayout(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(
-                                    1.dp,
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    RoundedCornerShape(10.dp),
-                                )
                                 .background(
-                                    color = MaterialTheme.colorScheme.background,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .border(
+                                    0.5.dp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                                    shape = RoundedCornerShape(16.dp)
                                 )
                         ) {
                             val (fileType , fileName , close) = createRefs()
@@ -939,10 +1473,10 @@ fun NewTask() {
                                     .width(16.dp)
                             )
                             Text(
-                                text = "BDA_Assignmentgowjsnfioweal;sfjioweisfjocknsdiolfjzxciodsjfkcsdjfjcops",
+                                text = "BDA_Assignment.pdf",
                                 style = MaterialTheme.typography.bodySmall,
                                 maxLines  = 1,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color =  MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                                     .constrainAs(fileName){
                                         top.linkTo(fileType.top)
@@ -952,8 +1486,9 @@ fun NewTask() {
                                         width = Dimension.fillToConstraints
                                     }
                             )
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_close),
+                            Icon(
+                                Icons.Filled.Close,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 contentDescription = null,
                                 modifier = Modifier.constrainAs(close){
                                     top.linkTo(fileName.top)
@@ -965,9 +1500,9 @@ fun NewTask() {
                         }
                         Spacer(
                             modifier = if (i == 1) {
-                                Modifier.height(10.dp)
+                                Modifier.height(0.dp)
                             }else {
-                                Modifier.height(10.dp)
+                                Modifier.height(15.dp)
                             }
                         )
                     }
@@ -978,7 +1513,7 @@ fun NewTask() {
                         backgroundColor = MaterialTheme.colorScheme.primary,
                     ),
                     modifier = Modifier
-                        .padding(top = 20.dp, start = 10.dp, end = 10.dp)
+                        .padding(top = 20.dp)
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.primary,
@@ -1007,5 +1542,23 @@ fun NewTaskPreview(){
 fun NewTaskDarkPreview() {
     TaskTrackerTheme(isDarkTheme = true) {
         NewTask()
+    }
+}
+
+@Composable
+fun TaskTypePopUpMenu(modifier: Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.tertiaryContainer),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .width(350.dp)
+                .wrapContentHeight()
+                .background(color = MaterialTheme.colorScheme.tertiary)
+                .padding(15.dp)
+        ){}
     }
 }

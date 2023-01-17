@@ -62,6 +62,9 @@ import com.shubham.tasktrackerapp.RevealViewAnimation
 import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.theme.*
 import com.shubham.tasktrackerapp.util.isLight
+import java.sql.Date
+import java.time.LocalDate
+import java.time.LocalTime
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     companion object {
@@ -114,64 +117,64 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val taskList = listOf<Task>(
         Task(
             "Title1",
-            "12 Nov",
-            "14 Nov",
-            "9:00AM",
-            "9:30AM",
+            LocalDate.of(2023 , 1 , 23),
+            LocalDate.of(2023 , 1 , 24),
+            LocalTime.of(12 , 24),
+            LocalTime.of(13 , 24),
             mutableListOf("Assignment, Coding, Classes, Hobby"),
             hashMap,
             R.color.red,
         ),
         Task(
             "Title1",
-            "12 Nov",
-            "14 Nov",
-            "9:00AM",
-            "9:30AM",
-            mutableListOf("Assignment"),
+            LocalDate.of(2023 , 1 , 23),
+            LocalDate.of(2023 , 1 , 24),
+            LocalTime.of(12 , 24),
+            LocalTime.of(13 , 24),
+            mutableListOf("Assignment, Coding, Classes, Hobby"),
             hashMap,
             R.color.red,
         ),
         Task(
             "Title1",
-            "12 Nov",
-            "14 Nov",
-            "9:00AM",
-            "9:30AM",
-            mutableListOf("Assignment"),
+            LocalDate.of(2023 , 1 , 23),
+            LocalDate.of(2023 , 1 , 24),
+            LocalTime.of(12 , 24),
+            LocalTime.of(13 , 24),
+            mutableListOf("Assignment, Coding, Classes, Hobby"),
             hashMap,
             R.color.red,
         ),
         Task(
             "Title1",
-            "12 Nov",
-            "14 Nov",
-            "9:00AM",
-            "9:30AM",
-            mutableListOf("Assignment"),
+            LocalDate.of(2023 , 1 , 23),
+            LocalDate.of(2023 , 1 , 24),
+            LocalTime.of(12 , 24),
+            LocalTime.of(13 , 24),
+            mutableListOf("Assignment, Coding, Classes, Hobby"),
             hashMap,
             R.color.red,
         ),
         Task(
             "Title1",
-            "12 Nov",
-            "14 Nov",
-            "9:00AM",
-            "9:30AM",
-            mutableListOf("Assignment"),
+            LocalDate.of(2023 , 1 , 23),
+            LocalDate.of(2023 , 1 , 24),
+            LocalTime.of(12 , 24),
+            LocalTime.of(13 , 24),
+            mutableListOf("Assignment, Coding, Classes, Hobby"),
             hashMap,
             R.color.red,
         ),
         Task(
             "Title1",
-            "12 Nov",
-            "14 Nov",
-            "9:00AM",
-            "9:30AM",
-            mutableListOf("Assignment"),
+            LocalDate.of(2023 , 1 , 23),
+            LocalDate.of(2023 , 1 , 24),
+            LocalTime.of(12 , 24),
+            LocalTime.of(13 , 24),
+            mutableListOf("Assignment, Coding, Classes, Hobby"),
             hashMap,
             R.color.red,
-        )
+        ),
     )
 
     init {
@@ -611,10 +614,55 @@ fun DashBoard() {
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
             )
+            Text(
+                text = "Recent Missed Tasks",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(top = 30.dp)
+            )
+            LazyRow{
+                items(items = missedTasks , itemContent = {
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .padding(top = 10.dp, end = 10.dp)
+                            .width(180.dp)
+                            .height(95.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondary,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .padding(12.dp)
+                    ){
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = it.title,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text(
+                                text = it.due_date.toString() + " " + it.start_time + '-' + it.end_time,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                            var string = ""
+                            for(i in it.taskTypes){
+                                string+=(i + " ")
+                            }
+                            Text(
+                                text = string,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                        }
+                    }
+                })
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 30.dp)
+                    .padding(top = 20.dp)
                     .wrapContentHeight(),
             ) {
                 Text(
@@ -648,13 +696,179 @@ fun DashBoard() {
             }
             Column(
                 modifier = Modifier
+                    .padding(top = 20.dp)
                     .verticalScroll(rememberScrollState())
                     .weight(1f, fill = false)
             ) {
+                Text(
+                    text = "Performance Graph",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
                 Row(
                     modifier = Modifier
-                        .padding(top = 20.dp)
                         .fillMaxWidth()
+                        .padding(top = 10.dp)
+                        .wrapContentHeight(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = "Before Deadline",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .padding(end = 5.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(15.dp)
+                            )
+                            .padding(10.dp)
+                    )
+                    Text(
+                        text = "Missed",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(15.dp)
+                            )
+                            .padding(10.dp)
+                    )
+                }
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp)
+                        .wrapContentHeight()
+                ) {
+                    val coordinates = calculateLocationsAndDrawTheCurve(
+                        listNoOfMissedTasksForMonth,
+                        "Monthly"
+                    )
+                    val (ycol , xrow , ivgraph , revealView) = createRefs()
+                    Column(
+                        modifier = Modifier.constrainAs(ycol){
+                            start.linkTo(parent.start)
+                            top.linkTo(ivgraph.top)
+                            bottom.linkTo(ivgraph.bottom)
+                            height = Dimension.fillToConstraints
+                        },
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Log.d("Coord" , "${coordinates[0][0]}")
+                        for(i in coordinates[0].size-1 downTo 0){
+                            Text(
+                                text = coordinates[0][i].toString(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                    val isLight  = MaterialTheme.colorScheme.isLight()
+                    Canvas(
+                        modifier = Modifier
+                            .constrainAs(ivgraph) {
+                                start.linkTo(ycol.end, 5.dp)
+                                width = Dimension.value(320.dp)
+                                height = Dimension.value(266.dp)
+                            }
+                            .padding(top = 8.dp, start = 10.dp, end = 10.dp, bottom = 8.dp)
+                    ){
+
+                        val strokePath = Path().let{
+                            for(i in 0 until coordinates[1].size){
+                                if(i == 0) {
+                                    it.moveTo(coordinates[1][i], coordinates[2][i])
+                                }
+                                else {
+                                    it.lineTo(coordinates[1][i], coordinates[2][i])
+                                }
+                                Log.d("Coord" , "safe")
+                            }
+                            it.lineTo(this.size.width , this.size.height)
+                            it
+                        }
+                        val path = Path().let{
+                            for(i in 0 until coordinates[1].size){
+                                if(i == 0) {
+                                    it.moveTo(coordinates[1][i], coordinates[2][i])
+                                }
+                                else {
+                                    it.lineTo(coordinates[1][i], coordinates[2][i])
+                                }
+                                Log.d("Coord" , "safe")
+                            }
+                            it.lineTo(this.size.width , this.size.height)
+                            it.lineTo(0f , this.size.height)
+                            it.close()
+                            it
+                        }
+                        drawPath(
+                            path = strokePath,
+                            style = Stroke(3f),
+                            brush = if(isLight){
+                                Brush.verticalGradient(listOf(Teal600 ,  Teal600))
+                            }else {
+                                Brush.verticalGradient(listOf(Teal200 , Teal200))
+                            },
+                        )
+                        drawPath(
+                            path = path,
+                            brush = if(isLight){
+                                Brush.verticalGradient(listOf(Teal600 ,  Transparent))
+                            }else {
+                                Brush.verticalGradient(listOf(Teal200 , Transparent))
+                            },
+                            style = Fill,
+                        )
+                    }
+                    val state = remember {
+                        MutableTransitionState(false).apply {
+                            targetState = true
+                        }
+                    }
+                    RevealViewAnimation(
+                        modifier = Modifier
+                            .constrainAs(revealView){
+                                start.linkTo(ivgraph.start , 320.dp)
+                                width = Dimension.value(320.dp)
+                                height = Dimension.value(266.dp)
+                            }
+                    ) {
+                        Text(
+                            text = "",
+                            modifier = Modifier
+                                .background(color = MaterialTheme.colorScheme.background)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.constrainAs(xrow){
+                            start.linkTo(ivgraph.start)
+                            end.linkTo(ivgraph.end)
+                            top.linkTo(ivgraph.bottom, 10.dp)
+                            width = Dimension.fillToConstraints
+                        },
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        val xaxis  = listOf("0" , "5" , "10" , "15" , "20" , "25" , "30")
+                        for(element in xaxis){
+                            Text(
+                                text = element,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp)
                         .wrapContentHeight()
                 ) {
                     Box (
@@ -748,10 +962,10 @@ fun DashBoard() {
                     }
                 }
                 Text(
-                    text = "Performance Graph",
+                    text = "Tasks by categories",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 15.dp)
+                    modifier = Modifier.padding(top = 30.dp)
                 )
                 Row(
                     modifier = Modifier
@@ -789,151 +1003,7 @@ fun DashBoard() {
                 }
                 ConstraintLayout(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 15.dp)
-                        .wrapContentHeight()
-                ) {
-                    val coordinates = calculateLocationsAndDrawTheCurve(
-                        listNoOfMissedTasksPerWeek,
-                        "Weekly"
-                    )
-                    val (ycol , xrow , ivgraph , revealView) = createRefs()
-                    Column(
-                        modifier = Modifier.constrainAs(ycol){
-                            start.linkTo(parent.start)
-                            top.linkTo(ivgraph.top)
-                            bottom.linkTo(ivgraph.bottom)
-                            height = Dimension.fillToConstraints
-                        },
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Log.d("Coord" , "${coordinates[0][0]}")
-                        for(i in coordinates[0].size-1 downTo 0){
-                            Text(
-                                text = coordinates[0][i].toString(),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                    val isLight  = MaterialTheme.colorScheme.isLight()
-                    Canvas(
-                        modifier = Modifier
-                            .constrainAs(ivgraph) {
-                                start.linkTo(ycol.end, 5.dp)
-                                width = Dimension.value(320.dp)
-                                height = Dimension.value(266.dp)
-                            }
-                            .padding(top = 8.dp, start = 10.dp, end = 10.dp, bottom = 8.dp)
-                    ){
-
-                        val path = Path().let{
-                            for(i in 0 until coordinates[1].size){
-                                if(i == 0) {
-                                    it.moveTo(coordinates[1][i], coordinates[2][i])
-                                }
-                                else {
-                                    it.lineTo(coordinates[1][i], coordinates[2][i])
-                                }
-                                Log.d("Coord" , "safe")
-                            }
-                            it.lineTo(this.size.width , this.size.height)
-                            it.lineTo(0f , this.size.height)
-                            it.close()
-                            it
-                        }
-                        drawPath(
-                            path = path,
-                            brush = if(isLight){
-                                Brush.verticalGradient(listOf(Teal600 ,  Transparent))
-                            }else {
-                                Brush.verticalGradient(listOf(Teal200 , Transparent))
-                            },
-                            style = Fill,
-                        )
-                    }
-                    val state = remember {
-                        MutableTransitionState(false).apply {
-                            targetState = true
-                        }
-                    }
-                    RevealViewAnimation(
-                        modifier = Modifier
-                            .constrainAs(revealView){
-                                start.linkTo(ivgraph.start , 320.dp)
-                                width = Dimension.value(320.dp)
-                                height = Dimension.value(266.dp)
-                            }
-                    ) {
-                        Text(
-                            text = "",
-                            modifier = Modifier
-                                .background(color = MaterialTheme.colorScheme.background)
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.constrainAs(xrow){
-                            start.linkTo(ivgraph.start)
-                            end.linkTo(ivgraph.end)
-                            top.linkTo(ivgraph.bottom, 10.dp)
-                            width = Dimension.fillToConstraints
-                        },
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val xaxis  = listOf("Sun" , "Mon" , "Tue" , "Wed" , "Thu" , "Fri" , "Sat")
-                        for(element in xaxis){
-                            Text(
-                                text = element,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                }
-                Text(
-                    text = "Tasks by categories",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 15.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 15.dp)
-                        .wrapContentHeight(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = "Before Deadline",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier
-                            .padding(end = 5.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .padding(10.dp)
-                    )
-                    Text(
-                        text = "Missed",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier
-                            .padding(start = 5.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .padding(10.dp)
-                    )
-                }
-                ConstraintLayout(
-                    modifier = Modifier
-                        .padding(top = 15.dp)
+                        .padding(top = 30.dp)
                         .fillMaxWidth()
                         .wrapContentHeight()
                 ) {
@@ -956,12 +1026,12 @@ fun DashBoard() {
                                 ),
                                 DonutSection(
                                     "Classes",
-                                    ContextCompat.getColor(context, R.color.secondary),
+                                    ContextCompat.getColor(context, R.color.tertiary),
                                     0.2f
                                 ),
                                 DonutSection(
                                     "Hangout",
-                                    ContextCompat.getColor(context, R.color.tertiary),
+                                    ContextCompat.getColor(context, R.color.secondary),
                                     0.2f
                                 ),
                                 DonutSection(
@@ -992,7 +1062,7 @@ fun DashBoard() {
                             .height(10.dp)
                             .background(color = MaterialTheme.colorScheme.primary)
                             .constrainAs(colPrim) {
-                                start.linkTo(donutView.end, 30.dp)
+                                start.linkTo(donutView.end, 80.dp)
                                 top.linkTo(donutView.top, 15.dp)
                             }
                     )
@@ -1000,9 +1070,9 @@ fun DashBoard() {
                         modifier = Modifier
                             .width(10.dp)
                             .height(10.dp)
-                            .background(color = MaterialTheme.colorScheme.secondary)
+                            .background(color = MaterialTheme.colorScheme.tertiary)
                             .constrainAs(colSecon) {
-                                start.linkTo(donutView.end, 30.dp)
+                                start.linkTo(donutView.end, 80.dp)
                                 top.linkTo(colPrim.bottom, 10.dp)
                             }
                     )
@@ -1010,9 +1080,9 @@ fun DashBoard() {
                         modifier = Modifier
                             .width(10.dp)
                             .height(10.dp)
-                            .background(color = MaterialTheme.colorScheme.tertiary)
+                            .background(color = MaterialTheme.colorScheme.secondary)
                             .constrainAs(colTer) {
-                                start.linkTo(donutView.end, 30.dp)
+                                start.linkTo(donutView.end, 80.dp)
                                 top.linkTo(colSecon.bottom, 10.dp)
                             }
                     )
@@ -1022,7 +1092,7 @@ fun DashBoard() {
                             .height(10.dp)
                             .background(color = MaterialTheme.colorScheme.onBackground)
                             .constrainAs(colonBack) {
-                                start.linkTo(donutView.end, 30.dp)
+                                start.linkTo(donutView.end, 80.dp)
                                 top.linkTo(colTer.bottom, 10.dp)
                             }
                     )
@@ -1032,7 +1102,7 @@ fun DashBoard() {
                             .height(10.dp)
                             .background(color = MaterialTheme.colorScheme.error)
                             .constrainAs(colRed) {
-                                start.linkTo(donutView.end, 30.dp)
+                                start.linkTo(donutView.end, 80.dp)
                                 top.linkTo(colonBack.bottom, 10.dp)
                             }
                     )
@@ -1087,51 +1157,6 @@ fun DashBoard() {
                         }
                     )
                 }
-                Text(
-                    text = "Recent Missed Tasks",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 15.dp)
-                )
-                LazyRow{
-                    items(items = missedTasks , itemContent = {
-                        BoxWithConstraints(
-                            modifier = Modifier
-                                .padding(top = 10.dp, end = 10.dp)
-                                .width(180.dp)
-                                .height(95.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    RoundedCornerShape(10.dp)
-                                )
-                                .padding(12.dp)
-                        ){
-                            Column(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    text = it.title,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSecondary
-                                )
-                                Text(
-                                    text = it.due_date + " " + it.start_time + '-' + it.end_time,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSecondary,
-                                    modifier = Modifier.padding(top = 10.dp)
-                                )
-                                var string = ""
-                                for(i in it.taskTypes){
-                                    string+=(i + " ")
-                                }
-                                Text(
-                                    text = string,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSecondary,
-                                    modifier = Modifier.padding(top = 10.dp)
-                                )
-                            }
-                        }
-                    })
-                }
             }
         }
     }
@@ -1139,126 +1164,115 @@ fun DashBoard() {
 
 val missedTasks = listOf<Task>(
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
+        R.color.red,
     ),
     Task(
-        "Hello",
-        "20-20-20",
-        "20-12-22",
-        "7:03",
-        "8:30",
-        taskTypes = mutableListOf("Assignment , Television"),
+        "Title1",
+        LocalDate.of(2023 , 1 , 23),
+        LocalDate.of(2023 , 1 , 24),
+        LocalTime.of(12 , 24),
+        LocalTime.of(13 , 24),
+        mutableListOf("Assignment, Coding, Classes, Hobby"),
         hashMapOf(),
-        1,
-        1
-    )
+        R.color.red,
+    ),
 )
 
 fun calculateLocationsAndDrawTheCurve(
@@ -1298,7 +1312,11 @@ fun calculateLocationsAndDrawTheCurve(
     val xCordList = arrayListOf<Float>()
     val yCordList = arrayListOf<Float>()
 
-    var x = -(50.toPx * 1f)
+    var x = if(tag == "Monthly"){
+        -(50.toPx * 1f)
+    }else {
+        -(10.toPx*1f)
+    }
     for (i in 0 until missedTasks.size) {
         var low = 0f
         var high = 0f

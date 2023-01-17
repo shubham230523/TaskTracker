@@ -1,15 +1,14 @@
 package com.shubham.tasktrackerapp.data.local
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.sql.Date
 import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalTime
 
-@Entity(tableName = "tbTask")
-data class Task(
+@Entity(tableName = "tbTasksMissed")
+@TypeConverters(TaskConverter::class)
+data class MissedTask(
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "added_date")
@@ -24,6 +23,8 @@ data class Task(
     val taskTypes: MutableList<String> = mutableListOf(),
     @ColumnInfo(name = "attachments")
     val attachments: HashMap<String, String> = hashMapOf(),
+    @ColumnInfo(name = "reason")
+    val reason: String,
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 )

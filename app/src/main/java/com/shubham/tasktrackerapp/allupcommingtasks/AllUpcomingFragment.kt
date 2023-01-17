@@ -130,7 +130,7 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
                 modifier = Modifier.padding(top = 7.dp)
             ) {
                 Text(
-                    text = task.due_date,
+                    text = task.due_date.toString(),
                     style = TaskTrackerTopography.labelMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1

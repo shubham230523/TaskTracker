@@ -24,7 +24,7 @@ object TaskModule {
             app,
             TaskDatabase::class.java,
             TaskDatabase.DATABASE_NAME
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

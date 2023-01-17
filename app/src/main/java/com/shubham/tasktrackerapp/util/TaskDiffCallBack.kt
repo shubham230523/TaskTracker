@@ -25,6 +25,5 @@ class TaskDiffCallBack(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition].taskTypes == newList[newItemPosition].taskTypes
                 && oldList[oldItemPosition].attachments == newList[newItemPosition].attachments
-                && oldList[oldItemPosition].bgColor == newList[newItemPosition].bgColor
     }
 }
