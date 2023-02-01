@@ -19,7 +19,7 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
-    @Query("DELETE FROM tbTask")
+    @Query("DELETE FROM tbTasksMissed")
     suspend fun deleteTable()
 
     // Missed task table

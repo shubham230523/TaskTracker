@@ -8,15 +8,18 @@ import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,67 +30,57 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.shubham.tasktrackerapp.R
 import com.shubham.tasktrackerapp.RoomViewModel
 import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
+import com.shubham.tasktrackerapp.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 import kotlin.math.min
 
 /**
- * Fragment to show all upcoming tasks
- *
- * @param mContext Context of the main activity
+ * Composable to show all upcoming tasks
  */
-@AndroidEntryPoint
-class AllUpcomingFragment(
-    private val mContext: Context,
-) :
-    Fragment() {
-    companion object {
-        private const val TAG = "AllUpcomingFragment"
-    }
-
-    private val viewModel by viewModels<RoomViewModel>()
-    private val viewModelAllUpTasks by viewModels<AllUpcomingTasksViewModel>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val rootView: View =
-            inflater.inflate(R.layout.fragment_all_upcoming_tasks, container, false)
-        rootView.findViewById<ComposeView>(R.id.allUpcomTasks_compose_view).apply {
-            setContent {
-                TaskTrackerTheme {
-                    val tasks by viewModel.getTasks().observeAsState()
-                    tasks?.let { AllUpcomingTasksList(it) }
-                }
+@Composable
+fun AllUpcomingTasksList(navController: NavController) {
+    val viewModel = hiltViewModel<AllUpcomingTasksViewModel>()
+    val taskList = viewModel.getTasksFromDatabase().observeAsState()
+    var count = 0
+    val sortedList by remember {
+        derivedStateOf {
+            taskList.value?.let { list->
+                list.sortedWith(compareBy<Task>{it.due_date}.thenBy { it.start_time }.thenBy { it.end_time })
+                    .dropWhile {
+                        (it.due_date == LocalDate.now() && count !=3).apply { count++ }
+                    }
             }
         }
-        return rootView
     }
-}
-
-@Composable
-fun AllUpcomingTasksList(taskList: List<Task>) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(taskList) { task ->
-            ListTaskItem(task) {
-                // TODO to show pop up menu on options clicked
+        if(sortedList!=null){
+            items(sortedList!!){ task ->
+                ListTaskItem(task = task, navController){
+
+                }
             }
         }
     }
 }
 
 @Composable
-fun ListTaskItem(task: Task, onClick: () -> Unit) {
+fun ListTaskItem(task: Task, navController: NavController, onClick: () -> Unit,) {
+    var showDropDownMenu by remember { mutableStateOf(false) }
+    val roomViewModel = hiltViewModel<RoomViewModel>()
+
     Surface(
         color = Color.Transparent,
         tonalElevation = 2.dp,
@@ -115,28 +108,68 @@ fun ListTaskItem(task: Task, onClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Image(
-                    painterResource(id = R.drawable.menu__colon),
-                    contentDescription = "task options",
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable {
-                            onClick()
+                Box(contentAlignment = Alignment.Center){
+                    Image(
+                        painterResource(id = R.drawable.menu__colon),
+                        contentDescription = "task options",
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clickable {
+                                showDropDownMenu = !showDropDownMenu
+                            }
+                    )
+                    DropdownMenu(
+                        expanded = showDropDownMenu,
+                        onDismissRequest = { showDropDownMenu = false },
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                roomViewModel.deleteTask(task)
+                                showDropDownMenu = false
+                            },
+                            enabled = true,
+                            contentPadding = MenuDefaults.DropdownMenuItemContentPadding,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            Text(
+                                text = "Delete",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
-                )
+                        DropdownMenuItem(
+                            onClick = {
+                                showDropDownMenu = false
+                                val taskJson = Gson().toJson(task)
+                                navController.navigate(
+                                    Screen.EditTask.route.replace(oldValue = "{task}", newValue = taskJson)
+                                )
+                            },
+                            enabled = true,
+                            contentPadding = MenuDefaults.DropdownMenuItemContentPadding,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            Text(
+                                text = "Edit",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
             }
             Row(
                 horizontalArrangement = Arrangement.Start,
                 modifier = Modifier.padding(top = 7.dp)
             ) {
                 Text(
-                    text = task.due_date.toString(),
+                    text = "Due date: ${task.due_date}",
                     style = TaskTrackerTopography.labelMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1
                 )
                 Text(
-                    text = "${task.start_time}-${task.end_time}",
+                    text = "Time: ${task.start_time} - ${task.end_time}",
                     style = TaskTrackerTopography.labelMedium,
                     modifier = Modifier.padding(start = 20.dp),
                     color = MaterialTheme.colorScheme.onSecondaryContainer,

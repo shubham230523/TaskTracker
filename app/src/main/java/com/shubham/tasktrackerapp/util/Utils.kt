@@ -21,3 +21,6 @@ var taskCategories = mutableListOf(
 
 @Composable
 fun ColorScheme.isLight() = this.background.luminance() > 0.5
+
+val xAxisMonthly = listOf("00", "05", "10", "15", "20", "25", "30")
+val xAxisWeekly = listOf("Sun" , "Mon" , "Tue" , "Wed" , "Thu" , "Fri" , "Sat")

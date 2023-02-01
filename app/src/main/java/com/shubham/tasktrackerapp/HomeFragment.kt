@@ -1,16 +1,12 @@
 package com.shubham.tasktrackerapp
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
@@ -22,14 +18,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.*
 import com.shubham.tasktrackerapp.allupcommingtasks.AllUpcomingTasksList
-import com.shubham.tasktrackerapp.newtask.NewTask
 import com.shubham.tasktrackerapp.selecteddate.CalenderDateModel
 import com.shubham.tasktrackerapp.selecteddate.CalenderViewModel
 import com.shubham.tasktrackerapp.upcommingtasks.UpcomingTasks
@@ -85,7 +79,7 @@ fun HomeScreen(navController: NavController) {
             datesList[lastSelectedPosition].selected = true
             datesListState.animateScrollToItem(lastSelectedPosition)
         })
-        HorizontalPagerScreen()
+        HorizontalPagerScreen(navController)
     }
     MaterialDialog(
         dialogState = dateDialogState,
@@ -201,7 +195,7 @@ fun DateItem(date: CalenderDateModel, onClick: () -> Unit) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HorizontalPagerScreen() {
+fun HorizontalPagerScreen(navController: NavController) {
     val roomViewModel: RoomViewModel = hiltViewModel()
     Column(
         modifier = Modifier
@@ -212,6 +206,349 @@ fun HorizontalPagerScreen() {
         val coroutineScope = rememberCoroutineScope()
         val tasks by roomViewModel.getTasks().observeAsState()
 
+//    val task1 = MissedTask(
+//        "MissedTask1" ,
+//        LocalDate.of(2023 , 1 , 25),
+//        LocalDate.of(2023 , 1 , 26),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task2 = MissedTask(
+//        "MissedTask2" ,
+//        LocalDate.of(2023 , 1 , 24),
+//        LocalDate.of(2023 , 1 , 25),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(6 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task3 = MissedTask(
+//        "MissedTask3" ,
+//        LocalDate.of(2023 , 1 , 23),
+//        LocalDate.of(2023 , 1 , 24),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(15 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task4 = MissedTask(
+//        "MissedTask4" ,
+//        LocalDate.of(2023 , 1 , 22),
+//        LocalDate.of(2023 , 1 , 23),
+//        LocalTime.of(6 , 0),
+//        LocalTime.of(7 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task5 = MissedTask(
+//        "MissedTask5" ,
+//        LocalDate.of(2023 , 1 , 21),
+//        LocalDate.of(2023 , 1 , 22),
+//        LocalTime.of(8 , 0),
+//        LocalTime.of(8 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task6 = MissedTask(
+//        "MissedTask6" ,
+//        LocalDate.of(2023 , 1 , 20),
+//        LocalDate.of(2023 , 1 , 21),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task7 = MissedTask(
+//        "MissedTask7" ,
+//        LocalDate.of(2023 , 1 , 19),
+//        LocalDate.of(2023 , 1 , 20),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task8 = MissedTask(
+//        "MissedTask8" ,
+//        LocalDate.of(2023 , 1 , 18),
+//        LocalDate.of(2023 , 1 , 19),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task9 = MissedTask(
+//        "MissedTask9" ,
+//        LocalDate.of(2023 , 1 , 17),
+//        LocalDate.of(2023 , 1 , 18),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task10 = MissedTask(
+//        "MissedTask10" ,
+//        LocalDate.of(2023 , 1 , 16),
+//        LocalDate.of(2023 , 1 , 17),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task11 = MissedTask(
+//        "MissedTask11" ,
+//        LocalDate.of(2023 , 1 , 15),
+//        LocalDate.of(2023 , 1 , 16),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task12 = MissedTask(
+//        "MissedTask12" ,
+//        LocalDate.of(2023 , 1 , 14),
+//        LocalDate.of(2023 , 1 , 15),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task13 = MissedTask(
+//        "MissedTask13" ,
+//        LocalDate.of(2023 , 1 , 13),
+//        LocalDate.of(2023 , 1 , 14),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task14 = MissedTask(
+//        "MissedTask14" ,
+//        LocalDate.of(2023 , 1 , 12),
+//        LocalDate.of(2023 , 1 , 13),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task15 = MissedTask(
+//        "MissedTask15" ,
+//        LocalDate.of(2023 , 1 , 11),
+//        LocalDate.of(2023 , 1 , 12),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task16 = MissedTask(
+//        "MissedTask16" ,
+//        LocalDate.of(2023 , 1 , 10),
+//        LocalDate.of(2023 , 1 , 11),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task17 = MissedTask(
+//        "MissedTask17" ,
+//        LocalDate.of(2023 , 1 , 9),
+//        LocalDate.of(2023 , 1 , 10),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task18 = MissedTask(
+//        "MissedTask18" ,
+//        LocalDate.of(2023 , 1 , 8),
+//        LocalDate.of(2023 , 1 , 9),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task19 = MissedTask(
+//        "MissedTask19" ,
+//        LocalDate.of(2023 , 1 , 7),
+//        LocalDate.of(2023 , 1 , 8),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task20 = MissedTask(
+//        "MissedTask20" ,
+//        LocalDate.of(2023 , 1 , 6),
+//        LocalDate.of(2023 , 1 , 7),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task21 = MissedTask(
+//        "MissedTask21" ,
+//        LocalDate.of(2023 , 1 , 5),
+//        LocalDate.of(2023 , 1 , 6),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task22 = MissedTask(
+//        "MissedTask22" ,
+//        LocalDate.of(2023 , 1 , 4),
+//        LocalDate.of(2023 , 1 , 5),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task23 = MissedTask(
+//        "MissedTask23" ,
+//        LocalDate.of(2023 , 1 , 3),
+//        LocalDate.of(2023 , 1 , 4),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task24 = MissedTask(
+//        "MissedTask24" ,
+//        LocalDate.of(2023 , 1 , 2),
+//        LocalDate.of(2023 , 1 , 3),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task25 = MissedTask(
+//        "MissedTask25" ,
+//        LocalDate.of(2023 , 1 , 1),
+//        LocalDate.of(2023 , 1 , 2),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task26 = MissedTask(
+//        "MissedTask26" ,
+//        LocalDate.of(2022 , 12 , 31),
+//        LocalDate.of(2023 , 1 , 1),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task27 = MissedTask(
+//        "MissedTask27" ,
+//        LocalDate.of(2022 , 12 , 30),
+//        LocalDate.of(2022 , 12 , 31),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task28 = MissedTask(
+//        "MissedTask28" ,
+//        LocalDate.of(2022 , 12 , 29),
+//        LocalDate.of(2022 , 12 , 30),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task29 = MissedTask(
+//        "MissedTask29" ,
+//        LocalDate.of(2022 , 12 , 28),
+//        LocalDate.of(2022 , 12 , 29),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task30 = MissedTask(
+//        "MissedTask30" ,
+//        LocalDate.of(2022 , 12 , 27),
+//        LocalDate.of(2022 , 12 , 28),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//    val task31 = MissedTask(
+//        "MissedTask31" ,
+//        LocalDate.of(2022 , 12 , 26),
+//        LocalDate.of(2022 , 12 , 27),
+//        LocalTime.of(5 , 0),
+//        LocalTime.of(5 , 30),
+//        mutableListOf("Assignment" , "Coding"),
+//        hashMapOf(Pair("uri" , "ML_assign_1.pdf")),
+//        "Playing"
+//    )
+//
+//    roomViewModel.insertMissedTask(task1)
+//    roomViewModel.insertMissedTask(task2)
+//    roomViewModel.insertMissedTask(task3)
+//    roomViewModel.insertMissedTask(task4)
+//    roomViewModel.insertMissedTask(task5)
+//    roomViewModel.insertMissedTask(task6)
+//    roomViewModel.insertMissedTask(task7)
+//    roomViewModel.insertMissedTask(task8)
+//    roomViewModel.insertMissedTask(task9)
+//    roomViewModel.insertMissedTask(task10)
+//    roomViewModel.insertMissedTask(task11)
+//    roomViewModel.insertMissedTask(task12)
+//    roomViewModel.insertMissedTask(task13)
+//    roomViewModel.insertMissedTask(task14)
+//    roomViewModel.insertMissedTask(task15)
+//    roomViewModel.insertMissedTask(task16)
+//    roomViewModel.insertMissedTask(task17)
+//    roomViewModel.insertMissedTask(task18)
+//    roomViewModel.insertMissedTask(task19)
+//    roomViewModel.insertMissedTask(task20)
+//    roomViewModel.insertMissedTask(task21)
+//    roomViewModel.insertMissedTask(task22)
+//    roomViewModel.insertMissedTask(task23)
+//    roomViewModel.insertMissedTask(task24)
+//    roomViewModel.insertMissedTask(task25)
+//    roomViewModel.insertMissedTask(task26)
+//    roomViewModel.insertMissedTask(task27)
+//    roomViewModel.insertMissedTask(task28)
+//    roomViewModel.insertMissedTask(task29)
+//    roomViewModel.insertMissedTask(task30)
+//    roomViewModel.insertMissedTask(task31)
+
         HorizontalTabs(items = tabsList, pagerState = pagerState, coroutineScope)
 
         HorizontalPager(
@@ -220,9 +557,9 @@ fun HorizontalPagerScreen() {
             modifier = Modifier.weight(1f)
         ) { currentPage ->
             if (currentPage == 0) {
-                UpcomingTasks()
+                UpcomingTasks(navController)
             } else {
-                tasks?.let { AllUpcomingTasksList(taskList = it) }
+                AllUpcomingTasksList(navController)
             }
         }
     }

@@ -3,7 +3,6 @@ package com.shubham.tasktrackerapp.data.local
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -52,30 +51,31 @@ class TaskConverter {
     }
 
     @TypeConverter
-    fun dateToString(date: LocalDate): String{
+    fun dateToString(date: LocalDate): String {
         var month = date.monthValue.toString()
         var dayOfMonth = date.dayOfMonth.toString()
-        if(month.length == 1) month = "0$month"
-        if(dayOfMonth.length == 1) dayOfMonth = "0$dayOfMonth"
-        val string = "${date.year}-$month-$dayOfMonth"
-        return string
+        if (month.length == 1) month = "0$month"
+        if (dayOfMonth.length == 1) dayOfMonth = "0$dayOfMonth"
+        return "${date.year}-$month-$dayOfMonth"
     }
 
     @TypeConverter
-    fun stringToDate(string: String): LocalDate{
-        val map = object : TypeToken<LocalDate>(){}.type
-        return gson.fromJson(string , map)
+    fun stringToDate(string: String): LocalDate {
+        val array = string.split("-").toTypedArray()
+        return LocalDate.of(array[0].toInt(), array[1].toInt(), array[2].toInt())
     }
 
     @TypeConverter
     fun timeToString(time: LocalTime): String{
-        return gson.toJson(time)
+        val string = "${time.hour}:${time.minute}"
+        return string
     }
 
     @TypeConverter
-    fun stringToTime(string: String): LocalTime{
-        val map = object : TypeToken<LocalTime>(){}.type
-        return gson.fromJson(string , map)
+    fun stringToTime(string: String): LocalTime {
+//        val map = object : TypeToken<LocalTime>() {}.type
+        val array = string.split(":").toTypedArray()
+        return LocalTime.of(array[0].toInt(), array[1].toInt())
     }
 
 

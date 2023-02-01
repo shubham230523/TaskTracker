@@ -50,13 +50,7 @@ class RoomViewModel @Inject constructor(
         }
     }
 
-    fun getLastWeekMissedTasks(date: String): List<MissedTask>?{
-        var list : List<MissedTask>? = listOf()
-        viewModelScope.launch {
-            list = taskDaoImpl.getLastWeekMissedTasks(date).value
-        }
-        return list
-    }
+    fun getLastWeekMissedTasks(date: String) = taskDaoImpl.getLastWeekMissedTasks(date)
 
     fun getLastMonthMissedTasks(date: String): List<MissedTask>?{
         var list : List<MissedTask>? = listOf()
