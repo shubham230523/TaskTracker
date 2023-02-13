@@ -38,6 +38,10 @@ class RoomViewModel @Inject constructor(
         }
     }
 
+    fun getTaskById(taskId: Int): LiveData<Task>{
+        return taskDaoImpl.getTaskById(taskId)
+    }
+
     fun deleteTask(task: Task){
         viewModelScope.launch {
             taskDaoImpl.deleteTask(task)

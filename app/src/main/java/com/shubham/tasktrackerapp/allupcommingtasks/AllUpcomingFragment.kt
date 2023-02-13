@@ -2,6 +2,7 @@ package com.shubham.tasktrackerapp.allupcommingtasks
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,21 +34,34 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonSerializer
+import com.google.gson.reflect.TypeToken
 import com.shubham.tasktrackerapp.R
 import com.shubham.tasktrackerapp.RoomViewModel
 import com.shubham.tasktrackerapp.data.local.Task
+import com.shubham.tasktrackerapp.parcelable
 import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
-import com.shubham.tasktrackerapp.util.Screen
+import com.shubham.tasktrackerapp.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
+import java.time.LocalTime
 import kotlin.math.min
 
 /**
  * Composable to show all upcoming tasks
  */
+const val TAG = "AllUpcomingTasksFragment"
 @Composable
 fun AllUpcomingTasksList(navController: NavController) {
+    val gsonBuilder = GsonBuilder()
+    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeSerializer())
+    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateSerializer())
+    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateDeserializer())
+    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeDeserializer())
+    val gson = gsonBuilder.setPrettyPrinting().create()
+
     val viewModel = hiltViewModel<AllUpcomingTasksViewModel>()
     val taskList = viewModel.getTasksFromDatabase().observeAsState()
     var count = 0
@@ -68,7 +82,7 @@ fun AllUpcomingTasksList(navController: NavController) {
     ) {
         if(sortedList!=null){
             items(sortedList!!){ task ->
-                ListTaskItem(task = task, navController){
+                ListTaskItem(task = task, navController, gson){
 
                 }
             }
@@ -77,7 +91,7 @@ fun AllUpcomingTasksList(navController: NavController) {
 }
 
 @Composable
-fun ListTaskItem(task: Task, navController: NavController, onClick: () -> Unit,) {
+fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: () -> Unit,) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     val roomViewModel = hiltViewModel<RoomViewModel>()
 
@@ -140,9 +154,8 @@ fun ListTaskItem(task: Task, navController: NavController, onClick: () -> Unit,)
                         DropdownMenuItem(
                             onClick = {
                                 showDropDownMenu = false
-                                val taskJson = Gson().toJson(task)
                                 navController.navigate(
-                                    Screen.EditTask.route.replace(oldValue = "{task}", newValue = taskJson)
+                                    Screen.EditTask.route.plus("/${task.id}"),
                                 )
                             },
                             enabled = true,

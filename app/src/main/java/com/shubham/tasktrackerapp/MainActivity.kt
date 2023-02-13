@@ -7,7 +7,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.os.Parcelable
+import android.util.Log
 import android.widget.*
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,15 +40,17 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.shubham.tasktrackerapp.dashboard.DashBoard
 import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.newtask.NewTask
 import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
-import com.shubham.tasktrackerapp.util.BottomNavItems
-import com.shubham.tasktrackerapp.util.Screen
+import com.shubham.tasktrackerapp.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.*
 
 @AndroidEntryPoint
@@ -53,7 +58,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG = "taskTag"
     }
-
     @OptIn(ExperimentalAnimationApi::class)
     @SuppressLint("ObjectAnimatorBinding")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +68,12 @@ class MainActivity : AppCompatActivity() {
         rootView.apply {
             setContent {
                 TaskTrackerTheme {
+                    val gsonBuilder = GsonBuilder()
+                    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeSerializer())
+                    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateSerializer())
+                    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateDeserializer())
+                    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeDeserializer())
+                    val gson = gsonBuilder.setPrettyPrinting().create()
 
                     LaunchedEffect(key1 = Unit, block = {
                         createNotificationChannel()
@@ -95,6 +105,7 @@ class MainActivity : AppCompatActivity() {
                                 ) {
                                     composable(
                                         route = Screen.Home.route,
+                                        arguments = listOf()
                                     ) {
                                         HomeScreen(navController)
                                     }
@@ -118,13 +129,12 @@ class MainActivity : AppCompatActivity() {
                                     composable(route = Screen.DashBoard.route) {
                                         DashBoard()
                                     }
-                                    composable(route = Screen.EditTask.route){ navBackStackEntry ->  
-                                        val taskJson = navBackStackEntry.arguments?.getString("task")
-                                        taskJson?.let{
-                                            val map = object : TypeToken<Task>(){}.type
-                                            val task = Gson().fromJson<Task>(taskJson , map)
-                                            EditTaskScreen(task , navController)
+                                    composable(route = Screen.EditTask.route.plus("/{id}")){ navBackStackEntry ->
+                                        val taskId = navBackStackEntry.arguments?.getString("id")
+                                        taskId?.let{
+                                            EditTaskScreen(taskId , navController)
                                         }
+                                        Log.d(TAG, "taskId MainActivity - $taskId")
                                     }
                                 }
                             }
@@ -208,4 +218,9 @@ fun AskForNotificationPermission() {
             })
         }
     }
+}
+
+inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelable(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelable(key) as? T
 }

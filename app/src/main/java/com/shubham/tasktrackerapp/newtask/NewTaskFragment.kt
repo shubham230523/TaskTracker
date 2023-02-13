@@ -55,6 +55,7 @@ import com.shubham.tasktrackerapp.data.local.*
 import com.shubham.tasktrackerapp.theme.RobotoFontFamily
 import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
+import com.shubham.tasktrackerapp.util.FileCache
 import com.shubham.tasktrackerapp.util.taskCategories
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
@@ -92,6 +93,9 @@ fun NewTask(navController: NavController) {
     var boxY2Coordinate by remember {mutableStateOf(0f)}
 
     val mContext = LocalContext.current
+    val fileCache = remember {
+        FileCache(mContext)
+    }
 
     BoxWithConstraints(modifier = Modifier
         .fillMaxSize()
@@ -585,6 +589,7 @@ fun NewTask(navController: NavController) {
                     cursor.moveToFirst()
                     val filename = cursor.getString(indexedName)
                     cursor.close()
+                    fileCache.cacheThis(listOf(result))
                     uriList.add(result.toString())
                     nameList.add(filename.toString())
                 }
@@ -908,24 +913,4 @@ fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List
             }
         }
     }
-}
-
-class RectangularShape(val x1: Float , val y1: Float , val x2: Float, val y2: Float): Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline {
-        Log.d(TAG , "x1 - $x1 y1 - $y1 x2 - $x2 y2 - $y2")
-         return Outline.Generic(
-             Path().apply{
-                 moveTo(x1 , y1)
-                 lineTo(x2 , y1)
-                 lineTo(x2 , y2)
-                 lineTo(x1 , y2)
-                 close()
-             }
-         )
-    }
-
 }

@@ -17,6 +17,10 @@ class TaskDaoImpl(val taskDao: TaskDao) : TaskDao {
         return taskDao.updateTask(task)
     }
 
+    override fun getTaskById(taskId: Int): LiveData<Task> {
+        return taskDao.getTaskById(taskId)
+    }
+
     override suspend fun deleteTask(task: Task) {
         return taskDao.deleteTask(task)
     }

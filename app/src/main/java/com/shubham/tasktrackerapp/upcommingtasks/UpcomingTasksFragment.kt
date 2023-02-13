@@ -52,11 +52,17 @@ fun UpcomingTasks(navController: NavController) {
     val viewModel = hiltViewModel<AllUpcomingTasksViewModel>()
     val taskList = viewModel.getTasksFromDatabase().observeAsState()
     Log.d(TAG , "taskList size - ${taskList.value?.size}")
+    var filterListSize = 0
     val sortedList by remember {
         derivedStateOf {
-            taskList.value?.filter { it.due_date.equals(LocalDate.now()) }?.sortedWith(compareBy<Task> { it.due_date }.thenBy { it.start_time }
+            taskList.value?.filter { it.due_date.equals(LocalDate.now()).apply {
+                if(this) {
+                    filterListSize++
+                    Log.d(TAG , "Inside filter condition satisfy block")
+                }
+            } }?.sortedWith(compareBy<Task> { it.due_date }.thenBy { it.start_time }
                 .thenBy { it.end_time })
-                ?.subList(0, min(2 , taskList.value!!.size))
+                ?.subList(0, min(filterListSize , taskList.value!!.size))
         }
     }
     if (sortedList != null && sortedList!!.isNotEmpty()) {

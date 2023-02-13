@@ -16,5 +16,7 @@
 
     <!-- time task -->
     <string name="timeLine_task_tags_no">%1$d more</string>
+    <!-- file class -->
+    <string name="internal_storage">Internal storage</string>
 
 </resources>

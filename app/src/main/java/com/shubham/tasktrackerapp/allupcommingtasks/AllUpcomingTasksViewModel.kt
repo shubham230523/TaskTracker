@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
-const val TAG = "AllUpcomingTasksViewModel"
+const val TAGV = "AllUpcomingTasksViewModel"
 
 @HiltViewModel
 class AllUpcomingTasksViewModel @Inject constructor(
@@ -23,13 +23,13 @@ class AllUpcomingTasksViewModel @Inject constructor(
 
     fun getTasksFromDatabase(): LiveData<List<Task>> {
         val list = taskDaoImpl.getAllTasks()
-        Log.d(TAG , "list from getTasksFromDatabase - ${list.value}")
+        Log.d(TAGV , "list from getTasksFromDatabase - ${list.value}")
         sortTasksAccordingToDueDate(list)
         return list
     }
 
     private fun sortTasksAccordingToDueDate(taskList: LiveData<List<Task>>){
-        Log.d(TAG , "taskList is - ${taskList.value}")
+        Log.d(TAGV , "taskList is - ${taskList.value}")
         val sortedList = taskList.value?.let {
             Collections.sort(it, { t1, t2 ->
                 if(t1.due_date.isBefore(t2.due_date) || t1.due_date.isEqual(t2.due_date)){
@@ -37,8 +37,8 @@ class AllUpcomingTasksViewModel @Inject constructor(
                 }else 0
             })
         }
-        Log.d(TAG , "sorted tasks method is getting called")
-        Log.d(TAG , "sorted list is - $sortedList")
+        Log.d(TAGV , "sorted tasks method is getting called")
+        Log.d(TAGV , "sorted list is - $sortedList")
     }
 
     /**

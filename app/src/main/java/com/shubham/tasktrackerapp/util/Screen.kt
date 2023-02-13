@@ -4,5 +4,5 @@ sealed class Screen(val route: String){
     object Home: Screen("home")
     object NewTask: Screen("new_task")
     object DashBoard: Screen("dashboard")
-    object EditTask: Screen("edit_task/?task={task}")
+    object EditTask: Screen("editScreen")
 }
