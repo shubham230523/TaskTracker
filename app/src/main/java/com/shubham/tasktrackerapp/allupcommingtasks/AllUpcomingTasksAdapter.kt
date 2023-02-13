@@ -43,7 +43,8 @@ class AllUpcomingTasksAdapter(
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
-        val date = task.due_date.split("-")
+//        val date = task.due_date.split("-")
+        val date = "25-11-2023".split("-")
         holder.date.text =
             context.getString(
                 R.string.upcom_task_date, date[0] ,

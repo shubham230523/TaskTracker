@@ -4,50 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp">
-    <!-- Current date -->
-    <TextView
-        android:id="@+id/tv_month"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:elevation="5dp"
-        android:fontFamily="@font/robotoslab_medium"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <!-- Recyclerview for selecting different dates -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_dates"
+    <androidx.compose.ui.platform.ComposeView
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_month" />
-    <!-- Tab layout for view pager -->
-    <com.google.android.material.tabs.TabLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tasksTabLayout"
-        app:tabTextAppearance="@style/tabLayout_text"
-        app:tabIndicatorColor="@color/green"
-        app:tabSelectedTextColor="@color/green"
-        app:tabIconTint="@color/grey"
-        app:tabTextColor="@color/grey"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_dates"
-        app:tabBackground="@color/white"/>
-    <!-- ViewPager for filter tasks on different options  -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:id="@+id/tasksViewPager"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tasksTabLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_height="match_parent"
+        android:id="@+id/frag_home_compose_view"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -36,7 +36,7 @@ class MissedTasksAdapter(private val context: Context, private val list: List<Ta
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = list[position]
         holder.title.text = task.title
-        holder.dueDate.text = task.due_date
+        holder.dueDate.text = task.due_date.toString()
         var tags = task.taskTypes[0]
         if (task.taskTypes.size > 1) {
             tags += ", ${task.taskTypes[1]}"

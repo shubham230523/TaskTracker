@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Task Tracker App</string>
-
+    <string name="channel_name">NotificationChannel</string>
+    <string name="CHANNEL_ID">NOTIFICATION_CHANNEL_ID</string>
+    <string name="channel_description">Task notification description</string>
     <!-- CardView strings -->
     <string name="no_date">dd-mm-yy</string>
     <string name="no_time">00:00</string>
@@ -14,5 +16,7 @@
 
     <!-- time task -->
     <string name="timeLine_task_tags_no">%1$d more</string>
+    <!-- file class -->
+    <string name="internal_storage">Internal storage</string>
 
 </resources>

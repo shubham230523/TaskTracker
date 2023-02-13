@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Theme colors -->
+    <color name="primary">#FF64D8CB</color>
+    <color name="onPrimary">#FF000000</color>
+    <color name="inversePrimary">#FF26A69A</color>
+    <color name="primaryContainer">#FF00766C</color>
+    <color name="onPrimaryContainer">#FFb2dfdb</color>
+    <color name="secondary">#FF80d6ff</color>
+    <color name="onSecondary">#FF000000</color>
+    <color name="secondaryContainer">#FF0077C2</color>
+    <color name="onSecondaryContainer">#FFBBDBFB</color>
+    <color name="tertiary">#FFDF78EF</color>
+    <color name="onTertiary">#FF000000</color>
+    <color name="tertiaryContainer">#FF00766C</color>
+    <color name="onTertiaryContainer">#FFE1BEE7</color>
+    <color name="error">#FFCF6679</color>
+    <color name="onError">#FF000000</color>
+    <color name="errorContainer">#FFEF5350</color>
+    <color name="onErrorContainer">#FFFFCDD2</color>
+    <color name="background">#FF000000</color>
+    <color name="onBackground">#FFF8F9F9</color>
+    <color name="surface">#FF424242</color>
+    <color name="onSurface">#FFFFFFFF</color>
+    <color name="surfaceVariant">#FF6D6D6D</color>
+    <color name="onSurfaceVariant">#FFFFFFFF</color>
+</resources>
