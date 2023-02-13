@@ -1,6 +1,5 @@
 package com.shubham.tasktrackerapp.newtask
 
-import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Toast
@@ -17,23 +16,14 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color.Companion.Transparent
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
@@ -41,10 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.PopupProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,7 +41,6 @@ import com.shubham.tasktrackerapp.R
 import com.shubham.tasktrackerapp.RoomViewModel
 import com.shubham.tasktrackerapp.data.local.*
 import com.shubham.tasktrackerapp.theme.RobotoFontFamily
-import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
 import com.shubham.tasktrackerapp.util.FileCache
 import com.shubham.tasktrackerapp.util.taskCategories
@@ -76,60 +63,60 @@ private const val TAG = "NewTaskFragment"
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NewTask(navController: NavController) {
+
     val bgColor = MaterialTheme.colorScheme.onBackground.copy(0.4f)
     val applyBgColor = remember { mutableStateOf(false) }
-    val showPopUpMenu = remember { mutableStateOf(false)}
-    val x1PopUpMenu = remember { mutableStateOf(0f)}
-    val x2PopUpMenu = remember { mutableStateOf(0f)}
-    val y1PopUpMenu = remember { mutableStateOf(0f)}
-    val y2PopUpMenu = remember { mutableStateOf(0f)}
+    val showPopUpMenu = remember { mutableStateOf(false) }
+
+    // task select pop up menu coordinates
+    val x1PopUpMenu = remember { mutableStateOf(0f) }
+    val x2PopUpMenu = remember { mutableStateOf(0f) }
+    val y1PopUpMenu = remember { mutableStateOf(0f) }
+    val y2PopUpMenu = remember { mutableStateOf(0f) }
+
     val roomViewModel = hiltViewModel<RoomViewModel>()
-    val taskTypeList = remember{ mutableStateListOf<String>() }
+    val taskTypeList = remember { mutableStateListOf<String>() }
     val uriList = remember { mutableStateListOf<String>() }
     val nameList = remember { mutableStateListOf<String>() }
-    var boxX1Coordinate by remember {mutableStateOf(0f)}
-    var boxX2Coordinate by remember {mutableStateOf(0f)}
-    var boxY1Coordinate by remember {mutableStateOf(0f)}
-    var boxY2Coordinate by remember {mutableStateOf(0f)}
+
+    // coordinates of the screen
+    var boxX1Coordinate by remember { mutableStateOf(0f) }
+    var boxX2Coordinate by remember { mutableStateOf(0f) }
+    var boxY1Coordinate by remember { mutableStateOf(0f) }
+    var boxY2Coordinate by remember { mutableStateOf(0f) }
 
     val mContext = LocalContext.current
     val fileCache = remember {
         FileCache(mContext)
     }
 
-    BoxWithConstraints(modifier = Modifier
-        .fillMaxSize()
-        .background(
-            color = if (applyBgColor.value) {
-                bgColor
-            } else {
-                Transparent
-            }
-        )
-        .pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                if (showPopUpMenu.value) {
-                    if (it.x < x1PopUpMenu.value || it.x > x2PopUpMenu.value || it.y < y1PopUpMenu.value || it.y > y2PopUpMenu.value) {
-                        showPopUpMenu.value = false
-                        applyBgColor.value = false
-                    }
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = if (applyBgColor.value) {
+                    bgColor
+                } else {
+                    Transparent
                 }
-            })
-        }
-        .onGloballyPositioned { coordinates ->
-            Log.d(
-                TAG,
-                "width is ${coordinates.size.width} and height is ${coordinates.size.height}"
             )
-//            boxX1Coordinate = coordinates.size.width/2-100 * 1f
-//            boxX2Coordinate = coordinates.size.width/2 + 100 * 1f
-//            boxY1Coordinate = coordinates.size.height/2-200 * 1f
-//            boxY2Coordinate = coordinates.size.height/2+200 * 1f
-            boxX1Coordinate = coordinates.size.width / 4 * 1f
-            boxX2Coordinate = boxX1Coordinate + coordinates.size.width / 2 * 1f
-            boxY1Coordinate = 0f
-            boxY2Coordinate = coordinates.size.height * 1f
-        },
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    // if clicked coordinates is outside the popup menu then we are disappearing the pop up menu
+                    if (showPopUpMenu.value) {
+                        if (it.x < x1PopUpMenu.value || it.x > x2PopUpMenu.value || it.y < y1PopUpMenu.value || it.y > y2PopUpMenu.value) {
+                            showPopUpMenu.value = false
+                            applyBgColor.value = false
+                        }
+                    }
+                })
+            }
+            .onGloballyPositioned { coordinates ->
+                boxX1Coordinate = coordinates.size.width / 4 * 1f
+                boxX2Coordinate = boxX1Coordinate + coordinates.size.width / 2 * 1f
+                boxY1Coordinate = 0f
+                boxY2Coordinate = coordinates.size.height * 1f
+            },
     ) {
         Column(
             modifier = Modifier
@@ -153,9 +140,10 @@ fun NewTask(navController: NavController) {
             val dateDialogState = rememberMaterialDialogState()
             val timeDialogState = rememberMaterialDialogState()
             val endTimeDialogState = rememberMaterialDialogState()
-            val hmAttachments = hashMapOf<String , String>()
+            val hmAttachments = hashMapOf<String, String>()
             val coroutineScope = rememberCoroutineScope()
 
+            // text "create new task and close button"
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -166,7 +154,7 @@ fun NewTask(navController: NavController) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Icon(
-                    imageVector  = Icons.Filled.Close,
+                    imageVector = Icons.Filled.Close,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clickable {
@@ -174,17 +162,21 @@ fun NewTask(navController: NavController) {
                     }
                 )
             }
+
+            // task title
             OutlinedTextField(
                 value = taskTitle,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 onValueChange = {
                     taskTitle = it
                 },
-                label = { Text(
-                    "Title",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                ) },
+                label = {
+                    Text(
+                        "Title",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
                 placeholder = {
                     Text(
                         text = "Task title ",
@@ -206,8 +198,11 @@ fun NewTask(navController: NavController) {
                     unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     placeholderColor = MaterialTheme.colorScheme.onSurface,
                     textColor = MaterialTheme.colorScheme.onSurface
-                )
+                ),
+                singleLine = true
             )
+
+            // dialog for picking due date
             MaterialDialog(
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 dialogState = dateDialogState,
@@ -254,6 +249,8 @@ fun NewTask(navController: NavController) {
                     dueDate = date
                 }
             }
+
+            // dialog for picking start time
             MaterialDialog(
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 dialogState = timeDialogState,
@@ -295,15 +292,17 @@ fun NewTask(navController: NavController) {
                         selectorTextColor = MaterialTheme.colorScheme.onSecondary,
                         headerTextColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    timeRange = if(dueDate.equals(LocalDate.now())) {
-                        LocalTime.now()..LocalTime.of(23 , 29)
-                    }else {
-                        LocalTime.MIDNIGHT .. LocalTime.of(23 , 29)
+                    timeRange = if (dueDate.equals(LocalDate.now())) {
+                        LocalTime.now()..LocalTime.of(23, 29)
+                    } else {
+                        LocalTime.MIDNIGHT..LocalTime.of(23, 29)
                     }
-                ){
+                ) {
                     startTime = it
                 }
             }
+
+            // dialog for picking end time
             MaterialDialog(
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 dialogState = endTimeDialogState,
@@ -332,7 +331,7 @@ fun NewTask(navController: NavController) {
                     dismissOnClickOutside = true,
                 ),
 
-            ) {
+                ) {
                 timepicker(
                     initialTime = LocalTime.now(),
                     title = "Select a time",
@@ -346,15 +345,17 @@ fun NewTask(navController: NavController) {
                         selectorTextColor = MaterialTheme.colorScheme.onSecondary,
                         headerTextColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    timeRange = startTime.plusMinutes(30) .. LocalTime.of(23 , 59)
-                ){
+                    timeRange = startTime.plusMinutes(30)..LocalTime.of(23, 59)
+                ) {
                     endTime = it
                 }
             }
-            Row (
+
+            // due date
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = 20.dp)
-            ){
+            ) {
                 Text(
                     text = "Due date",
                     style = MaterialTheme.typography.bodyLarge,
@@ -377,7 +378,9 @@ fun NewTask(navController: NavController) {
                     modifier = Modifier.clickable { dateDialogState.show() }
                 )
             }
-            Row (modifier = Modifier.padding(top = 10.dp)){
+
+            // start time
+            Row(modifier = Modifier.padding(top = 10.dp)) {
                 Text(
                     text = "Start",
                     style = MaterialTheme.typography.bodyLarge,
@@ -395,8 +398,8 @@ fun NewTask(navController: NavController) {
                 )
                 var startTimeMin = startTime.minute.toString()
                 var startTimeHour = startTime.hour.toString()
-                if(startTimeMin.length == 1) startTimeMin = "0$startTimeMin"
-                if(startTimeHour.length == 1) startTimeHour = "0$startTimeHour"
+                if (startTimeMin.length == 1) startTimeMin = "0$startTimeMin"
+                if (startTimeHour.length == 1) startTimeHour = "0$startTimeHour"
                 Text(
                     text = "$startTimeHour:$startTimeMin",
                     style = MaterialTheme.typography.bodyLarge,
@@ -406,7 +409,9 @@ fun NewTask(navController: NavController) {
                     }
                 )
             }
-            Row (modifier = Modifier.padding(top = 10.dp)){
+
+            // end time
+            Row(modifier = Modifier.padding(top = 10.dp)) {
                 Text(
                     text = "End",
                     style = MaterialTheme.typography.bodyLarge,
@@ -423,8 +428,8 @@ fun NewTask(navController: NavController) {
                 )
                 var endTimeMin = endTime.minute.toString()
                 var endTimeHour = endTime.hour.toString()
-                if(endTimeMin.length == 1) endTimeMin = "0$endTimeMin"
-                if(endTimeHour.length == 1) endTimeHour = "0$endTimeHour"
+                if (endTimeMin.length == 1) endTimeMin = "0$endTimeMin"
+                if (endTimeHour.length == 1) endTimeHour = "0$endTimeHour"
                 Text(
                     text = "$endTimeHour:$endTimeMin",
                     style = MaterialTheme.typography.bodyLarge,
@@ -433,7 +438,9 @@ fun NewTask(navController: NavController) {
                         .clickable { endTimeDialogState.show() }
                 )
             }
-            Row (modifier = Modifier.padding(top = 20.dp)){
+
+            // task types text and add button
+            Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
                     text = "Task Type",
                     style = MaterialTheme.typography.bodyLarge,
@@ -451,6 +458,8 @@ fun NewTask(navController: NavController) {
                         }
                 )
             }
+
+            // task types
             Column(
                 modifier = Modifier
                     .padding(top = 10.dp)
@@ -473,7 +482,8 @@ fun NewTask(navController: NavController) {
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(taskTypeList.size == 0){
+                // if no task categories are selected then background add image is shown
+                if (taskTypeList.size == 0) {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = null,
@@ -484,16 +494,17 @@ fun NewTask(navController: NavController) {
                             .alpha(0.2f)
                     )
                 }
+                // else we are showing the task types in two rows
                 else {
-                    Row (
+                    Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
                     ) {
-                        for(i in 0 until min(3 , taskTypeList.size)){
-                            var showDropDownMenu by remember{ mutableStateOf(false)}
-                            Box(contentAlignment = Alignment.Center){
+                        for (i in 0 until min(3, taskTypeList.size)) {
+                            var showDropDownMenu by remember { mutableStateOf(false) }
+                            Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     text = taskTypeList[i],
                                     style = TaskTrackerTopography.labelMedium,
@@ -532,7 +543,7 @@ fun NewTask(navController: NavController) {
                             }
                         }
                     }
-                    if(taskTypeList.size == 4){
+                    if (taskTypeList.size == 4) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -540,8 +551,8 @@ fun NewTask(navController: NavController) {
                                 .fillMaxWidth()
                                 .wrapContentHeight()
                         ) {
-                            var showDropDownMenu by remember{ mutableStateOf(false)}
-                            Box(contentAlignment = Alignment.Center){
+                            var showDropDownMenu by remember { mutableStateOf(false) }
+                            Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     text = taskTypeList[3],
                                     style = TaskTrackerTopography.labelMedium,
@@ -582,19 +593,24 @@ fun NewTask(navController: NavController) {
                     }
                 }
             }
-            val fileLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
-                if(result!=null) {
-                    val cursor = mContext.contentResolver.query(result, null, null, null, null)
-                    val indexedName = cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    cursor.moveToFirst()
-                    val filename = cursor.getString(indexedName)
-                    cursor.close()
-                    fileCache.cacheThis(listOf(result))
-                    uriList.add(result.toString())
-                    nameList.add(filename.toString())
+
+            // launcher for selecting file and storing the file in cache folder
+            val fileLauncher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
+                    if (result != null) {
+                        val cursor = mContext.contentResolver.query(result, null, null, null, null)
+                        val indexedName = cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        cursor.moveToFirst()
+                        val filename = cursor.getString(indexedName)
+                        cursor.close()
+                        fileCache.cacheThis(listOf(result))
+                        uriList.add(result.toString())
+                        nameList.add(filename.toString())
+                    }
                 }
-            }
-            Row (modifier = Modifier.padding(top = 20.dp)){
+
+            // attachments text
+            Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
                     text = "No Attachments",
                     style = MaterialTheme.typography.bodyLarge,
@@ -621,8 +637,10 @@ fun NewTask(navController: NavController) {
                         }
                 )
             }
+
+            // attachments
             Column(
-                modifier = if(uriList.size == 0) {
+                modifier = if (uriList.size == 0) {
                     Modifier
                         .padding(top = 10.dp)
                         .fillMaxWidth()
@@ -640,7 +658,7 @@ fun NewTask(navController: NavController) {
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                             RoundedCornerShape(10.dp),
                         )
-                }else {
+                } else {
                     Modifier
                         .padding(top = 10.dp)
                         .fillMaxWidth()
@@ -649,7 +667,8 @@ fun NewTask(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                if(uriList.size == 0){
+                if (uriList.size == 0) {
+                    // if no attachments are selected then we are showing the background image
                     Image(
                         painter = painterResource(R.drawable.arrow_circle_up),
                         contentDescription = null,
@@ -658,10 +677,9 @@ fun NewTask(navController: NavController) {
                             .size(50.dp)
                             .alpha(0.2f)
                     )
-                }
-                else {
-                    for(i in 0 until nameList.size){
-                        Log.d(TAG , "nameList size is ${nameList.size}")
+                } else {
+                    for (i in 0 until nameList.size) {
+                        Log.d(TAG, "nameList size is ${nameList.size}")
                         val name = nameList[i]
                         val uri = uriList[i]
                         ConstraintLayout(
@@ -683,7 +701,7 @@ fun NewTask(navController: NavController) {
                                     shape = RoundedCornerShape(16.dp)
                                 )
                         ) {
-                            val (fileType , fileName , close) = createRefs()
+                            val (fileType, fileName, close) = createRefs()
                             Image(
                                 painterResource(id = R.drawable.pdf),
                                 contentDescription = null,
@@ -698,14 +716,14 @@ fun NewTask(navController: NavController) {
                             Text(
                                 text = name,
                                 style = MaterialTheme.typography.bodyMedium,
-                                maxLines  = 1,
-                                color =  MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
-                                    .constrainAs(fileName){
+                                    .constrainAs(fileName) {
                                         top.linkTo(fileType.top)
                                         bottom.linkTo(fileType.bottom)
-                                        start.linkTo(fileType.end , 7.dp)
-                                        end.linkTo(close.start , 7.dp)
+                                        start.linkTo(fileType.end, 7.dp)
+                                        end.linkTo(close.start, 7.dp)
                                         width = Dimension.fillToConstraints
                                     }
                             )
@@ -729,30 +747,37 @@ fun NewTask(navController: NavController) {
                         Spacer(
                             modifier = if (i == 1) {
                                 Modifier.height(0.dp)
-                            }else {
+                            } else {
                                 Modifier.height(15.dp)
                             }
                         )
                     }
                 }
             }
+
+            // create task
             Button(
                 onClick = {
-                    if(taskTitle == ""){
-                        Toast.makeText(mContext , "Please enter a title" , Toast.LENGTH_SHORT).show()
-                    }
-                    else if(taskTypeList.size == 0) {
-                        Toast.makeText(mContext , "Please select one task category", Toast.LENGTH_SHORT).show()
-                    }
-                    else if(startTime.hour == endTime.hour && startTime.minute == endTime.minute){
-                        Toast.makeText(mContext , "Task start and end time are same" , Toast.LENGTH_SHORT).show()
-                    }
-                    else if(startTime.isAfter(endTime)){
-                        Toast.makeText(mContext , "Time interval is incorrect" , Toast.LENGTH_SHORT).show()
-                    }
-                    else {
-                        for(i in 0 until uriList.size){
-                            hmAttachments.put(uriList[i] , nameList[i])
+                    if (taskTitle == "") {
+                        Toast.makeText(mContext, "Please enter a title", Toast.LENGTH_SHORT).show()
+                    } else if (taskTypeList.size == 0) {
+                        Toast.makeText(
+                            mContext,
+                            "Please select one task category",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (startTime.hour == endTime.hour && startTime.minute == endTime.minute) {
+                        Toast.makeText(
+                            mContext,
+                            "Task start and end time are same",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (startTime.isAfter(endTime)) {
+                        Toast.makeText(mContext, "Time interval is incorrect", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        for (i in 0 until uriList.size) {
+                            hmAttachments.put(uriList[i], nameList[i])
                         }
                         val task = Task(
                             title = taskTitle,
@@ -770,9 +795,9 @@ fun NewTask(navController: NavController) {
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if(applyBgColor.value){
+                    backgroundColor = if (applyBgColor.value) {
                         bgColor
-                    }else {
+                    } else {
                         MaterialTheme.colorScheme.primary
                     }
                 ),
@@ -791,11 +816,12 @@ fun NewTask(navController: NavController) {
                 )
             }
         }
-        if(showPopUpMenu.value){
+        if (showPopUpMenu.value) {
             TaskTypePopUpMenu(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .onGloballyPositioned { layoutCoordinates ->
+                        // calculating the coordinates of pop up menu
                         x1PopUpMenu.value = layoutCoordinates.positionInWindow().x
                         y1PopUpMenu.value = layoutCoordinates.positionInWindow().y
                         x2PopUpMenu.value = x1PopUpMenu.value + layoutCoordinates.size.width
@@ -804,7 +830,7 @@ fun NewTask(navController: NavController) {
                     },
                 taskTypeList.size
             ) {
-                it.forEach {type ->
+                it.forEach { type ->
                     taskTypeList.add(type)
                 }
                 applyBgColor.value = false
@@ -816,7 +842,7 @@ fun NewTask(navController: NavController) {
 }
 
 @Composable
-fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List<String>) -> Unit) {
+fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected: Int, onClick: (List<String>) -> Unit) {
     val state = MutableTransitionState(false).apply {
         targetState = true
     }
@@ -836,7 +862,7 @@ fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val selectedTaskCount = remember { mutableStateOf(tasksSelected)}
+            val selectedTaskCount = remember { mutableStateOf(tasksSelected) }
             val showMaxCountWarning by remember {
                 derivedStateOf {
                     selectedTaskCount.value == 4
@@ -847,7 +873,7 @@ fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            if(showMaxCountWarning){
+            if (showMaxCountWarning) {
                 Text(
                     text = "Max limit is 4",
                     style = MaterialTheme.typography.bodySmall,
@@ -864,8 +890,9 @@ fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Top,
             ) {
-                for(i in 0 until 13){
-                    val checkedState = remember{ mutableStateOf(false) }
+                // task check boxes
+                for (i in 0 until 13) {
+                    val checkedState = remember { mutableStateOf(false) }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -876,12 +903,12 @@ fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List
                         Checkbox(
                             checked = checkedState.value,
                             onCheckedChange = {
-                                if(!it){
+                                if (!it) {
                                     checkedState.value = false
                                     selectedTaskCount.value--
                                     taskTypeList.remove(taskCategories[i])
                                 }
-                                if(it && selectedTaskCount.value < 4){
+                                if (it && selectedTaskCount.value < 4) {
                                     checkedState.value = true
                                     selectedTaskCount.value++
                                     taskTypeList.add(taskCategories[i])
@@ -897,6 +924,8 @@ fun TaskTypePopUpMenu(modifier: (Modifier), tasksSelected : Int , onClick: (List
                     }
                 }
             }
+
+            // button select
             Button(
                 onClick = { onClick(taskTypeList) },
                 modifier = Modifier

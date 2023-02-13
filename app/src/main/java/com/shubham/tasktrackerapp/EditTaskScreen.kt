@@ -2,9 +2,7 @@ package com.shubham.tasktrackerapp
 
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
-import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,9 +10,9 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MenuDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MenuDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -24,17 +22,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
 import com.shubham.tasktrackerapp.util.FileCache
 import com.shubham.tasktrackerapp.util.taskCategories
@@ -46,22 +43,23 @@ import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
-import kotlin.math.max
-import kotlin.math.min
 
 const val TAG = "EditTaskScreen"
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun EditTaskScreen(taskId : String, navController: NavController) {
+fun EditTaskScreen(taskId: String, navController: NavController) {
+
     val roomViewModel = hiltViewModel<RoomViewModel>()
     val task = roomViewModel.getTaskById(taskId.toInt()).observeAsState()
     val mContext = LocalContext.current
+
+    // to cache and store the selected attachment or file
     val fileCache = remember {
         FileCache(mContext)
     }
 
-    if(task.value!=null){
+    if (task.value != null) {
         val taskCategoryListSelected = remember { mutableStateListOf<String>() }
         val attachments = remember { mutableStateListOf<Pair<String, String>>() }
         LaunchedEffect(key1 = Unit, block = {
@@ -80,40 +78,40 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
 
         val showTitleError by remember {
             derivedStateOf {
-                taskTitle.equals("")
+                taskTitle == ""
             }
         }
 
         val date = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
         // launched effect because we don't want to recalculate hour, min otherwise they will not be
         // updated when selected
-        LaunchedEffect(key1 = Unit, block = {
-            if(date.equals(LocalDate.now())){
-                hour = LocalTime.now().hour.toString()
-                minutes = LocalTime.now().minute.toString()
-                if(LocalTime.now().minute + 30 <60){
-                    hourEndTime = hour
-                    minutesEndTime = (minutes.toInt()+30).toString()
-                }
-                else {
-                    hourEndTime = (hour.toInt() + 1).toString()
-                    minutesEndTime = (30 - (60 - minutes.toInt())).toString()
-                }
-            }
-        })
+//        LaunchedEffect(key1 = Unit, block = {
+//            if(date.equals(LocalDate.now())){
+//                hour = LocalTime.now().hour.toString()
+//                minutes = LocalTime.now().minute.toString()
+//                if(LocalTime.now().minute + 30 <60){
+//                    hourEndTime = hour
+//                    minutesEndTime = (minutes.toInt()+30).toString()
+//                }
+//                else {
+//                    hourEndTime = (hour.toInt() + 1).toString()
+//                    minutesEndTime = (30 - (60 - minutes.toInt())).toString()
+//                }
+//            }
+//        })
 
         Column(
             modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.background)
                 .padding(15.dp)
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
         ) {
             // headline and save button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     text = "Edit Task Details",
                     color = MaterialTheme.colorScheme.onBackground,
@@ -124,22 +122,25 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         val startTime = LocalTime.of(hour.toInt(), minutes.toInt())
                         val endTime = LocalTime.of(hourEndTime.toInt(), minutesEndTime.toInt())
 
-                        if(showTitleError){
-                            Toast.makeText(mContext, "Title required" , Toast.LENGTH_SHORT).show()
-                        }
-                        else if(taskCategoryListSelected.size == 0){
-                            Toast.makeText(mContext, "Select atleast one task type", Toast.LENGTH_SHORT).show()
-                        }
-                        else if(startTime.equals(endTime) && startTime.isAfter(endTime)){
-                            Toast.makeText(mContext , "Invalid time interval", Toast.LENGTH_SHORT).show()
-                        }
-                        else {
-                            val hashMap = hashMapOf<String , String>()
+                        if (showTitleError) {
+                            Toast.makeText(mContext, "Title required", Toast.LENGTH_SHORT).show()
+                        } else if (taskCategoryListSelected.size == 0) {
+                            Toast.makeText(
+                                mContext,
+                                "Select at least one task type",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else if (startTime.equals(endTime) && startTime.isAfter(endTime)) {
+                            Toast.makeText(mContext, "Invalid time interval", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            val hashMap = hashMapOf<String, String>()
                             attachments.forEach {
                                 hashMap[it.first] = it.second
                             }
                             task.value!!.title = taskTitle
-                            task.value!!.due_date = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
+                            task.value!!.due_date =
+                                LocalDate.of(year.toInt(), month.toInt(), day.toInt())
                             task.value!!.start_time = startTime
                             task.value!!.end_time = endTime
                             task.value!!.taskTypes = taskCategoryListSelected
@@ -204,7 +205,7 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     )
                 )
             }
-            if(showTitleError){
+            if (showTitleError) {
                 Text(
                     text = "* Title is required",
                     color = MaterialTheme.colorScheme.error,
@@ -212,20 +213,22 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                 )
             }
 
-            // Due date and text field
+            // Due date and date dropdowns to select
             Row(
                 modifier = Modifier.padding(top = 15.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                var showYearDropDown by remember{ mutableStateOf(false)}
-                var showMonthDropDown by remember{ mutableStateOf(false)}
-                var showDayDropDown by remember{ mutableStateOf(false)}
+                var showYearDropDown by remember { mutableStateOf(false) }
+                var showMonthDropDown by remember { mutableStateOf(false) }
+                var showDayDropDown by remember { mutableStateOf(false) }
                 Text(
                     text = "Due date",
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.labelLarge
                 )
+
+                // selected year
                 Text(
                     text = year,
                     modifier = Modifier
@@ -235,11 +238,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // year icon and drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showYearDropDown){
+                        imageVector = if (showYearDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -258,16 +262,18 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
-                    ) {
-                        for(i in LocalDate.now().year until LocalDate.now().year+25){
+                        ) {
+                        for (i in LocalDate.now().year until LocalDate.now().year + 25) {
                             DropdownMenuItem(
                                 text = {
-                                   Text(
-                                       text = i.toString(),
-                                       style = MaterialTheme.typography.bodySmall
-                                   )
+                                    Text(
+                                        text = i.toString(),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 },
                                 onClick = {
                                     year = i.toString()
@@ -281,6 +287,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         }
                     }
                 }
+
+                // selected month
                 Text(
                     text = month,
                     modifier = Modifier
@@ -290,11 +298,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // month selector icon and drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showMonthDropDown){
+                        imageVector = if (showMonthDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -305,6 +314,7 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                             .clickable {
                                 showMonthDropDown = !showMonthDropDown
                             }
+
                     )
                     DropdownMenu(
                         expanded = showMonthDropDown,
@@ -313,19 +323,23 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
                         ) {
                         var m = LocalDate.now().monthValue
-                        if(!year.toInt().equals(LocalDate.now().year)){
+                        // if selected year value is not equal to current year value then m will range from 1 to 12
+                        // else m will have value from current month value to 12
+                        if (year.toInt() != LocalDate.now().year) {
                             m = 1
                         }
-                        for(i in m until 13){
+                        for (i in m until 13) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = i.toString(),
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
                                 onClick = {
@@ -340,6 +354,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         }
                     }
                 }
+
+                // selected day
                 Text(
                     text = day,
                     modifier = Modifier
@@ -349,11 +365,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // day selector icon and drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showDayDropDown){
+                        imageVector = if (showDayDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -372,19 +389,25 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
                         ) {
                         var d = LocalDate.now().dayOfMonth
-                        if(!month.toInt().equals(LocalDate.now().monthValue)){
+                        // if the selected month is not equal to current month then d will start from 1
+                        // else it will start from current day of month
+                        if (month.toInt() != LocalDate.now().monthValue) {
                             d = 1
                         }
-                        for(i in d until LocalDate.of(year.toInt() , month.toInt(), 1 ).lengthOfMonth() + 1){
+                        // d will have values till max days in current month
+                        for (i in d until LocalDate.of(year.toInt(), month.toInt(), 1)
+                            .lengthOfMonth() + 1) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = i.toString(),
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
                                 onClick = {
@@ -401,7 +424,7 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                 }
             }
 
-            // Start time text and text field
+            // Start time text and time selecting drop down menus
             Row(
                 modifier = Modifier.padding(top = 15.dp),
                 horizontalArrangement = Arrangement.Start,
@@ -414,6 +437,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.labelLarge
                 )
+
+                // selected start time hour
                 Text(
                     text = hour,
                     modifier = Modifier
@@ -423,11 +448,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // start time hour selector icon and drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showStartTimeHourDropDown){
+                        imageVector = if (showStartTimeHourDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -446,32 +472,49 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
                         ) {
-                        var h = 0
-                        if(date.equals(LocalDate.now())) {
-                            h = LocalTime.now().hour
-                        }else h = 0
-                        for(i in h until 24){
+                        // if selected date from above row is equal to current date then h will start from
+                        // current hour of the day
+                        // else it will start from 0 and range till 23 i.e 0 to 23(both inclusive)
+                        val h : Int = if (date.equals(LocalDate.now())) {
+                            LocalTime.now().hour
+                        } else 0
+                        for (i in h until 24) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = i.toString(),
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
                                 onClick = {
                                     hour = i.toString()
-                                    if(i > hourEndTime.toInt()) {
-                                        if(minutes.toInt() + 30 < 60){
+                                    // checking if the start time hour selected is greater than end time hour
+                                    if (i > hourEndTime.toInt()) {
+                                        // if selected start time minutes plus 30 does not go in next hour
+                                        // then we will simply make endTime hour equal to start time hour
+                                        // and increase the endtime minutes by 30
+                                        if (minutes.toInt() + 30 < 60) {
                                             hourEndTime = i.toString()
                                             minutesEndTime = (minutes.toInt() + 30).toString()
-                                        }else {
-                                            if(i+1 < 24){
-                                                hourEndTime = (i+1).toString()
-                                            }else hourEndTime = 0.toString()
-                                            minutesEndTime = (30 - (60 - minutes.toInt())).toString()
+                                        }
+                                        // if selected start time minutes plus 30 goes in next hour
+                                        // then we first check that endtime hour is 23 or not. if it is
+                                        // in that case we have to make endTime hour to 0 and and make the
+                                        // minutes equal to the value by which it was in next hour
+                                        // if the endTime hour is not 23 than just increase the endTime hour
+                                        // by one and make the minutes equal to the value by which it was
+                                        // going in next hour
+                                        else {
+                                            hourEndTime = if (i + 1 < 24) {
+                                                (i + 1).toString()
+                                            } else 0.toString()
+                                            minutesEndTime =
+                                                (30 - (60 - minutes.toInt())).toString()
                                         }
                                     }
                                     showStartTimeHourDropDown = false
@@ -484,6 +527,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         }
                     }
                 }
+
+                // start time selected minutes
                 Text(
                     text = minutes,
                     modifier = Modifier
@@ -493,11 +538,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // start time minutes selector icon and drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showStartTimeMinDropDown){
+                        imageVector = if (showStartTimeMinDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -516,31 +562,35 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
                         ) {
-                        val m: Int
-                        m = if(date.equals(LocalDate.now()) && hour.toInt() == LocalTime.now().hour){
-                            LocalTime.now().minute
-                        }else 0
-                        for(i in m until 60){
+                        // if selected date is equal to current date and selected start time hour is also
+                        // equal to the current time hour then m value will start current minute
+                        // else it will start from 0
+                        val m: Int =
+                            if (date.equals(LocalDate.now()) && hour.toInt() == LocalTime.now().hour) {
+                                LocalTime.now().minute
+                            } else 0
+                        for (i in m until 60) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = i.toString(),
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
                                 onClick = {
                                     minutes = i.toString()
-                                    if(i + 30 < 60 && hour.equals(hourEndTime)){
-                                        minutesEndTime = (i+30).toString()
-                                    }else if(hour.equals(hourEndTime)){
+                                    if (i + 30 < 60 && hour == hourEndTime) {
+                                        minutesEndTime = (i + 30).toString()
+                                    } else if (hour == hourEndTime) {
                                         hourEndTime = (hour.toInt() + 1).toString()
                                         minutesEndTime = (30 - (60 - i)).toString()
-                                    }
-                                    else if(hourEndTime.toInt() == hour.toInt() + 1 && i+30 >=60){
-                                        if(minutesEndTime.toInt() < 30 - (60 - i)){
+                                    } else if (hourEndTime.toInt() == hour.toInt() + 1 && i + 30 >= 60) {
+                                        if (minutesEndTime.toInt() < 30 - (60 - i)) {
                                             minutesEndTime = (30 - (60 - i)).toString()
                                         }
                                     }
@@ -556,7 +606,7 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                 }
             }
 
-            // End time text and text field
+            // End time text and time selecting drop down menus
             Row(
                 modifier = Modifier.padding(top = 15.dp),
                 horizontalArrangement = Arrangement.Start,
@@ -569,6 +619,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.labelLarge
                 )
+
+                // end time selected hour
                 Text(
                     text = hourEndTime,
                     modifier = Modifier
@@ -578,11 +630,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // end time hour selector and drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showEndTimeHourDropDown){
+                        imageVector = if (showEndTimeHourDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -601,17 +654,21 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
                         ) {
+                        // endTime hour will start from selected start time hour but if start time minutes
+                        // plus 30 goes in next hour then endTime hour will be increase by 1
                         var h = hour.toInt()
-                        if(minutes.toInt() + 30 >=60) h++
-                        for(i in h until 24){
+                        if (minutes.toInt() + 30 >= 60) h++
+                        for (i in h until 24) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = i.toString(),
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
                                 onClick = {
@@ -626,6 +683,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         }
                     }
                 }
+
+                // endTime selected minutes
                 Text(
                     text = minutesEndTime,
                     modifier = Modifier
@@ -635,11 +694,12 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Box(contentAlignment = Alignment.Center){
+                // endTime selector icon and minute drop down
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = if(showEndTimeMinDropDown){
+                        imageVector = if (showEndTimeMinDropDown) {
                             Icons.Filled.KeyboardArrowUp
-                        }else {
+                        } else {
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = null,
@@ -658,20 +718,27 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         },
                         modifier = Modifier
                             .height(300.dp)
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant),
 
                         ) {
-                        val m : Int = if(hour.equals(hourEndTime)){
-                            minutes.toInt()+30
-                        }else {
-                            30 - (60 - minutes.toInt())
+                        // if endTime hour is equal to start time hour then m will be
+                        var m: Int = if (hour == hourEndTime) {
+                            minutes.toInt() + 30
+                        } else {
+                            0
                         }
-                        for(i in max(m, 0) until 60){
+                        if (m >= 60) {
+                            hour = (hour.toInt() + 1).toString()
+                            m -= 60
+                        }
+                        for (i in m until 60) {
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = i.toString(),
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
                                 onClick = {
@@ -694,8 +761,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     .padding(top = 15.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
-            ){
-                var showCategoryDropDownMenu by remember{
+            ) {
+                var showCategoryDropDownMenu by remember {
                     mutableStateOf(false)
                 }
 
@@ -704,7 +771,9 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                BoxWithConstraints{
+
+                // task type add icon and drop down
+                BoxWithConstraints {
                     var selectedType by remember {
                         mutableStateOf("")
                     }
@@ -734,6 +803,7 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         modifier = Modifier
                             .height(400.dp)
                             .align(Alignment.TopEnd)
+                            .background(color = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         taskCategories.forEach { type ->
                             val tagEnabled = !taskCategoryListSelected.contains(type)
@@ -743,25 +813,28 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                                     taskCategoryListSelected.add(type)
                                     showCategoryDropDownMenu = false
                                 },
-                            enabled = tagEnabled) {
+                                enabled = tagEnabled,
+                            ) {
                                 Text(
                                     text = type,
-                                    style = if(tagEnabled){
+                                    style = if (tagEnabled) {
                                         MaterialTheme.typography.labelMedium
-                                    }else {
+                                    } else {
                                         MaterialTheme.typography.bodySmall
                                     },
-                                    color = if(tagEnabled){
-                                        MaterialTheme.colorScheme.onSurface
-                                    }else {
-                                        MaterialTheme.colorScheme.onSurface.copy(0.4f)
+                                    color = if (tagEnabled) {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    } else{
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(0.4f)
                                     }
                                 )
                             }
                         }
                     }
                 }
-                if(taskCategoryListSelected.size > 0){
+
+                // showing the text only if the tasks category selected is greater than 0
+                if (taskCategoryListSelected.size > 0) {
                     Text(
                         text = "(long press to delete a task type)",
                         style = MaterialTheme.typography.bodySmall,
@@ -781,11 +854,11 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
-            ){
-                for(i in 0 until taskCategoryListSelected.size){
-                    var showTaskDeleteOpt by remember{ mutableStateOf(false)}
+            ) {
+                for (i in 0 until taskCategoryListSelected.size) {
+                    var showTaskDeleteOpt by remember { mutableStateOf(false) }
                     val type = taskCategoryListSelected[i]
-                    Box(contentAlignment = Alignment.Center){
+                    Box(contentAlignment = Alignment.Center) {
                         Text(
                             text = type,
                             style = TaskTrackerTopography.labelMedium,
@@ -806,7 +879,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                         )
                         DropdownMenu(
                             expanded = showTaskDeleteOpt,
-                            onDismissRequest = { showTaskDeleteOpt = false }
+                            onDismissRequest = { showTaskDeleteOpt = false },
+                            modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)
                         ) {
                             DropdownMenuItem(onClick = {
                                 taskCategoryListSelected.remove(type)
@@ -814,7 +888,8 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
                             }) {
                                 Text(
                                     text = "Delete",
-                                    style = MaterialTheme.typography.labelMedium
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -823,26 +898,31 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
             }
 
             // launcher for getting the file uri and storing the file in the cache directory
-            val fileLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
-                if(result!=null) {
-                    val cursor = mContext.contentResolver.query(result, null, null, null, null)
-                    val indexedName = cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    cursor.moveToFirst()
-                    val filename = cursor.getString(indexedName)
-                    cursor.close()
-                    fileCache.cacheThis(listOf(result))
-                    attachments.add(Pair(result.toString(), filename))
-                    Toast.makeText(mContext, "attach size - ${attachments.size}", Toast.LENGTH_SHORT).show()
+            val fileLauncher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
+                    if (result != null) {
+                        val cursor = mContext.contentResolver.query(result, null, null, null, null)
+                        val indexedName = cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        cursor.moveToFirst()
+                        val filename = cursor.getString(indexedName)
+                        cursor.close()
+                        fileCache.cacheThis(listOf(result))
+                        attachments.add(Pair(result.toString(), filename))
+                        Toast.makeText(
+                            mContext,
+                            "attach size - ${attachments.size}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
-            }
 
             // Attachments text and add button
             Row(
                 modifier = Modifier
                     .padding(top = 15.dp)
                     .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-            ){
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = "Attachments",
                     style = MaterialTheme.typography.labelLarge,
@@ -876,11 +956,13 @@ fun EditTaskScreen(taskId : String, navController: NavController) {
 }
 
 @Composable
-fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair: Pair<String, String>) -> Unit) {
+fun FilePreview(
+    attachments: MutableList<Pair<String, String>>,
+    onClick: (pair: Pair<String, String>) -> Unit
+) {
     val mContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val mutex = remember{ Mutex() }
-    val roomViewModel = hiltViewModel<RoomViewModel>()
+    val mutex = remember { Mutex() }
 
     Column(
         modifier = Modifier
@@ -896,14 +978,20 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
             attachments.forEach {
                 val uri = it.first.toUri()
                 val name = it.second
-                val file = remember(uri){ File(mContext.cacheDir, name) }
-                val input = remember(file, uri){ mContext.contentResolver.openFileDescriptor(file.toUri(), "r") }
-                if(input!=null){
-                    val renderer by produceState<PdfRenderer?>(null , input){
+                val file = remember(uri) { File(mContext.cacheDir, name) }
+                val input = remember(file, uri) {
+                    mContext.contentResolver.openFileDescriptor(
+                        file.toUri(),
+                        "r"
+                    )
+                }
+                if (input != null) {
+                    val renderer by produceState<PdfRenderer?>(null, input) {
                         coroutineScope.launch(Dispatchers.IO) {
                             value = PdfRenderer(input)
                         }
                         awaitDispose {
+                            // on dispose we are closing the renderer with lock
                             val currentRenderer = value
                             coroutineScope.launch(Dispatchers.IO) {
                                 mutex.withLock {
@@ -921,19 +1009,19 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
                                 color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                 RoundedCornerShape(7.dp)
                             ),
-                    ){
-                        val width = with(LocalDensity.current){ maxWidth.toPx()}.toInt()
+                    ) {
+                        val width = with(LocalDensity.current) { maxWidth.toPx() }.toInt()
                         val height = (width * 0.6f).toInt()
                         val bitmap = remember {
-                            Bitmap.createBitmap(width , height , Bitmap.Config.ARGB_8888)
+                            Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                         }
-                        DisposableEffect(key1 = renderer){
+                        DisposableEffect(key1 = renderer) {
                             val job = coroutineScope.launch(Dispatchers.IO) {
                                 mutex.withLock {
-                                    if(!coroutineContext.isActive) return@launch
-                                    try{
-                                        renderer?.let {
-                                            it.openPage(0).use { page ->
+                                    if (!coroutineContext.isActive) return@launch
+                                    try {
+                                        renderer?.let { renderer->
+                                            renderer.openPage(0).use { page ->
                                                 page.render(
                                                     bitmap,
                                                     null,
@@ -942,7 +1030,7 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
                                                 )
                                             }
                                         }
-                                    }catch (e: Exception){
+                                    } catch (e: Exception) {
                                         return@launch
                                     }
                                 }
@@ -951,26 +1039,31 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
                                 job.cancel()
                             }
                         }
+
+                        // file preview
                         Image(
                             bitmap = bitmap.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.Center),
+                                .align(Alignment.Center)
+                                .clip(RoundedCornerShape(7.dp)),
                             alignment = Alignment.Center
                         )
+
+                        // row showing filename and opt menu
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(40.dp)
                                 .background(
-                                    color = MaterialTheme.colorScheme.onBackground.copy(0.4f),
+                                    color = Color.Black.copy(0.4f),
                                     RoundedCornerShape(bottomStart = 7.dp, bottomEnd = 7.dp)
                                 )
                                 .align(Alignment.BottomCenter)
                                 .padding(10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
-                        ){
+                        ) {
                             var showDropDownMenu by remember {
                                 mutableStateOf(false)
                             }
@@ -979,7 +1072,7 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.background,
                             )
-                            Box(contentAlignment = Alignment.Center){
+                            Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.menu__colon),
                                     contentDescription = null,
@@ -992,12 +1085,12 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
                                 )
                                 DropdownMenu(
                                     expanded = showDropDownMenu,
-                                    onDismissRequest = { showDropDownMenu = false }
+                                    onDismissRequest = { showDropDownMenu = false },
+                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
                                     DropdownMenuItem(
                                         onClick = {
                                             onClick(it)
-                                            //Toast.makeText(mContext, "attach file prev size - ${attachments.size}", Toast.LENGTH_SHORT).show()
                                             showDropDownMenu = false
                                         },
                                         contentPadding = MenuDefaults.DropdownMenuItemContentPadding,
@@ -1005,7 +1098,7 @@ fun FilePreview(attachments: MutableList<Pair<String, String>> , onClick: (pair:
                                     ) {
                                         Text(
                                             text = "Delete",
-                                            color = MaterialTheme.colorScheme.onBackground,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             style = MaterialTheme.typography.bodySmall
                                         )
                                     }

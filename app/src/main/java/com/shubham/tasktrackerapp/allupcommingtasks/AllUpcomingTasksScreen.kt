@@ -1,11 +1,5 @@
 package com.shubham.tasktrackerapp.allupcommingtasks
 
-import android.content.Context
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,73 +19,60 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonSerializer
-import com.google.gson.reflect.TypeToken
 import com.shubham.tasktrackerapp.R
 import com.shubham.tasktrackerapp.RoomViewModel
 import com.shubham.tasktrackerapp.data.local.Task
-import com.shubham.tasktrackerapp.parcelable
-import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.theme.TaskTrackerTopography
-import com.shubham.tasktrackerapp.util.*
-import dagger.hilt.android.AndroidEntryPoint
+import com.shubham.tasktrackerapp.util.Screen
 import java.time.LocalDate
-import java.time.LocalTime
 import kotlin.math.min
 
 /**
  * Composable to show all upcoming tasks
  */
 const val TAG = "AllUpcomingTasksFragment"
+
 @Composable
 fun AllUpcomingTasksList(navController: NavController) {
-    val gsonBuilder = GsonBuilder()
-    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeSerializer())
-    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateSerializer())
-    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateDeserializer())
-    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeDeserializer())
-    val gson = gsonBuilder.setPrettyPrinting().create()
+    val viewModel = hiltViewModel<RoomViewModel>()
+    val taskList = viewModel.getTasks().observeAsState()
 
-    val viewModel = hiltViewModel<AllUpcomingTasksViewModel>()
-    val taskList = viewModel.getTasksFromDatabase().observeAsState()
-    var count = 0
+    // sorting the tasks by due date first and then by start time and after that by end time
+    // we are selecting all the tasks except the first 3 tasks of the current day which will be shown in
+    // upcoming tasks screen
     val sortedList by remember {
         derivedStateOf {
-            taskList.value?.let { list->
-                list.sortedWith(compareBy<Task>{it.due_date}.thenBy { it.start_time }.thenBy { it.end_time })
+            var count = 0
+            taskList.value?.let { list ->
+                list.sortedWith(compareBy<Task> { it.due_date }.thenBy { it.start_time }
+                    .thenBy { it.end_time })
                     .dropWhile {
-                        (it.due_date == LocalDate.now() && count !=3).apply { count++ }
+                        (it.due_date == LocalDate.now() && count != 3).apply { count++ }
                     }
             }
         }
     }
+
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
             .fillMaxSize()
     ) {
-        if(sortedList!=null){
-            items(sortedList!!){ task ->
-                ListTaskItem(task = task, navController, gson){
-
-                }
+        if (sortedList != null) {
+            items(sortedList!!) { task ->
+                ListTaskItem(task = task, navController)
             }
         }
     }
 }
 
 @Composable
-fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: () -> Unit,) {
+fun ListTaskItem(task: Task, navController: NavController) {
     var showDropDownMenu by remember { mutableStateOf(false) }
     val roomViewModel = hiltViewModel<RoomViewModel>()
 
@@ -102,8 +83,7 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
             .padding(top = 8.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
-
-        ) {
+    ) {
         Column(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
@@ -111,6 +91,7 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                 .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
                 .padding(15.dp)
         ) {
+            // task title and menu option
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
@@ -122,7 +103,7 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Box(contentAlignment = Alignment.Center){
+                Box(contentAlignment = Alignment.Center) {
                     Image(
                         painterResource(id = R.drawable.menu__colon),
                         contentDescription = "task options",
@@ -135,6 +116,7 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                     DropdownMenu(
                         expanded = showDropDownMenu,
                         onDismissRequest = { showDropDownMenu = false },
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         DropdownMenuItem(
                             onClick = {
@@ -143,11 +125,11 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                             },
                             enabled = true,
                             contentPadding = MenuDefaults.DropdownMenuItemContentPadding,
-                            interactionSource = remember { MutableInteractionSource() }
+                            interactionSource = remember { MutableInteractionSource() },
                         ) {
                             Text(
                                 text = "Delete",
-                                color = MaterialTheme.colorScheme.onBackground,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -164,13 +146,15 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                         ) {
                             Text(
                                 text = "Edit",
-                                color = MaterialTheme.colorScheme.onBackground,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
                 }
             }
+
+            // Due date and time
             Row(
                 horizontalArrangement = Arrangement.Start,
                 modifier = Modifier.padding(top = 7.dp)
@@ -189,6 +173,8 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                     maxLines = 1
                 )
             }
+
+            // task categories
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
@@ -218,6 +204,8 @@ fun ListTaskItem(task: Task, navController: NavController, gson: Gson, onClick: 
                     )
                 }
             }
+
+            // Attachments text
             Row(
                 horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
