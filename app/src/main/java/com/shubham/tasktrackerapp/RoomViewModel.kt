@@ -14,41 +14,47 @@ import javax.inject.Inject
 @HiltViewModel
 class RoomViewModel @Inject constructor(
     private val taskDaoImpl: TaskDaoImpl
-): ViewModel() {
+) : ViewModel() {
 
     private lateinit var mTasks: LiveData<List<Task>>
 
     fun getTasks() = mTasks
 
+    // for all tasks from tb_task table
     private fun getTasksFromDatabase() {
         viewModelScope.launch {
             mTasks = taskDaoImpl.getAllTasks()
         }
     }
 
-    fun insertIntoDatabase(task : Task){
+    // to insert task into tb_task table
+    fun insertIntoDatabase(task: Task) {
         viewModelScope.launch {
             taskDaoImpl.insertTask(task)
         }
     }
 
-    fun updateTask(task: Task){
+    // to update task in tb_task table
+    fun updateTask(task: Task) {
         viewModelScope.launch {
             taskDaoImpl.updateTask(task)
         }
     }
 
-    fun getTaskById(taskId: Int): LiveData<Task>{
+    // to get task by id from tb_task table
+    fun getTaskById(taskId: Int): LiveData<Task> {
         return taskDaoImpl.getTaskById(taskId)
     }
 
-    fun deleteTask(task: Task){
+    // to delete task from tb_task table
+    fun deleteTask(task: Task) {
         viewModelScope.launch {
             taskDaoImpl.deleteTask(task)
         }
     }
 
-    fun insertMissedTask(task: MissedTask){
+    // to insert missed task into table  tbTasksMissed
+    fun insertMissedTask(task: MissedTask) {
         viewModelScope.launch {
             taskDaoImpl.insertTaskIntoMissedTable(task)
         }
@@ -56,30 +62,31 @@ class RoomViewModel @Inject constructor(
 
     fun getLastWeekMissedTasks(date: String) = taskDaoImpl.getLastWeekMissedTasks(date)
 
-    fun getLastMonthMissedTasks(date: String): List<MissedTask>?{
-        var list : List<MissedTask>? = listOf()
+    fun getLastMonthMissedTasks(date: String): List<MissedTask>? {
+        var list: List<MissedTask>? = listOf()
         viewModelScope.launch {
             list = taskDaoImpl.getLastWeekMissedTasks(date).value
         }
         return list
     }
 
-    fun insertTaskDone(task: TaskDone){
+    // to insert task in table tbTasksDone
+    fun insertTaskDone(task: TaskDone) {
         viewModelScope.launch {
             taskDaoImpl.insertTaskIntoDoneTable(task)
         }
     }
 
-    fun getLastWeekDoneTask(date: String) : List<TaskDone>?{
-        var list : List<TaskDone>? = null
+    fun getLastWeekDoneTask(date: String): List<TaskDone>? {
+        var list: List<TaskDone>? = null
         viewModelScope.launch {
             list = taskDaoImpl.getLastWeekDoneTasks(date).value
         }
         return list
     }
 
-    fun getLastMonthDoneTask(date: String) : List<TaskDone>?{
-        var list : List<TaskDone>? = null
+    fun getLastMonthDoneTask(date: String): List<TaskDone>? {
+        var list: List<TaskDone>? = null
         viewModelScope.launch {
             list = taskDaoImpl.getLastMonthDoneTasks(date).value
         }

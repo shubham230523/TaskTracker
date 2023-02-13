@@ -9,48 +9,34 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.widget.*
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.shubham.tasktrackerapp.dashboard.DashBoard
-import com.shubham.tasktrackerapp.data.local.Task
 import com.shubham.tasktrackerapp.newtask.NewTask
 import com.shubham.tasktrackerapp.theme.TaskTrackerTheme
 import com.shubham.tasktrackerapp.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import java.time.LocalDate
-import java.time.LocalTime
 import java.util.*
 
 @AndroidEntryPoint
@@ -58,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG = "taskTag"
     }
+
     @OptIn(ExperimentalAnimationApi::class)
     @SuppressLint("ObjectAnimatorBinding")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,12 +55,6 @@ class MainActivity : AppCompatActivity() {
         rootView.apply {
             setContent {
                 TaskTrackerTheme {
-                    val gsonBuilder = GsonBuilder()
-                    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeSerializer())
-                    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateSerializer())
-                    gsonBuilder.registerTypeAdapter(LocalDate::class.java , LocalDateDeserializer())
-                    gsonBuilder.registerTypeAdapter(LocalTime::class.java , LocalTimeDeserializer())
-                    val gson = gsonBuilder.setPrettyPrinting().create()
 
                     LaunchedEffect(key1 = Unit, block = {
                         createNotificationChannel()
@@ -129,12 +110,11 @@ class MainActivity : AppCompatActivity() {
                                     composable(route = Screen.DashBoard.route) {
                                         DashBoard()
                                     }
-                                    composable(route = Screen.EditTask.route.plus("/{id}")){ navBackStackEntry ->
+                                    composable(route = Screen.EditTask.route.plus("/{id}")) { navBackStackEntry ->
                                         val taskId = navBackStackEntry.arguments?.getString("id")
-                                        taskId?.let{
-                                            EditTaskScreen(taskId , navController)
+                                        taskId?.let {
+                                            EditTaskScreen(taskId, navController)
                                         }
-                                        Log.d(TAG, "taskId MainActivity - $taskId")
                                     }
                                 }
                             }
@@ -185,15 +165,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
             val channelId = getString(R.string.CHANNEL_ID)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(channelId , name , importance).apply {
+            val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
-            val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -204,23 +185,27 @@ fun AskForNotificationPermission() {
     val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-    ){
-        if(!it){
-            Toast.makeText(context , "Notification permission is required for notifying user, you can enable this in settings", Toast.LENGTH_LONG).show()
+    ) {
+        if (!it) {
+            Toast.makeText(
+                context,
+                "Notification permission is required for notifying user, you can enable this in settings",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+
+    // for android version 13 or above we have to ask for notification permission
+    if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permission = Manifest.permission.POST_NOTIFICATIONS
-        val permissionCheckResult = ContextCompat.checkSelfPermission(LocalContext.current, Manifest.permission.POST_NOTIFICATIONS)
-        if(permissionCheckResult != PackageManager.PERMISSION_GRANTED){
+        val permissionCheckResult = ContextCompat.checkSelfPermission(
+            LocalContext.current,
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+        if (permissionCheckResult != PackageManager.PERMISSION_GRANTED) {
             LaunchedEffect(key1 = Unit, block = {
                 permissionLauncher.launch(permission)
             })
         }
     }
-}
-
-inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
-    SDK_INT >= 33 -> getParcelable(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelable(key) as? T
 }

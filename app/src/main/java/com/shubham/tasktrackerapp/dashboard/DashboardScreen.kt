@@ -1,7 +1,6 @@
 package com.shubham.tasktrackerapp.dashboard
 
 import android.content.res.Resources.getSystem
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.core.LinearEasing
@@ -56,40 +55,44 @@ const val PG_WEEKLY = "Weekly"
 
 @Composable
 fun DashBoard() {
+
     val roomViewModel = hiltViewModel<RoomViewModel>()
+
     var currentMonth = LocalDate.now().monthValue.toString()
-    var currentDay= LocalDate.now().dayOfMonth.toString()
-    if(currentMonth.length == 1) currentMonth = "0$currentMonth"
-    if(currentDay.length == 1) currentDay = "0$currentDay"
+    var currentDay = LocalDate.now().dayOfMonth.toString()
+    if (currentMonth.length == 1) currentMonth = "0$currentMonth"
+    if (currentDay.length == 1) currentDay = "0$currentDay"
+
     var btnWeekly by remember { mutableStateOf(true) }
     var btnMonthly by remember { mutableStateOf(false) }
     var btnBeforeDeadlinePG by remember { mutableStateOf(true) }
     var btnMissedPG by remember { mutableStateOf(false) }
     var btnBeforeDeadineCategories by remember { mutableStateOf(true) }
     var btnMissedCategories by remember { mutableStateOf(false) }
-    var yaxisNum = remember { mutableStateListOf<Float>() }
+
+    val yaxisNum = remember { mutableStateListOf<Float>() }
     val xCoordList = remember { mutableStateListOf<Float>() }
     val yCoordList = remember { mutableStateListOf<Float>() }
     var tasksMissed by remember { mutableStateOf(0) }
     var tasksAccuracy by remember { mutableStateOf(0) }
+
     var beforeDeadline by remember { mutableStateOf(0) }
     var beforeDeadlinePercentage by remember { mutableStateOf(0) }
 
-    if(btnWeekly){
+    if (btnWeekly) {
         tasksMissed = 2
         tasksAccuracy = 80
         beforeDeadline = 8
         beforeDeadlinePercentage = 5
-    }
-    else if(btnMonthly){
+    } else if (btnMonthly) {
         tasksMissed = 5
         tasksAccuracy = 65
         beforeDeadline = 22
         beforeDeadlinePercentage = 3
     }
 
-    val recentMissedTaskList by roomViewModel.getLastWeekMissedTasks("${LocalDate.now().year}-$currentMonth-$currentDay").observeAsState()
-
+    val recentMissedTaskList by roomViewModel.getLastWeekMissedTasks("${LocalDate.now().year}-$currentMonth-$currentDay")
+        .observeAsState()
 
     Surface(
         modifier = Modifier
@@ -112,7 +115,9 @@ fun DashBoard() {
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(top = 30.dp)
             )
-            if(recentMissedTaskList != null){
+
+            if (recentMissedTaskList != null) {
+                // horizontal row showing recent missed tasks
                 LazyRow {
                     items(items = recentMissedTaskList!!, itemContent = {
                         BoxWithConstraints(
@@ -153,6 +158,8 @@ fun DashBoard() {
                     })
                 }
             }
+
+            // weekly and monthly buttons
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -163,18 +170,18 @@ fun DashBoard() {
                     text = "Weekly",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if(btnWeekly) {
+                    color = if (btnWeekly) {
                         MaterialTheme.colorScheme.onPrimary
-                    }else {
-                          MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
                     },
                     modifier = Modifier
                         .padding(end = 5.dp)
                         .background(
-                            color = if(btnWeekly){
+                            color = if (btnWeekly) {
                                 MaterialTheme.colorScheme.primary
-                            }else {
-                                  MaterialTheme.colorScheme.surface
+                            } else {
+                                MaterialTheme.colorScheme.surface
                             },
                             RoundedCornerShape(15.dp)
                         )
@@ -189,17 +196,17 @@ fun DashBoard() {
                     text = "Monthly",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if(btnMonthly){
+                    color = if (btnMonthly) {
                         MaterialTheme.colorScheme.onPrimary
-                    }else {
-                          MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
                     },
                     modifier = Modifier
                         .padding(start = 5.dp)
                         .background(
-                            color = if(btnMonthly){
+                            color = if (btnMonthly) {
                                 MaterialTheme.colorScheme.primary
-                            }else {
+                            } else {
                                 MaterialTheme.colorScheme.surface
                             },
                             RoundedCornerShape(15.dp)
@@ -212,6 +219,8 @@ fun DashBoard() {
                         .weight(1f)
                 )
             }
+
+            // scrollable column
             Column(
                 modifier = Modifier
                     .padding(top = 20.dp)
@@ -223,6 +232,8 @@ fun DashBoard() {
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
+
+                // buttons "before deadline" , "missed"
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -234,17 +245,17 @@ fun DashBoard() {
                         text = "Before Deadline",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if(btnBeforeDeadlinePG){
+                        color = if (btnBeforeDeadlinePG) {
                             MaterialTheme.colorScheme.onPrimary
-                        }else {
+                        } else {
                             MaterialTheme.colorScheme.onBackground
                         },
                         modifier = Modifier
                             .padding(end = 5.dp)
                             .background(
-                                color = if(btnBeforeDeadlinePG){
+                                color = if (btnBeforeDeadlinePG) {
                                     MaterialTheme.colorScheme.primary
-                                }else {
+                                } else {
                                     MaterialTheme.colorScheme.surface
                                 },
                                 RoundedCornerShape(15.dp)
@@ -259,17 +270,17 @@ fun DashBoard() {
                         text = "Missed",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if(btnMissedPG){
+                        color = if (btnMissedPG) {
                             MaterialTheme.colorScheme.onPrimary
-                        }else {
+                        } else {
                             MaterialTheme.colorScheme.onBackground
                         },
                         modifier = Modifier
                             .padding(start = 5.dp)
                             .background(
-                                color = if(btnMissedPG){
+                                color = if (btnMissedPG) {
                                     MaterialTheme.colorScheme.primary
-                                }else {
+                                } else {
                                     MaterialTheme.colorScheme.surface
                                 },
                                 RoundedCornerShape(15.dp)
@@ -281,34 +292,36 @@ fun DashBoard() {
                             .padding(10.dp)
                     )
                 }
+
+                // constrain layout graph to show graph
                 ConstraintLayout(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 30.dp)
                         .wrapContentHeight()
                 ) {
-                    if(btnMonthly) {
-                        val list  = calculateLocationsAndDrawTheCurve(
+                    if (btnMonthly) {
+                        val list = calculateLocationsAndDrawTheCurve(
                             listNoOfMissedTasksForMonth,
                             PG_MONTHLY
                         )
-                        yaxisNum.removeRange(0 , yaxisNum.size)
-                        xCoordList.removeRange(0 , xCoordList.size)
-                        yCoordList.removeRange(0 , yCoordList.size)
+                        yaxisNum.removeRange(0, yaxisNum.size)
+                        xCoordList.removeRange(0, xCoordList.size)
+                        yCoordList.removeRange(0, yCoordList.size)
 
                         yaxisNum.addAll(list[0])
                         xCoordList.addAll(list[1])
                         yCoordList.addAll(list[2])
 
-                    }else if(btnWeekly) {
+                    } else if (btnWeekly) {
                         val list = calculateLocationsAndDrawTheCurve(
                             listNoOfMissedTasksPerWeek,
                             PG_WEEKLY
                         )
 
-                        yaxisNum.removeRange(0 , yaxisNum.size)
-                        xCoordList.removeRange(0 , xCoordList.size)
-                        yCoordList.removeRange(0 , yCoordList.size)
+                        yaxisNum.removeRange(0, yaxisNum.size)
+                        xCoordList.removeRange(0, xCoordList.size)
+                        yCoordList.removeRange(0, yCoordList.size)
 
                         yaxisNum.addAll(list[0])
                         xCoordList.addAll(list[1])
@@ -326,6 +339,7 @@ fun DashBoard() {
                         verticalArrangement = Arrangement.SpaceBetween,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        // values on y axis
                         for (i in yaxisNum.size - 1 downTo 0) {
                             Text(
                                 text = yaxisNum[i].toString(),
@@ -344,14 +358,14 @@ fun DashBoard() {
                             }
                             .padding(
                                 top = 8.dp,
-                                start = if(btnMonthly){
+                                start = if (btnMonthly) {
                                     7.dp
-                                }else{
+                                } else {
                                     10.dp
                                 },
-                                end = if(btnMonthly){
+                                end = if (btnMonthly) {
                                     7.dp
-                                }else{
+                                } else {
                                     10.dp
                                 },
                                 bottom = 8.dp
@@ -386,42 +400,39 @@ fun DashBoard() {
                             path = strokePath,
                             style = Stroke(3f),
                             brush = if (isLight) {
-                                if(btnBeforeDeadlinePG){
+                                if (btnBeforeDeadlinePG) {
                                     Brush.verticalGradient(listOf(Teal600, Teal600))
-                                }else {
-                                    Brush.verticalGradient(listOf(Red600 , Red600))
+                                } else {
+                                    Brush.verticalGradient(listOf(Red600, Red600))
                                 }
                             } else {
-                                if(btnBeforeDeadlinePG){
+                                if (btnBeforeDeadlinePG) {
                                     Brush.verticalGradient(listOf(Teal200, Teal200))
-                                }else {
-                                    Brush.verticalGradient(listOf(Red200 , Red200))
+                                } else {
+                                    Brush.verticalGradient(listOf(Red200, Red200))
                                 }
                             },
                         )
                         drawPath(
                             path = path,
                             brush = if (isLight) {
-                                if(btnBeforeDeadlinePG){
+                                if (btnBeforeDeadlinePG) {
                                     Brush.verticalGradient(listOf(Teal600, Transparent))
-                                }else {
-                                    Brush.verticalGradient(listOf(Red600 , Transparent))
+                                } else {
+                                    Brush.verticalGradient(listOf(Red600, Transparent))
                                 }
                             } else {
-                                if(btnBeforeDeadlinePG){
+                                if (btnBeforeDeadlinePG) {
                                     Brush.verticalGradient(listOf(Teal200, Transparent))
-                                }else {
-                                    Brush.verticalGradient(listOf(Red200 , Transparent))
+                                } else {
+                                    Brush.verticalGradient(listOf(Red200, Transparent))
                                 }
                             },
                             style = Fill,
                         )
                     }
-                    val state = remember {
-                        MutableTransitionState(false).apply {
-                            targetState = true
-                        }
-                    }
+
+                    // a view that slides from left to right to create graph animation
                     RevealViewAnimation(
                         modifier = Modifier
                             .constrainAs(revealView) {
@@ -436,6 +447,8 @@ fun DashBoard() {
                                 .background(color = MaterialTheme.colorScheme.background)
                         )
                     }
+
+                    // x axis values
                     Row(
                         modifier = Modifier.constrainAs(xrow) {
                             start.linkTo(ivgraph.start)
@@ -446,10 +459,9 @@ fun DashBoard() {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         val xaxis: List<String>
-                        if(btnWeekly){
+                        if (btnWeekly) {
                             xaxis = xAxisWeekly
-                        }
-                        else {
+                        } else {
                             xaxis = xAxisMonthly
                         }
                         for (element in xaxis) {
@@ -461,12 +473,15 @@ fun DashBoard() {
                         }
                     }
                 }
+
+                // cards showing missed and before deadline tasks
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 30.dp)
                         .wrapContentHeight()
                 ) {
+                    /// tasks missed
                     Box(
                         modifier = Modifier
                             .padding(end = 5.dp)
@@ -511,6 +526,8 @@ fun DashBoard() {
                             )
                         }
                     }
+
+                    // tasks before deadline
                     Box(
                         modifier = Modifier
                             .padding(start = 5.dp)
@@ -562,6 +579,8 @@ fun DashBoard() {
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(top = 30.dp)
                 )
+
+                // tasks by categories - "before deadline and missed" buttons
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -573,17 +592,17 @@ fun DashBoard() {
                         text = "Before Deadline",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if(btnBeforeDeadineCategories){
+                        color = if (btnBeforeDeadineCategories) {
                             MaterialTheme.colorScheme.onPrimary
-                        }else {
+                        } else {
                             MaterialTheme.colorScheme.onBackground
                         },
                         modifier = Modifier
                             .padding(end = 5.dp)
                             .background(
-                                color = if(btnBeforeDeadineCategories){
+                                color = if (btnBeforeDeadineCategories) {
                                     MaterialTheme.colorScheme.primary
-                                }else {
+                                } else {
                                     MaterialTheme.colorScheme.surface
                                 },
                                 RoundedCornerShape(15.dp)
@@ -598,17 +617,17 @@ fun DashBoard() {
                         text = "Missed",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if(btnMissedCategories){
+                        color = if (btnMissedCategories) {
                             MaterialTheme.colorScheme.onPrimary
-                        }else {
-                              MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
                         },
                         modifier = Modifier
                             .padding(start = 5.dp)
                             .background(
-                                color = if(btnMissedCategories){
+                                color = if (btnMissedCategories) {
                                     MaterialTheme.colorScheme.primary
-                                }else {
+                                } else {
                                     MaterialTheme.colorScheme.surface
                                 },
                                 RoundedCornerShape(15.dp)
@@ -618,9 +637,10 @@ fun DashBoard() {
                                 btnBeforeDeadineCategories = false
                             }
                             .padding(10.dp)
-
                     )
                 }
+
+                // donut view of tasks
                 ConstraintLayout(
                     modifier = Modifier
                         .padding(top = 30.dp)
@@ -628,6 +648,8 @@ fun DashBoard() {
                         .wrapContentHeight()
                 ) {
                     val (donutView, colPrim, colSecon, colTer, colRed, colonBack, leg1, leg2, leg3, leg4, leg5) = createRefs()
+
+                    // donut view
                     AndroidView(
                         modifier = Modifier
                             .width(150.dp)
@@ -675,6 +697,8 @@ fun DashBoard() {
                             }
                         }
                     )
+
+                    // tasks marking colors
                     Box(
                         modifier = Modifier
                             .width(10.dp)
@@ -781,6 +805,15 @@ fun DashBoard() {
     }
 }
 
+/**
+ * Function to calculate the locations or coordinates of tasks in canvas
+ *
+ * @param missedTasks list of no of tasks missed per day. value can be monthly or weekly
+ * @param tag monthly or weekly tag
+ *
+ * @return Arraylist of arraylists containing float value. The first arraylist contains y axis value
+ * The second arraylist is x coordinates list and third arraylist is y coordinates list
+ */
 fun calculateLocationsAndDrawTheCurve(
     missedTasks: MutableList<Int>,
     tag: String
@@ -850,7 +883,6 @@ fun calculateLocationsAndDrawTheCurve(
     return coordinates
 }
 
-
 val listNoOfMissedTasksForMonth = mutableListOf(
     5, 7, 15, 10, 12, 4, 18, 12, 16, 16, 19, 18, 6, 7, 9, 12, 4, 3, 6, 9,
     10, 8, 10, 18, 2, 3, 4, 6, 6, 17
@@ -862,6 +894,9 @@ val Int.toDp: Int get() = (this / getSystem().displayMetrics.density).toInt()
 val Int.toPx: Int get() = (this * getSystem().displayMetrics.density).toInt()
 val Float.toPx: Float get() = (this * getSystem().displayMetrics.density).toFloat()
 
+/**
+ * Composable for creating graph view animation
+ */
 @Composable
 fun RevealViewAnimation(
     modifier: Modifier,
